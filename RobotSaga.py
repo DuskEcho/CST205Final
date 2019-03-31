@@ -40,8 +40,10 @@ shopKeeperY = 2*bits
 
 
 
-
+#beings
 beingList = []
+#interactable objects
+objectList = []
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
@@ -109,6 +111,31 @@ lootTable = {}
 
 
 
+# TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
+# Converts the given rawText to a Label object to be added to the 
+# display, then adds at coordsX, coordsY. 
+
+
+
+def showText(rawText, coordsX = backWidth * (2/5), coordsY = 0):
+    label = gui.Label(rawText)
+    display.add(rawText, coordsX, coordsY)
+
+
+
+
+
+
+    
+# TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
+# Adds the given gui.Label to the display at the Label's coords (default 0, 0)
+
+def showLabel(label):
+    display.add(label, backWidth*(2/5), 0)
+
+
+
+
 
 
 # All actions that depend on the turn counter go here
@@ -124,6 +151,8 @@ def turnPass():
     clearBadSprites()
     #total action counter to affect shop/store stock
     
+
+
 
 
 
@@ -157,6 +186,10 @@ def threadDelayRemoveObject(object, delay):
     display.remove(object)
 
 
+
+
+
+
 # cleanup for duplicate sprites created when input is given
 # too quickly
 
@@ -167,6 +200,8 @@ def clearBadSprites():
     for sprite in display.items:
         if sprite not in goodSprites and type(sprite) == BeingSprite:
             display.remove(sprite)
+
+
 
 
 
@@ -183,6 +218,10 @@ def threadRemoveSprite(timeToWait, sprite):
     display.remove(sprite)
 
 
+
+
+
+
 #helper Functions
 def spotToCoord(spot):
     #if low set to 0d
@@ -191,14 +230,23 @@ def spotToCoord(spot):
     if spot > widthTiles * heightTiles: spot = widthTiles * heightTiles - 1
     return Coords(spot % widthTiles, spot / widthTiles)
 
+
+
+
+
+
 def coordToSpot(coord):
     return coord.x + coord.y * widthTiles
 
 
 
 
+
+
 def coordToSpot(coord):
     return coord.x + coord.y * widthTiles
+
+
 
 
 
@@ -213,12 +261,22 @@ def updateBackground(tiles):
         #elif tiles[spot] == "w": placeTex(wall, spot)
     writePictureTo(background, path + "newBack.png")
 
+
+
+
+
+
 def placeTex(tex, spot):
     startx = (spot * bits) % backWidth;
     starty = ((spot * bits) / backWidth) * bits;
     for x in range(0, bits):
         for y in range(0, bits):
             setColor(getPixel(background, startx + x, starty + y), getColor(getPixel(tex, x, y)))
+
+
+
+
+
 
 def getTexture(spot):
     texture = makeEmptyPicture(bits,bits)
@@ -229,6 +287,7 @@ def getTexture(spot):
         for y in range(0, bits):
             setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
     return texture
+
 
 
 
@@ -260,15 +319,7 @@ def simpleEnemyAI(enemy):
 
 
 
-
-
-
-
-
-
-    
-
-
+                              
 # any function passed to onKeyType() must have one and exactly one
 # parameter.  This parameter is how the function knows which key is pressed
 # gotta find some way to "pause" in between moves to create the illusion of animation. 
@@ -309,8 +360,16 @@ def keyAction(a):
   elif a == "t":
     #openMenu
     print("not implemented")
+  elif a == "v":
+    bot1.talk()
 
-    
+
+
+
+
+
+    # To pass to getKeyTyped in order to block inputs 
+    # (e.g., during animations or delays)
 
 def blockKeys(a):
     None
@@ -319,11 +378,7 @@ def blockKeys(a):
 
 
 
-
-
-
-
-
+          
 # Currently only sets up the lootTable
 
 def initialSetup():
@@ -342,8 +397,7 @@ def initialSetup():
 
 
 
-
-
+        
 # Moves a being in a random direction
 # Parameters:
 #   Being           - being to be moved
@@ -360,20 +414,11 @@ def moveRandom(Being):
     else:
         Being.moveRight()
 
+                                    
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        
 def keyDownEvent():
     print("NotImplemented")
     #perform action (move, attack, etc.)
@@ -448,6 +493,7 @@ class Sprite(gui.Icon):
 
 
 
+
       # adds the sprite to the display. If the sprite already exists,
       # moves the sprite to the self.coords location
 
@@ -474,10 +520,7 @@ class Sprite(gui.Icon):
 
 
 
-
-
-
-
+                     
   # inherits from Sprite. Separated to give   See sprite for function exacts. 
   # ownership to sub-sprites (e.g., weapon)
 
@@ -504,6 +547,7 @@ class BeingSprite(Sprite):
 
 
 
+
       # adds the sprite to the display. If the sprite already exists,
       # moves the sprite to the self.coords location
 
@@ -514,8 +558,7 @@ class BeingSprite(Sprite):
 
 
 
-
-
+        
       # removes the sprite
 
   def removeSprite(self):
@@ -525,8 +568,7 @@ class BeingSprite(Sprite):
 
 
 
-
-
+        
       # not a huge fan of the weaponOut flag, but it works for now.
       # without the check in putAwayWeap, JES complains  
 
@@ -537,9 +579,7 @@ class BeingSprite(Sprite):
 
 
 
-
-
-
+       
       # hides the weapon. may be unnecessary if we get
       # animations figured out
 
@@ -550,9 +590,7 @@ class BeingSprite(Sprite):
 
 
 
-
-
-
+           
       #moves sprite to location given
 
   def moveTo(self, x, y):
@@ -568,12 +606,7 @@ class BeingSprite(Sprite):
 
 
 
-
-
-
-
-
-
+          
     # Class for weapon objects. weapName must correspond to a weapon
     # in the weaponList. Contains stats and sprites.
     #
@@ -591,6 +624,9 @@ class Weapon():
           self.power = weaponStatsList[self.name][0]
         self.displayed = false
     
+
+
+
 
 
         # Displays the weapon's "up/down/left/right" sprite at the coords.
@@ -616,6 +652,10 @@ class Weapon():
             self.sprite = Sprite(self.sprites[3], 0, 0)
             display.add(self.sprite, x, y)
             self.displayed = true
+
+
+
+
 
 
         # removes the weapon from the display
@@ -666,6 +706,9 @@ class Being():
         self.weapon = Weapon(weapName)
         self.facing = "right"
         self.isMoving = false
+        self.talkingLines = ["Hello!",
+                             "Yes?",
+                             "Can I Help you?"]
         beingList.append(self)
 
 
@@ -677,6 +720,7 @@ class Being():
 
     def getLevel(self):
         return self.level
+
 
 
 
@@ -695,6 +739,7 @@ class Being():
     
 
 
+
         # returns the Being's name
 
     def getName(self):
@@ -704,8 +749,7 @@ class Being():
 
 
 
-
-    
+        
         # returns the Being's current hp
 
     def getCurrentHP(self):
@@ -715,8 +759,7 @@ class Being():
 
 
 
-
-    
+        
         # returns the Being's max hp
 
     def getMaxHP(self):
@@ -726,8 +769,7 @@ class Being():
 
 
 
-
-    
+        
         # returns the Being's current xp
 
     def getXp(self):
@@ -737,9 +779,7 @@ class Being():
 
 
 
-
-
-    
+           
         # returns the Being's ATK
 
     def getAtk(self):
@@ -749,9 +789,7 @@ class Being():
 
 
 
-
-
-    
+           
         # returns the Being's DF
 
     def getDf(self):
@@ -761,10 +799,7 @@ class Being():
 
 
 
-
-
-
-    
+             
         # increases xp by the amount given.
         # negative amounts will reduce xp
         # contains built in "barrier" formula
@@ -777,9 +812,7 @@ class Being():
                 self.levelUp()
     
 
-
-
-
+                               
 
 
                 
@@ -789,9 +822,7 @@ class Being():
         self.atk += amount
     
 
-
-
-
+               
 
 
         
@@ -802,9 +833,7 @@ class Being():
         self.df += amount
 
 
-
-
-
+               
 
 
         
@@ -814,9 +843,7 @@ class Being():
         self.maxHp += amount
 
 
-
-
-
+               
 
 
 
@@ -831,8 +858,7 @@ class Being():
         elif self.hp < 0:
             self.dead()
 
-
-
+            
 
 
 
@@ -848,6 +874,34 @@ class Being():
 
 
 
+        # For use with actions that can target more than one target (e.g., attacks)
+
+    def getFrontTargetList(self):
+        bigList = beingList + objectList
+        targetList = []
+        for target in bigList:
+            if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
+                targetList.append(target)
+        return targetList
+        
+
+
+
+
+
+
+        #for use with actions that can only target one target (e.g., talking)
+
+    def getFrontTarget(self):
+        bigList = beingList + objectList
+        for target in bigList:
+            if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
+                return target
+
+            
+
+
+            
         #needs to be reworked for better decomp
         #
         # activates the melee attack action.
@@ -863,30 +917,28 @@ class Being():
         x = 1
         thread.start_new_thread(threadRemoveSprite, (.2, self.weapon.sprite))
         self.weapon.displayed = false
-        for target in beingList:
-            if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
-                if target != bot1:
-                    target.hostile = true
-                damage = self.atk
-                if damage <= 0:
-                    damage = 1
-                target.hp -= damage
-                self.displayDamage(target.coords.x, target.coords.y)
-                if target.hp <= 0:
-                    self.changeXp(target.xpValue)
-                    target.sprite.removeSprite()
-                    if target is not bot1:
-                        beingList.remove(target)
-                        del target
-                    else:                        
-                        target.__init__("bot1", "Stick", userSpritePaths, 32, 32)
+        for target in self.getFrontTargetList():
+            if target != bot1:
+                target.hostile = true
+            damage = self.atk
+            if damage <= 0:
+                damage = 1
+            target.hp -= damage
+            self.displayDamage(target.coords.x, target.coords.y)
+            if target.hp <= 0:
+                self.changeXp(target.xpValue)
+                target.sprite.removeSprite()
+                if target is not bot1:
+                    beingList.remove(target)
+                    del target
+                else:                        
+                    target.__init__("bot1", "Stick", userSpritePaths, 32, 32)
                     
             
 
 
 
-
-
+                    
         # Display's the "damage splash" sprite at
         # the given location. Uses multithreading.
 
@@ -930,14 +982,7 @@ class Being():
     
 
 
-
-
-
-
-
-
-
-
+                    # MOVEMENT CLUSTER                                                    
         # Moves the being up/down/left/right one unit in two steps.
         # the first step is instant/halfstep, the second
         # is through a delayed call to thread moveDirection
@@ -1136,8 +1181,7 @@ class Enemy(Being):
 
 
 
-
-
+        
         # in progress loot-dropping function
 
     def dropLoot(self):
@@ -1161,9 +1205,7 @@ class Enemy(Being):
 
 
 
-
-
-
+               
         # returns a random inventory item the being has
 
     def randomInvItem(self):
@@ -1182,8 +1224,7 @@ class Enemy(Being):
 
 
 
-
-
+        
         # Class for armor/equipment, in development
 
 class Armor():
@@ -1200,10 +1241,7 @@ class Armor():
 
 
 
-
-
-
-
+                     
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
@@ -1245,8 +1283,7 @@ class User(Being):
 
 
 
-
-
+            
         # Adds item to inventory list
 
     def inventoryAdd(self, item):
@@ -1256,9 +1293,7 @@ class User(Being):
 
 
 
-
-
-
+               # EQUIPMENT CLUSTER
         # The following 6 functions handle equipping items
         # to  specific parts of the body.  Atk and Df stats
         # are adjusted accordingly.  The equipped item must
@@ -1270,8 +1305,7 @@ class User(Being):
         self.atk -= weaponStatsList[self.weapon]
         self.weapon = weapon
         self.atk += weaponStatsList[self.weapon]
-
-        
+               
 
     def setHelm(self, helm):
         if self.helm != "Hair":
@@ -1279,6 +1313,7 @@ class User(Being):
         self.df -= helmStatsList(self.helm)
         self.helm = helm
         self.df += helmStatsList(self.helm)
+
 
     def setChest(self, chest):
         if self.chest != "BDaySuit":
@@ -1294,7 +1329,8 @@ class User(Being):
         self.df -= legsStatsList(self.legs)
         self.legs = legs
         self.df += legsStatsList(self.legs)
-                       
+                 
+        
     def setBoots(self, boots):
         if self.boots != "Toes":
             inventoryAdd(self.boots)
@@ -1302,6 +1338,7 @@ class User(Being):
         self.boots = boots
         self.df += bootsStatsList(self.boots)
         
+
     def setGloves(self, gloves):
         if self.gloves != "Digits":
             inventoryAdd(self.gloves)
@@ -1313,10 +1350,7 @@ class User(Being):
 
 
 
-
-
-
-
+                     
         # equips a given item by calling one of the 
         # equipment "set" functions
         # item should be passed as it's key as it appears
@@ -1345,6 +1379,8 @@ class User(Being):
 
 
 
+
+
             # action - attempts to steal an item from a target
             # Being.  If the attempt fails, the Being turns hostile
 
@@ -1358,7 +1394,11 @@ class User(Being):
             else:
                 target.hostile = true
 
-
+    def talk(self):
+        target = self.getFrontTarget()
+        speech = gui.Label(target.talkingLines[random.randint(0, len(target.talkingLines)-1)])
+        showLabel(speech)
+        delayRemoveObject(speech, 2)
 
 
 
