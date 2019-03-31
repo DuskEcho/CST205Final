@@ -35,6 +35,8 @@ widthTiles = 40
 #how many tiles there are tall
 heightTiles = 22
 
+shopKeeperX = 5*bits
+shopKeeperY = 2*bits
 
 
 
@@ -135,6 +137,24 @@ def slideRight(object, targetXBig, sprite):
     if object.coords.x < targetXBig:
         thread.start_new_thread(slideRight, (object, targetXBig, sprite))
 
+
+
+
+
+
+
+# Used to remove objects (labels, sprites, etc.) from the display after a delay.
+# only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
+# directly.
+# Parameters:
+#   object          - An object on the displays self.items list
+#   delay           - the amount of time in seconds to delay the removal
+
+def delayRemoveObject(object, delay):
+    thread.start_new_thread(threadDelayRemoveObject, (object, delay))
+def threadDelayRemoveObject(object, delay):
+    time.sleep(delay)
+    display.remove(object)
 
 
 # cleanup for duplicate sprites created when input is given
@@ -565,9 +585,10 @@ class BeingSprite(Sprite):
 class Weapon():
     def __init__(self, weapName):
         self.name = weapName
-        self.sprites = weaponStatsList[self.name][1]
-        self.sprite = Sprite(self.sprites[3], 0, 0)
-        self.power = weaponStatsList[self.name][0]
+        if self.name != None:
+          self.sprites = weaponStatsList[self.name][1]
+          self.sprite = Sprite(self.sprites[3], 0, 0)
+          self.power = weaponStatsList[self.name][0]
         self.displayed = false
     
 
@@ -641,7 +662,7 @@ class Being():
         self.coords = Coords(xSpawn, ySpawn)
         self.forwardCoords = Coords(self.coords.x + bits, self.coords.y)
         self.spritePaths = spritePaths
-        self.sprite = BeingSprite(self.spritePaths[3], xSpawn, ySpawn)
+        self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
         self.facing = "right"
         self.isMoving = false
@@ -844,7 +865,8 @@ class Being():
         self.weapon.displayed = false
         for target in beingList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
-                target.hostile = true
+                if target != bot1:
+                    target.hostile = true
                 damage = self.atk
                 if damage <= 0:
                     damage = 1
@@ -921,133 +943,109 @@ class Being():
         # is through a delayed call to thread moveDirection
         # in order to give the illusion of animation.
         # faceDirection is called first 
+        # threadMoveDirection is not meant to be called directly.
         #
         # may be streamlined by using a single moveForward function
         # that interacts with direction facing
 
     
 
-    def moveUp(self):           
-        x = None
-        self.faceUp()
-        self.slideUp((self.coords.y - bits/2), BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadMoveUpSecondHalf, (x,))
-                             
-    def threadMoveUpSecondHalf(self, x):
-        self.isMoving = true
-        time.sleep(.12)
-        self.slideUp((self.coords.y - bits/2), BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadDoneMoving, (x,))
+ 
+    def moveUp(self):
+        if self.coords.y >= 0:
+            self.faceUp()
+            self.coords.y -= bits/2
+            self.sprite.removeSprite()
+            self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
+            self.sprite.moveTo(self.coords.x, self.coords.y)
+            x = None
+            thread.start_new_thread(self.threadMoveUp, (x,))
+            if self.facing == "up": 
+              self.forwardCoords.y = self.coords.y - bits - bits/2
+              self.forwardCoords.x = self.coords.x
+        else:
+            self.isMoving = false
+                           
+    def threadMoveUp(self, x):
+        time.sleep(.15)
+        self.coords.y -= bits/2
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
+        self.sprite.moveTo(self.coords.x, self.coords.y)
+        self.isMoving = false
         
 
-    def slideUp(self, targetYBig, sprite):
-        time.sleep(.005)
-        self.coords.y -= 1 
-        self.forwardCoords.y -= 1
-        display.remove(self.sprite)
-        self.sprite = sprite
-        display.add(self.sprite, self.coords.x, self.coords.y)
-        if self.coords.y > targetYBig:
-            thread.start_new_thread(self.slideUp, (targetYBig, sprite))
-        
-
-       
-
-    def moveDown(self):           
-        x = None
-        self.faceDown()
-        self.slideDown((self.coords.y + bits/2), BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadMoveDownSecondHalf, (x,))
-                             
-    def threadMoveDownSecondHalf(self, x):
-        self.isMoving = true
-        time.sleep(.12)
-        self.slideDown((self.coords.y + bits/2), BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadDoneMoving, (x,))
-        
-
-    def slideDown(self, targetYBig, sprite):
-        time.sleep(.005)
-        self.coords.y += 1 
-        self.forwardCoords.y += 1
-        display.remove(self.sprite)
-        self.sprite = sprite
-        display.add(self.sprite, self.coords.x, self.coords.y)
-        if self.coords.y < targetYBig:
-            thread.start_new_thread(self.slideDown, (targetYBig, sprite))
-
-    def moveLeft(self):           
-        x = None
-        self.faceLeft()
-        self.slideLeft((self.coords.x - bits/2), BeingSprite(self.spritePaths[4], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadMoveLeftSecondHalf, (x,))
-                             
-    def threadMoveLeftSecondHalf(self, x):
-        self.isMoving = true
-        time.sleep(.12)
-        self.slideLeft((self.coords.x - bits/2), BeingSprite(self.spritePaths[2], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadDoneMoving, (x,))
-        
-
-    def slideLeft(self, targetXBig, sprite):
-        time.sleep(.005)
-        self.coords.x -= 1 
-        self.forwardCoords.x -= 1
-        display.remove(self.sprite)
-        self.sprite = sprite
-        display.add(self.sprite, self.coords.x, self.coords.y)
-        if self.coords.x > targetXBig:
-            thread.start_new_thread(self.slideLeft, (targetXBig, sprite))
-
-    #def moveRight(self):
-     #   self.faceRight()
-     #   self.coords.x += bits/2                        LEGACY MOVEMENT TYPE
-     #   self.sprite.removeSprite()
-     #   self.sprite = BeingSprite(self.spritePaths[5], self.coords.x, self.coords.y)
-     #   self.sprite.moveTo(self.coords.x, self.coords.y)
-     #   x = None
-     #   thread.start_new_thread(self.threadMoveRight, (x,))
-     #   if self.facing == "right":
-     #     self.forwardCoords.y = self.coords.y
-     #     self.forwardCoords.x = self.coords.x + bits+ bits/2
-                             
-   # def threadMoveRight(self, x):
-  #      time.sleep(.1)
-   #     self.coords.x += bits/2
-   #     self.sprite.removeSprite()
-    #    self.sprite = BeingSprite(self.spritePaths[3], self.coords.x, self.coords.y)
-   #     self.sprite.moveTo(self.coords.x, self.coords.y)
-
-
-
-    def moveRight(self):           #NEARLY FUNCTIONAL, BUT GLITCHES ON HELD BUTTON
-        x = None
-        self.faceRight()
-        self.slideRight((self.coords.x + bits/2), BeingSprite(self.spritePaths[5], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadMoveRightSecondHalf, (x,))
-                             
-    def threadMoveRightSecondHalf(self, x):
-        self.isMoving = true
-        time.sleep(.12)
-        self.slideRight((self.coords.x + bits/2), BeingSprite(self.spritePaths[3], self.coords.x, self.coords.y))
-        thread.start_new_thread(self.threadDoneMoving, (x,))
-        
-
-    def slideRight(self, targetXBig, sprite):
-        time.sleep(.005)
-        self.coords.x += 1 
-        self.forwardCoords.x += 1
-        display.remove(self.sprite)
-        self.sprite = sprite
-        display.add(self.sprite, self.coords.x, self.coords.y)
-        if self.coords.x < targetXBig:
-            thread.start_new_thread(self.slideRight, (targetXBig, sprite))
-
-
-    def threadDoneMoving(self, x):
-        time.sleep(moveAnimationSleep)
+    def moveDown(self):
+        if self.coords.y < backHeight:
+            self.faceDown()
+            self.coords.y += bits/2
+            self.sprite.removeSprite()
+            self.sprite = BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y)
+            self.sprite.moveTo(self.coords.x, self.coords.y)
+            x = None
+            thread.start_new_thread(self.threadMoveDown, (x,))
+            self.sprite.moveTo(self.coords.x, self.coords.y)
+            if self.facing == "down":
+              self.forwardCoords.y = self.coords.y + bits + bits/2
+              self.forwardCoords.x = self.coords.x
+        else:
+            self.isMoving = false
+                   
+    def threadMoveDown(self, x):
+        time.sleep(.15)
+        self.coords.y += bits/2
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y)
+        self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
 
+
+    def moveLeft(self):
+        if self.coords.x >= 0:
+            self.faceLeft()
+            self.coords.x -= bits/2
+            self.sprite.removeSprite()
+            self.sprite = BeingSprite(self.spritePaths[4], self.coords.x, self.coords.y)
+            self.sprite.moveTo(self.coords.x, self.coords.y)
+            x = None
+            thread.start_new_thread(self.threadMoveLeft, (x,))
+            if self.facing == "left":
+              self.forwardCoords.y = self.coords.y
+              self.forwardCoords.x = self.coords.x - bits - bits/2 
+        else:
+            self.isMoving = false
+
+    def threadMoveLeft(self, x):
+        time.sleep(.15)
+        self.coords.x -= bits/2
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[2], self.coords.x, self.coords.y)
+        self.sprite.moveTo(self.coords.x, self.coords.y)
+        self.isMoving = false
+
+    def moveRight(self):
+        if self.coords.x < backWidth:
+            self.faceRight()
+            self.coords.x += bits/2
+            self.sprite.removeSprite()
+            self.sprite = BeingSprite(self.spritePaths[5], self.coords.x, self.coords.y)
+            self.sprite.moveTo(self.coords.x, self.coords.y)
+            x = None
+            thread.start_new_thread(self.threadMoveRight, (x,))
+            if self.facing == "right":
+              self.forwardCoords.y = self.coords.y
+              self.forwardCoords.x = self.coords.x + bits+ bits/2
+        else:
+            self.isMoving = false
+
+
+    def threadMoveRight(self, x):
+        time.sleep(.1)
+        self.coords.x += bits/2
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[3], self.coords.x, self.coords.y)
+        self.sprite.moveTo(self.coords.x, self.coords.y)
+        self.isMoving = false
 
 
         # changes the being's sprite to one facing the corresponding
@@ -1436,14 +1434,19 @@ blueEnemySpritePaths = [path + "blueRobotBack.gif",
                path + "BlueRobotSideRight.gif",
                path + "BlueRobotMovingLeft.gif",
                path + "BlueRobotMovingRight.gif",]
+shopKeeperSpritePaths = [path + "ShopkeeperbotCloseup.gif",
+                         path + "ShopkeeperbotFront.gif"]
+
 display.drawImage(path + "newBack.png", 0, 0)
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
+shopKeeper = Being("shopKeep", None, shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
 bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
 bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
+shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
 
