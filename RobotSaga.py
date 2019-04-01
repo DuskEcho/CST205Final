@@ -65,10 +65,10 @@ else: printNow("Welcome Back") #welcome the player back to the game
 # arrays in form [attack/def, spritePaths]
 
 weaponStatsList = {    
-    "Stick": [1, [path + "stickUp.gif",
-                  path + "stickDown.gif",
-                  path + "stickLeft.gif",
-                  path + "stickRight.gif"]],
+    "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
+                  path + "WeaponSprites/Stick/stickDown.gif",
+                  path + "WeaponSprites/Stick/stickLeft.gif",
+                  path + "WeaponSprites/Stick/stickRight.gif"]],
    "Rock": [2, "spritePath"]
    }
 helmStatsList = {
@@ -1480,7 +1480,7 @@ class User(Being):
 
 
 textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
-explore(textureMap)
+#explore(textureMap)
 
 #get width and height
 texWidth = getWidth(textureMap)
@@ -1525,20 +1525,20 @@ text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 display.add(text)
 #create background (probably prerender home background later)
-userSpritePaths = [path + "botBlueBack.gif",
-               path + "botBlueFront.gif",
-               path + "botBlueSideLeft.gif",
-               path + "botBlueSideRight.gif",
-               path + "botBlueMovingLeft.gif",
-               path + "botBlueMovingRight.gif",]
-blueEnemySpritePaths = [path + "blueRobotBack.gif",
-               path + "blueRobotFront.gif",
-               path + "BlueRobotSideLeft.gif",
-               path + "BlueRobotSideRight.gif",
-               path + "BlueRobotMovingLeft.gif",
-               path + "BlueRobotMovingRight.gif",]
-shopKeeperSpritePaths = [path + "ShopkeeperbotCloseup.gif",
-                         path + "ShopkeeperbotFront.gif"]
+userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
+               path + "RobotSprites/botBlueFront.gif",
+               path + "RobotSprites/botBlueSideLeft.gif",
+               path + "RobotSprites/botBlueSideRight.gif",
+               path + "RobotSprites/botBlueMovingLeft.gif",
+               path + "RobotSprites/botBlueMovingRight.gif",]
+blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
+               path + "RobotSprites/blueRobotFront.gif",
+               path + "RobotSprites/BlueRobotSideLeft.gif",
+               path + "RobotSprites/BlueRobotSideRight.gif",
+               path + "RobotSprites/BlueRobotMovingLeft.gif",
+               path + "RobotSprites/BlueRobotMovingRight.gif",]
+shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif"]
 
 display.drawImage(path + "newBack.png", 0, 0)
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
