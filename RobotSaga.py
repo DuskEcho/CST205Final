@@ -240,38 +240,18 @@ def coordToSpot(coord):
 
 
 
-
-
-
-def coordToSpot(coord):
-    return coord.x + coord.y * widthTiles
-
+def coordToTile(coord):
+    return coord.x/bits + (coord.y * widthTiles)/bits
 
 
 
 
-
-def updateBackground(tiles):
-    for spot in range(0, len(tiles)):
-        if   tiles[spot] == "g": placeTex(grass, spot)
-        elif tiles[spot] == "s": placeTex(stone, spot)
-        #not in files yet
-        #elif tiles[spot] == "m": placeTex(monster, spot)
-        #elif tiles[spot] == "p": placeTex(player, spot)
-        #elif tiles[spot] == "w": placeTex(wall, spot)
-    writePictureTo(background, path + "newBack.png")
-
-
-
-
-
-
-def placeTex(tex, spot):
+def placeTex(tex, spot, back):
     startx = (spot * bits) % backWidth;
     starty = ((spot * bits) / backWidth) * bits;
     for x in range(0, bits):
         for y in range(0, bits):
-            setColor(getPixel(background, startx + x, starty + y), getColor(getPixel(tex, x, y)))
+            setColor(getPixel(baseMap, startx + x, starty + y), getColor(getPixel(tex, x, y)))
 
 
 
@@ -453,8 +433,64 @@ class Coords():
     self.y = y
 
 
+class Tile():
+  def __init__(self, tile, isTraversable, desc):
+    self.desc = desc
+    self.tileImg = tile
+    self.isTraversable = isTraversable
+    self.beings = {} #array of beings in that tile
+
+  def getImg(self):
+    return self.tileImg
+
+  def getTraversable(self):
+    return self.isTraversable
+
+  def addBeing(self, being):
+    self.beings.append(being)
+
+  def getDesc(self):
+    return self.desc
 
 
+class Map():
+    def __init__(self, tileMap):
+        self.tileMap = {} #change to make map
+        #beings will probably be a dictionary with coords as the key and value is the being at the spot
+        self.beings = {} #master holder for all of the beings
+        self.Map = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
+        self.updateBackground(tileMap, self.Map)
+        #for key, value in self.tileMap.iteritems():
+            #printNow(key)
+
+
+    def placeTex(self, tex, spot):
+        startx = (spot * bits) % backWidth
+        starty = ((spot * bits) / backWidth) * bits
+        #printNow(spot)
+        self.tileMap.update({spot: tex})
+        #placeTex(tex.getImg(), spot, self.Map)
+        for x in range(0, bits):
+            for y in range(0, bits):
+                setColor(getPixel(self.Map, startx + x, starty + y), getColor(getPixel(tex.getImg(), x, y)))
+
+
+    def updateBackground(self, tiles, back):
+        for spot in range(0, len(tiles)):
+            if   tiles[spot] == "g": self.placeTex(grass, spot)
+            elif tiles[spot] == "s": self.placeTex(stone, spot)
+            #not in files yet
+            #elif tiles[spot] == "m": placeTex(monster, spot)
+            #elif tiles[spot] == "p": placeTex(player, spot)
+            #elif tiles[spot] == "w": placeTex(wall, spot)
+        writePictureTo(self.Map, path + "newBack.png")
+
+    def isTraversable(self, spot):
+        printNow(spot)
+        if spot < 0 or spot > len(self.tileMap) - 1: return false
+        printNow(self.tileMap[spot].getTraversable())
+        printNow(self.tileMap[spot].getDesc())
+        return self.tileMap[spot].getTraversable()
 
 
 
@@ -1054,8 +1090,9 @@ class Being():
 
  
     def moveUp(self):
-        if self.coords.y >= 0:
-            self.faceUp()
+        self.faceUp()
+        targetCoord = coordToTile(Coords(self.coords.x, self.coords.y-1))
+        if self.coords.y >= 0 and baseMap.isTraversable(targetCoord):
             self.coords.y -= bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
@@ -1486,13 +1523,14 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
-stone = getTexture(textCoordToSpot(3,24))
-grass = getTexture(textCoordToSpot(10,19))
+stone = Tile(getTexture(textCoordToSpot(3,24)), False, "stone")
+grass = Tile(getTexture(textCoordToSpot(10,19)), True, "grass")
+
 
 #create emply grass field will clean up later
-home  = "gsgsgsgsgsgsgsgsgsgsgsgsgggggggggggggggg"
-home += "sgsgsgsgsgsgsgsgsgsgsggggggggggggggggggg"
-home += "gsgsgsgsgsgsgsgsgsgsgsgggggggggggggggggg"
+home  = "gsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgs"
+home += "sgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsg"
+home += "gsgsgsgsgsgsgsgsgsgsgsgsgssggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
@@ -1515,8 +1553,9 @@ home += "gggggggggggggggggggggggggggggggggggggggg"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
-background = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
-updateBackground(home)
+baseMap = Map(home)
+#background = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
+#updateBackground(home)
 
 
 display = gui.Display("Robot Saga", backWidth, backHeight)
