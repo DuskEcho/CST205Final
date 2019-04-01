@@ -342,8 +342,8 @@ def keyAction(a):
         turnPass()
   elif a == "g":
     #steal(targetLocatedAt(self.forwardX, self.forwardY)
-    if bot1.isMoving == false:
-      #  bot1.steal()
+    if bot1.isMoving == false and bot1.weapon.displayed == False:
+        bot1.steal(bot1.getFrontTarget())
         turnPass()
   elif a == "q":
     print("NotImplementedAtAll")
@@ -951,13 +951,37 @@ class Being():
         else:
             self.bloodify()
 
+
+
+
+
+
+        # returns a random item from the inv list
+
+    def randomInvItem(self):
+        possibilities = len(self.inv)
+        if possibilities>0:
+            itemIndex = random.randint(0, possibilities-1)
+            return self.inv[itemIndex]
             
+
+
+
+
+
+
+        # drops all contents of the inv list in a lootbag object
+
     def dropLoot(self):
         loot = Lootbag(self.inv, self.coords)
         objectList.append(loot)
 
 
-        #undeveloped, for use in handling hp == 0
+
+
+
+
+        # Actions to be taken on hp <= 0
 
     def dead(self):
         self.dropLoot()
@@ -1339,7 +1363,7 @@ class Enemy(Being):
 
 
                
-        # returns a random inventory item the being has
+        # returns a random item from the inv list
 
     def randomInvItem(self):
         possibilities = len(self.inv)
@@ -1524,8 +1548,13 @@ class User(Being):
                 item = target.randomInvItem()
                 target.inv.remove(item)
                 self.inv.append(item)
+                label = gui.Label("You stole "  + item.name)
+                showLabel(label)
             else:
+                label = gui.Label("You messed up now!")
+                showLabel(label)
                 target.hostile = true
+            delayRemoveObject(label, 2)
 
     def talk(self):
         target = self.getFrontTarget()
