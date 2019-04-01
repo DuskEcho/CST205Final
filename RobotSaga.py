@@ -117,7 +117,7 @@ lootTable = {}
 
 
 
-def showText(rawText, coordsX = backWidth * (2/5), coordsY = 0):
+def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
     label = gui.Label(rawText)
     display.add(rawText, coordsX, coordsY)
 
@@ -131,7 +131,7 @@ def showText(rawText, coordsX = backWidth * (2/5), coordsY = 0):
 # Adds the given gui.Label to the display at the Label's coords (default 0, 0)
 
 def showLabel(label):
-    display.add(label, backWidth*(2/5), 0)
+    display.add(label, 1280*(2/5), 0)
 
 
 
@@ -456,6 +456,43 @@ class Coords():
 
 
 
+class Lootbag():
+    def __init__(self, itemList, coords):
+        self.contents = itemList
+        self.coords = coords
+        self.spriteList = [Sprite(path + "lootBag.gif", self.coords.x, self.coords.y),
+                           Sprite(path + "lootBag2.gif", self.coords.x, self.coords.y)]
+        self.sprite = self.spriteList[0]
+        
+        self.spawnSprite()
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
+
+
+
+
+
+
+    def spawnSprite(self):
+        display.add(self.sprite, self.coords.x, self.coords.y)
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+
+    def threadAnimate(self, x):
+        while true:
+            time.sleep(.5)
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+
+
+        
 
 
 
@@ -859,14 +896,17 @@ class Being():
             self.dead()
 
             
-
-
+    def dropLoot(self):
+        loot = Lootbag(self.inv, self.coords)
+        objectList.append(loot)
 
 
         #undeveloped, for use in handling hp == 0
 
     def dead(self):
-        print("NotImplemented")
+        self.dropLoot()
+
+
 
 
 
@@ -923,7 +963,7 @@ class Being():
             damage = self.atk
             if damage <= 0:
                 damage = 1
-            target.hp -= damage
+            target.changeHp(damage*(-1))
             self.displayDamage(target.coords.x, target.coords.y)
             if target.hp <= 0:
                 self.changeXp(target.xpValue)
@@ -1185,9 +1225,10 @@ class Enemy(Being):
         # in progress loot-dropping function
 
     def dropLoot(self):
-        #animateDeath()
-        loot = self.randomInvItem()
-        #drop loot at gridLocation self.coords.x, self.coords.y
+        items = []
+        items.append(self.randomInvItem)
+        loot = Lootbag(items, self.coords)
+        objectList.append(loot)
 
 
 
@@ -1199,7 +1240,7 @@ class Enemy(Being):
     def dead(self):
         #play animation
         #delete coordinate data from grid
-        dropLoot();
+        self.dropLoot();
         
 
 
@@ -1483,6 +1524,7 @@ bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, r
 bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 shopKeeper = Being("shopKeep", None, shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
+#shopKeeper.inv.append("stick")
 bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
 bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
 bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
