@@ -276,7 +276,10 @@ def placeTex(tex, spot):
 
 
 
-
+def textCoordToSpot(x, y):
+  col = texWidth/32
+  row = texHeight/32
+  return x + y*col
 
 def getTexture(spot):
     texture = makeEmptyPicture(bits,bits)
@@ -1476,15 +1479,15 @@ class User(Being):
 
 
 
-textureMap = makePicture(path + "texture.png")
+textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
+explore(textureMap)
 
 #get width and height
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
-stone = getTexture(1)
-
-grass = getTexture(2)
+stone = getTexture(textCoordToSpot(3,24))
+grass = getTexture(textCoordToSpot(10,19))
 
 #create emply grass field will clean up later
 home  = "gsgsgsgsgsgsgsgsgsgsgsgsgggggggggggggggg"
