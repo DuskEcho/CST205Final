@@ -463,6 +463,7 @@ class Lootbag():
         self.spriteList = [Sprite(path + "lootBag.gif", self.coords.x, self.coords.y),
                            Sprite(path + "lootBag2.gif", self.coords.x, self.coords.y)]
         self.sprite = self.spriteList[0]
+        self.type = "lootbag"
         
         self.spawnSprite()
         x = None
@@ -481,7 +482,7 @@ class Lootbag():
 
 
     def threadAnimate(self, x):
-        while true:
+        while self in objectList:
             time.sleep(.5)
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -490,6 +491,9 @@ class Lootbag():
             else:
                 self.sprite = self.spriteList[0]
                 self.spawnSprite()
+        if self not in objectList:
+            self.removeSprite()
+            del self
 
 
         
@@ -724,7 +728,7 @@ class Weapon():
     #   ySpawn:         - initial y location
 
 class Being():
-    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         self.name = name
         self.level = 0
         self.hp = 10
@@ -746,6 +750,9 @@ class Being():
         self.talkingLines = ["Hello!",
                              "Yes?",
                              "Can I Help you?"]
+        self.inv.append(self.weapon)
+        if itemList != None:
+            self.inv += itemList
         beingList.append(self)
 
 
@@ -905,6 +912,9 @@ class Being():
 
     def dead(self):
         self.dropLoot()
+        self.sprite.removeSprite()
+        beingList.remove(self)
+        del self
 
 
 
@@ -964,15 +974,10 @@ class Being():
             if damage <= 0:
                 damage = 1
             target.changeHp(damage*(-1))
-            self.displayDamage(target.coords.x, target.coords.y)
+            target.displayDamage()
             if target.hp <= 0:
                 self.changeXp(target.xpValue)
-                target.sprite.removeSprite()
-                if target is not bot1:
-                    beingList.remove(target)
-                    del target
-                else:                        
-                    target.__init__("bot1", "Stick", userSpritePaths, 32, 32)
+                target.dead()
                     
             
 
@@ -982,9 +987,9 @@ class Being():
         # Display's the "damage splash" sprite at
         # the given location. Uses multithreading.
 
-    def displayDamage(self, x, y):
-        damage = Sprite(path + "damage.gif", x, y)
-        display.add(damage, x, y)
+    def displayDamage(self):
+        damage = Sprite(path + "damage.gif", self.coords.x, self.coords.y)
+        display.add(damage, self.coords.x, self.coords.y)
         thread.start_new_thread(threadRemoveSprite, (.25, damage))
 
         
@@ -1020,6 +1025,14 @@ class Being():
 
 
     
+    def pickUpLoot(self, coords):
+        for item in objectList:
+            if item.type == "lootbag" and item.coords.x == coords.x and item.coords.y == coords.y:
+                self.inv += item.contents
+                item.removeSprite()
+                objectList.remove(item)
+                del item
+
 
 
                     # MOVEMENT CLUSTER                                                    
@@ -1029,7 +1042,8 @@ class Being():
         # in order to give the illusion of animation.
         # faceDirection is called first 
         # threadMoveDirection is not meant to be called directly.
-        #
+        # pickUpLoot() is called in the threadMovefunctions
+        # 
         # may be streamlined by using a single moveForward function
         # that interacts with direction facing
 
@@ -1058,6 +1072,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
+        self.pickUpLoot(self.coords)
         
 
     def moveDown(self):
@@ -1083,6 +1098,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
+        self.pickUpLoot(self.coords)
 
 
     def moveLeft(self):
@@ -1107,6 +1123,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[2], self.coords.x, self.coords.y)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
+        self.pickUpLoot(self.coords)
 
     def moveRight(self):
         if self.coords.x < backWidth:
@@ -1131,6 +1148,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[3], self.coords.x, self.coords.y)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
+        self.pickUpLoot(self.coords)
 
 
         # changes the being's sprite to one facing the corresponding
@@ -1441,7 +1459,8 @@ class User(Being):
         showLabel(speech)
         delayRemoveObject(speech, 2)
 
-
+    def dead(self):
+        self.__init__("bot1", "Stick", userSpritePaths, 32, 32)
 
 
 
@@ -1523,13 +1542,11 @@ bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-shopKeeper = Being("shopKeep", None, shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-#shopKeeper.inv.append("stick")
+shopKeeper = Being("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
 bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
 bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
-
 
 
 
