@@ -320,9 +320,9 @@ def getTexture(spot):
 # intro credits, adjust to add fade, etc.
 
 def loadIntro():
-    display.drawImage(path + "LogoOmega.png", 0, 0)
+    display.drawImage(path + "Fullscreens\\LogoOmega.png", 0, 0)
     time.sleep(1.5)
-    display.drawImage(path + "dummyStartScreen.png", 0, 0)
+    display.drawImage(path + "Fullscreens\\dummyStartScreen.png", 0, 0)
     time.sleep(1.5)
 
 
@@ -1897,7 +1897,7 @@ baseMap = Map(home)
 
 
 display = gui.Display("Robot Saga", backWidth, backHeight)
-#loadIntro()
+loadIntro()
 text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 display.add(text)
