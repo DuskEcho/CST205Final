@@ -39,7 +39,6 @@ shopKeeperX = 5*bits
 shopKeeperY = 2*bits
 
 
-
 #beings
 beingList = []
 #interactable objects
@@ -150,6 +149,9 @@ def showLabel(label):
 # All actions that depend on the turn counter go here
 
 def turnPass():
+    counter.turn += 1
+    if counter.turn % 20 == 0:
+        spawnEnemy()
     for person in beingList:
         if person.hostile == true:
             person.simpleHostileAI()
@@ -158,6 +160,7 @@ def turnPass():
         bot1.coords.y = 0
         bot1.sprite.spawnSprite(bot1.coords.x, bot1.coords.y)
     clearBadSprites()
+
     #total action counter to affect shop/store stock
     
 
@@ -177,10 +180,19 @@ def slideRight(object, targetXBig, sprite):
 
 
 
+        self, name, weapName, spritePaths, xSpawn, ySpawn, species, level
 
 
 
 
+
+
+# Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
+
+def spawnEnemy(name = ("EnemyBorn" + str(turnCounter)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+    enemy = Enemy(name, weap, spritePaths, x, y, species, level)
+    enemy.sprite.spawnSprite(enemy.coords.x, enemy.coords.y)
+    
 
 
 
@@ -440,7 +452,9 @@ def keyDownEvent():
 
 
 
-
+class TurnCounter():
+    def __init__(self):
+        self.turn = 0
 
 # universal coordinates object 
 
@@ -1904,14 +1918,13 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif"]
 
 display.drawImage(path + "newBack.png", 0, 0)
+
+counter = TurnCounter()
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
-bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
-bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
-bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
+spawnEnemy()
+spawnEnemy()
+spawnEnemy()
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
