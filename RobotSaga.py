@@ -1011,7 +1011,7 @@ class Being():
                     if getColor(p) != makeColor(0, 0, 0):
                         if random.randint(0, 100) > (self.hp*100)/self.maxHp:
                             setColor(p, makeColor(114, 87, 7))
-            newPicPath = path + r"RobotSprites\bloodySprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.bloodySprites.append(newPicPath)
             spriteNum += 1
@@ -1581,6 +1581,7 @@ class User(Being):
         delayRemoveObject(speech, 2)
 
     def dead(self):
+        self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
         self.__init__("bot1", "Stick", userSpritePaths, 32, 32)
