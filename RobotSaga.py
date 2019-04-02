@@ -1003,7 +1003,7 @@ class Being():
 
     def bloodify(self):
         spriteNum = 0
-        for sprites in range(0, len(self.spritePaths)-1):
+        for sprites in range(0, len(self.spritePaths)):
             pic = makePicture(self.spritePaths[sprites])
             for x in range(0, getWidth(pic)-1):
                 for y in range(0, getHeight(pic)-1):
