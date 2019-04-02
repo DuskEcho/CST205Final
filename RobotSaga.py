@@ -53,7 +53,7 @@ try:
            path #test to see if path exists
 except NameError: #if path does not exist make new path
            printNow("Please select your game install folder")
-           path = "C:\\Users\\Azrael\\source\\repos\\DuskEcho\\CST205Final\\"   # pickAFolder()
+           path = pickAFolder()
 else: printNow("Welcome Back") #welcome the player back to the game
 
 
