@@ -44,6 +44,8 @@ shopKeeperY = 2*bits
 beingList = []
 #interactable objects
 objectList = []
+#gore pieces
+gibList = []
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
@@ -208,6 +210,18 @@ def clearBadSprites():
         if sprite not in goodSprites and type(sprite) == BeingSprite:
             display.remove(sprite)
 
+
+
+
+
+
+
+# clears giblets from the display()
+
+def clearGibList():
+    for sprite in display.items:
+        if sprite in gibList:
+            display.remove(sprite)
 
 
 
@@ -1344,11 +1358,14 @@ class Enemy(Being):
         self.species = species 
         for val in range(0, level):
             self.levelUp()
+        self.gibSpriteList = [Sprite(path + r"RobotSprites\enemyArmGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyLegGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyLegGib2.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyBodyGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyHeadGib.gif", self.coords.x, self.coords.y),
+                              ]
         self.hostile = true
-
-
-
-
+        
 
         
         # in progress loot-dropping function
@@ -1363,12 +1380,27 @@ class Enemy(Being):
 
 
 
+    def gibSpawn(self, gibSprite, x, y):
+        gibList.append(gibSprite)
+        display.add(gibSprite, x, y)
+
+
+
+    def giblets(self):
+        gibIndex = 0
+        for i in range(0, random.randint(0, len(self.gibSpriteList))):
+            self.gibSpawn(self.gibSpriteList[gibIndex], random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
+            print(gibIndex)
+            gibIndex += 1
+
+
 
         # in progress hp == 0 action
 
     def dead(self):
         #play animation
         #delete coordinate data from grid
+        self.giblets()
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
