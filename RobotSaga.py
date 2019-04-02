@@ -231,15 +231,17 @@ def spotToCoord(spot):
     return Coords(spot % widthTiles, spot / widthTiles)
 
 
-
-
-
-
-def coordToSpot(coord):
+#given tile Coords give tile Spot in 1d array
+def tileCoordToSpot(coord):
     return coord.x + coord.y * widthTiles
 
 
+#Goes from pixel coords to tile Coords
+def coordToTileCoord(coord):
+    return Coords(coord.x/bits, coord.y/bits)
 
+
+#probably bad?
 def coordToTile(coord):
     return coord.x/bits + (coord.y * widthTiles)/bits
 
@@ -434,10 +436,13 @@ class Coords():
 
 
 class Tile():
-  def __init__(self, tile, isTraversable, desc):
+  def __init__(self, tile, isTraversable, isPassable, desc):
     self.desc = desc
     self.tileImg = tile
+    #can a being walk over
     self.isTraversable = isTraversable
+    #can a projectile go over
+    self.isPassable = isPassable
     self.beings = {} #array of beings in that tile
 
   def getImg(self):
@@ -1091,8 +1096,10 @@ class Being():
  
     def moveUp(self):
         self.faceUp()
-        targetCoord = coordToTile(Coords(self.coords.x, self.coords.y-1))
-        if self.coords.y >= 0 and baseMap.isTraversable(targetCoord):
+        targetCoord = coordToTileCoord(self.coords)
+        targetCoord.y -= 1
+        targetSpot = tileCoordToSpot(targetCoord)
+        if self.coords.y >= 0 and baseMap.isTraversable(targetSpot):
             self.coords.y -= bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
@@ -1116,8 +1123,11 @@ class Being():
         
 
     def moveDown(self):
-        if self.coords.y < backHeight:
-            self.faceDown()
+        self.faceDown()
+        targetCoord = coordToTileCoord(self.coords)
+        targetCoord.y += 1
+        targetSpot = tileCoordToSpot(targetCoord)
+        if self.coords.y < backHeight and baseMap.isTraversable(targetSpot):
             self.coords.y += bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y)
@@ -1142,8 +1152,11 @@ class Being():
 
 
     def moveLeft(self):
-        if self.coords.x >= 0:
-            self.faceLeft()
+        self.faceLeft()
+        targetCoord = coordToTileCoord(self.coords)
+        targetCoord.x -= 1
+        targetSpot = tileCoordToSpot(targetCoord)
+        if self.coords.x >= 0 and baseMap.isTraversable(targetSpot):
             self.coords.x -= bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[4], self.coords.x, self.coords.y)
@@ -1166,8 +1179,11 @@ class Being():
         self.pickUpLoot(self.coords)
 
     def moveRight(self):
-        if self.coords.x < backWidth:
-            self.faceRight()
+        self.faceRight()
+        targetCoord = coordToTileCoord(self.coords)
+        targetCoord.x += 1
+        targetSpot = tileCoordToSpot(targetCoord)
+        if self.coords.x < backWidth and baseMap.isTraversable(targetSpot):
             self.coords.x += bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[5], self.coords.x, self.coords.y)
@@ -1523,33 +1539,33 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
-stone = Tile(getTexture(textCoordToSpot(3,24)), False, "stone")
-grass = Tile(getTexture(textCoordToSpot(10,19)), True, "grass")
+stone = Tile(getTexture(textCoordToSpot(3,24)), false, true, "stone")
+grass = Tile(getTexture(textCoordToSpot(10,19)), true, true, "grass")
 
 
 #create emply grass field will clean up later
-home  = "gsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgs"
-home += "sgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsgsg"
-home += "gsgsgsgsgsgsgsgsgsgsgsgsgssggggggggggggg"
+home  = "ssssssssssssssssssssssssssssssssssssssss"
+home += "sggsggggggggggggggsgsgsgsgsgsgsgsgsgsgss"
+home += "sggsgggggggggggggsgsgsgsgssggggggggggggs"
+home += "sggsssgggggggsgggggggggggggggggggggggggs"
+home += "sgggssgggggggsgggggggggggggggggggggggggs"
+home += "sgggssssssssssgggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "ssssssssssssssssssssssssssssssssssssssss"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
