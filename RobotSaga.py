@@ -152,7 +152,7 @@ def showLabel(label):
 def turnPass():
     for person in beingList:
         if person.hostile == true:
-            simpleEnemyAI(person)
+            person.simpleHostileAI()
     if bot1.hp <= 0:
         bot1.coords.x = 0
         bot1.coords.y = 0
@@ -316,16 +316,7 @@ def loadIntro():
 
 
 
-# Basic enemy AI. Enemy moves in a random direction and attacks if 
-# the player is directly in front.
-# parameters:
-#   enemy           - enemy to perform the actions
 
-def simpleEnemyAI(enemy):
-    if enemy.forwardCoords.x == bot1.coords.x and enemy.forwardCoords.y == bot1.coords.y:
-        enemy.meleeAtk()
-    else:
-        moveRandom(enemy)
 
 
 
@@ -358,6 +349,19 @@ def keyAction(a):
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
+  elif a == "W":
+        bot1.faceUp()
+        turnPass()
+  elif a == "A":
+        bot1.faceLeft()
+        turnPass()
+  elif a == "S":
+        bot1.faceDown()
+        turnPass()
+  elif a == "D":
+        bot1.faceRight()
+        turnPass()
+
   elif a == "f":
     if bot1.isMoving == false:
         bot1.meleeAtk()
@@ -410,23 +414,7 @@ def initialSetup():
 
 
         
-# Moves a being in a random direction
-# Parameters:
-#   Being           - being to be moved
-
-
-def moveRandom(Being):
-    randNum = random.randint(0, 3)
-    if randNum == 0:
-        Being.moveUp()
-    elif randNum == 1:
-        Being.moveDown()
-    elif randNum == 2:
-        Being.moveLeft()
-    else:
-        Being.moveRight()
-
-                                    
+  
 
 
 
@@ -983,6 +971,73 @@ class Being():
 
 
 
+# Basic enemy AI. Enemy moves in a random direction and attacks if 
+# the player is directly in front.
+
+    def simpleHostileAI(self):
+        distanceX = self.coords.x - bot1.coords.x
+        distanceY = self.coords.y - bot1.coords.y
+        closeProximity = bits * 3
+        if self.forwardCoords.x == bot1.coords.x and self.forwardCoords.y == bot1.coords.y:
+            self.meleeAtk()
+        elif self.coords.x-bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+            self.faceLeft()
+            self.meleeAtk()
+        elif self.coords.x+bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+            self.faceRight()
+            self.meleeAtk()
+        elif self.coords.x == bot1.coords.x and self.coords.y+bits == bot1.coords.y:
+            self.faceDown()
+            self.meleeAtk()
+        elif self.coords.x == bot1.coords.x and self.coords.y-bits == bot1.coords.y:
+            self.faceUp()
+            self.meleeAtk()
+        elif abs(self.coords.x - bot1.coords.x) < bits and abs(self.coords.y - bot1.coords.y) < bits:
+            self.moveRandom()
+        elif abs(self.coords.x - bot1.coords.x) <= closeProximity and abs(self.coords.y - bot1.coords.y) <= closeProximity:
+            self.moveTowardsPlayer(distanceX, distanceY)
+        else:
+            self.moveRandom()
+
+
+
+
+
+
+        # Moves towards bot1. Distances should be passed in form self.x - bot1.x, same for y
+
+    def moveTowardsPlayer(self, distanceX, distanceY):
+        if abs(distanceX) > abs(distanceY):
+            if distanceX < 0:
+                self.moveRight()
+            else:
+                self.moveLeft()
+        else:
+            if distanceY < 0:
+                self.moveDown()
+            else:
+                self.moveUp()
+
+
+# Moves a being in a random direction
+
+    def moveRandom(self):
+        randNum = random.randint(0, 3)
+        if randNum == 0:
+            self.moveUp()
+        elif randNum == 1:
+            self.moveDown()
+        elif randNum == 2:
+            self.moveLeft()
+        else:
+            self.moveRight()
+
+
+
+
+
+
+                                  
         # returns a random item from the inv list
 
     def randomInvItem(self):
@@ -1410,12 +1465,16 @@ class Enemy(Being):
         self.hostile = true
         
 
+
+
+
+
         
         # in progress loot-dropping function
 
     def dropLoot(self):
         items = []
-        items.append(self.randomInvItem)
+        items.append(self.randomInvItem())
         loot = Lootbag(items, self.coords)
         objectList.append(loot)
 
