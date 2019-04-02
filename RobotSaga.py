@@ -449,9 +449,6 @@ def keyDownEvent():
         ####################
 
 
-
-
-
 class TurnCounter():
     def __init__(self):
         self.turn = 0
@@ -529,6 +526,24 @@ class Map():
         return self.tileMap[spot].getTraversable()
 
 
+
+
+
+
+# Class for merchant items and "buy/sell" transaction
+
+class itemForSale():
+    def __init__(self, price, item):
+        self.price = price
+        self.item = item
+
+    def buy(self, buyer, seller):
+        buyer.inventoryAdd(self.item)
+        buyer.changeWallet(self.price * - 1)
+        seller.changeWallet(self.price)
+        seller.inventoryRemove(self)
+        del self
+        
 
 
 class Lootbag():
@@ -820,6 +835,7 @@ class Being():
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
+        self.wallet = 0
         self.facing = directionList["right"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
@@ -833,6 +849,29 @@ class Being():
 
 
 
+
+
+
+        # Updates wallet by amount
+
+    def changeWallet(self, amount):
+        self.wallet += amount
+        if self.wallet <= 0:
+            self.wallet == 0
+            
+
+
+
+
+            
+        # Adds item to inventory list
+
+    def inventoryAdd(self, item):
+        self.inv.append(item)
+
+
+    def inventoryRemove(self, item):
+        self.inv.Remove(item)
 
 
 
@@ -1693,30 +1732,11 @@ class User(Being):
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
-        self.wallet = 0
+
         self.sprite.spawnSprite(self.coords.x, self.coords.y)
 
 
 
-
-
-
-        # Updates wallet by amount
-
-    def changeWallet(amount):
-        wallet += amount
-        if wallet <= 0:
-            wallet == 0
-            
-
-
-
-
-            
-        # Adds item to inventory list
-
-    def inventoryAdd(self, item):
-        inv.append(item)
 
 
 
