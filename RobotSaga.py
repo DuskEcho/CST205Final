@@ -46,7 +46,7 @@ beingList = []
 objectList = []
 #gore pieces
 gibList = []
-
+animatedSpriteList = []
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
         #add select game folder (to allow more portable loading of assets to path)
@@ -54,7 +54,7 @@ try:
            path #test to see if path exists
 except NameError: #if path does not exist make new path
            printNow("Please select your game install folder")
-           path = pickAFolder()
+           path = "C:\\Users\\Azrael\\source\\repos\\DuskEcho\\CST205Final\\"   # pickAFolder()
 else: printNow("Welcome Back") #welcome the player back to the game
 
 
@@ -181,6 +181,11 @@ def slideRight(object, targetXBig, sprite):
 
 
 
+
+
+
+
+
 # Used to remove objects (labels, sprites, etc.) from the display after a delay.
 # only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
 # directly.
@@ -219,9 +224,10 @@ def clearBadSprites():
 # clears giblets from the display()
 
 def clearGibList():
-    for sprite in display.items:
-        if sprite in gibList:
-            display.remove(sprite)
+    for sprite in gibList:
+        display.remove(sprite)
+        gibList.remove(sprite)
+        del sprite
 
 
 
@@ -1338,6 +1344,43 @@ class Being():
 
 
 
+class ShopKeeper(Being):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
+        Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
+        self.gibSpriteList = [Sprite(path + r"RobotSprites\shopKeeperGib1.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\shopKeeperGib2.gif", self.coords.x, self.coords.y)
+                              ]
+
+
+
+
+
+
+
+
+    def giblets(self):
+        animatedGib = AnimatedGiblets(path + r"RobotSprites\shopKeeperGib1.gif", path + r"RobotSprites\shopKeeperGib2.gif", random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
+        animatedGib.animate()
+
+
+
+    def dead(self):
+        #play animation
+        #delete coordinate data from grid
+        self.giblets()
+        self.dropLoot();
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        beingList.remove(self)
+        del self
+
+
+
+
+
+
+
 
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
@@ -1443,12 +1486,118 @@ class Armor():
 
 
 
+# used for sprite animation, flickering between two sprites at random
+# used for twitching/sparking/flames
+
+
+class AnimatedGiblets():
+    def __init__(self, filename1, filename2, x, y):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, x, y),
+                           Sprite(filename2, x, y)]
+        self.sprite = self.spriteList[0]
+        gibList.append(self.spriteList[0])
+        gibList.append(self.spriteList[1])
+        self.coords = Coords(x, y)
+
+
+
+
+        #activates animation
+
+    def animate(self):
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
 
 
 
 
 
+
+        # sprite addition and removal to and from display
+
+    def spawnSprite(self):
+        display.add(self.sprite, self.coords.x, self.coords.y)
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+    def threadAnimate(self, container):
+        while self.spriteList[0] in gibList or self.spriteList[1] in gibList:
+            time.sleep(random.randint(0, 2)/10.0)
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+        if self not in animatedSpriteList:
+            self.removeSprite()
+            del self
                      
+            
+
+
+
+
+
+
+
+
+
+
+
+# used for sprite animation, flickering between two sprites at random
+# used for twitching/sparking/flames
+
+
+class StationaryAnimatedSprite():
+    def __init__(self, filename1, filename2, x, y):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, x, y),
+                           Sprite(filename2, x, y)]
+        self.sprite = self.spriteList[0]
+        animatedSpriteList.append(self.spriteList[0])
+        animatedSpriteList.append(self.spriteList[1])
+        self.coords = Coords(x, y)
+
+
+
+
+    def animate(self):
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
+
+    def spawnSprite(self):
+        display.add(self.sprite, self.coords.x, self.coords.y)
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+    def threadAnimate(self, container):
+        while self.spriteList[0] in animatedSpriteList or self.spriteList[1] in animatedSpriteList:
+            time.sleep(random.randint(0, 2)/10.0)
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+        if self not in animatedSpriteList:
+            self.removeSprite()
+            del self
+
+
+
+
+
+
+
+
+
+
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
@@ -1700,7 +1849,7 @@ bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
 bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-shopKeeper = Being("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
+shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
 bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
 bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
