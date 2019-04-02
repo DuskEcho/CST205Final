@@ -7,7 +7,7 @@ import random
 import gui
 import time
 import thread
-
+import os
 
 
 
@@ -97,7 +97,14 @@ itemsList = {}  #potions, etc.
 lootTable = {}
 
 
-
+directionList = {
+    "up": 0,
+    "down": 1,
+    "left": 2,
+    "right": 3,
+    "movingLeft": 4,
+    "movingRight":5
+    }
 
 
 
@@ -337,8 +344,8 @@ def keyAction(a):
         turnPass()
   elif a == "g":
     #steal(targetLocatedAt(self.forwardX, self.forwardY)
-    if bot1.isMoving == false:
-      #  bot1.steal()
+    if bot1.isMoving == false and bot1.weapon.displayed == False:
+        bot1.steal(bot1.getFrontTarget())
         turnPass()
   elif a == "q":
     print("NotImplementedAtAll")
@@ -504,8 +511,8 @@ class Lootbag():
     def __init__(self, itemList, coords):
         self.contents = itemList
         self.coords = coords
-        self.spriteList = [Sprite(path + "lootBag.gif", self.coords.x, self.coords.y),
-                           Sprite(path + "lootBag2.gif", self.coords.x, self.coords.y)]
+        self.spriteList = [Sprite(path + r"EffectSprites\lootBag.gif", self.coords.x, self.coords.y),
+                           Sprite(path + r"EffectSprites\lootBag2.gif", self.coords.x, self.coords.y)]
         self.sprite = self.spriteList[0]
         self.type = "lootbag"
         
@@ -789,11 +796,12 @@ class Being():
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
-        self.facing = "right"
+        self.facing = directionList["right"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
                              "Yes?",
                              "Can I Help you?"]
+        self.bloodySprites = []
         self.inv.append(self.weapon)
         if itemList != None:
             self.inv += itemList
@@ -943,27 +951,73 @@ class Being():
         self.hp = int(self.hp + amount)
         if self.hp > self.maxHp:
             self.hp = self.maxHp
-        elif self.hp < 0:
+        elif self.hp <= 0:
             self.dead()
+        else:
+            self.bloodify()
 
+
+
+
+
+
+        # returns a random item from the inv list
+
+    def randomInvItem(self):
+        possibilities = len(self.inv)
+        if possibilities>0:
+            itemIndex = random.randint(0, possibilities-1)
+            return self.inv[itemIndex]
             
+
+
+
+
+
+
+        # drops all contents of the inv list in a lootbag object
+
     def dropLoot(self):
         loot = Lootbag(self.inv, self.coords)
         objectList.append(loot)
 
 
-        #undeveloped, for use in handling hp == 0
+
+
+
+
+        # Actions to be taken on hp <= 0
 
     def dead(self):
         self.dropLoot()
         self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
         beingList.remove(self)
         del self
 
 
 
 
-
+    def bloodify(self):
+        spriteNum = 0
+        for sprites in range(0, len(self.spritePaths)-1):
+            pic = makePicture(self.spritePaths[sprites])
+            for x in range(0, getWidth(pic)-1):
+                for y in range(0, getHeight(pic)-1):
+                    p = getPixel(pic, x, y)
+                    if getColor(p) != makeColor(0, 0, 0):
+                        if random.randint(0, 100) > (self.hp*100)/self.maxHp:
+                            setColor(p, makeColor(114, 87, 7))
+            newPicPath = path + r"RobotSprites\bloodySprite" + str(spriteNum) + ".gif"
+            writePictureTo(pic, newPicPath)
+            self.bloodySprites.append(newPicPath)
+            spriteNum += 1
+        self.spritePaths = self.bloodySprites
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.bloodySprites[self.facing], self.coords.x, self.coords.y)
+        self.sprite.spawnSprite(self.coords.x, self.coords.y)
+  
 
 
 
@@ -1021,7 +1075,6 @@ class Being():
             target.displayDamage()
             if target.hp <= 0:
                 self.changeXp(target.xpValue)
-                target.dead()
                     
             
 
@@ -1032,7 +1085,7 @@ class Being():
         # the given location. Uses multithreading.
 
     def displayDamage(self):
-        damage = Sprite(path + "damage.gif", self.coords.x, self.coords.y)
+        damage = Sprite(path + r"EffectSprites\damage.gif", self.coords.x, self.coords.y)
         display.add(damage, self.coords.x, self.coords.y)
         thread.start_new_thread(threadRemoveSprite, (.25, damage))
 
@@ -1058,11 +1111,11 @@ class Being():
         # note that the weapon sprite is not despawned
 
     def displayWeapon(self):
-        if self.facing == "up":
+        if self.facing == directionList["up"]:
             self.weapon.displayUp(self.forwardCoords.x, self.forwardCoords.y)
-        elif self.facing == "down":
+        elif self.facing == directionList["down"]:
             self.weapon.displayDown(self.forwardCoords.x, self.forwardCoords.y)
-        elif self.facing == "left":
+        elif self.facing == directionList["left"]:
             self.weapon.displayLeft(self.forwardCoords.x, self.forwardCoords.y)
         else:  #right
             self.weapon.displayRight(self.forwardCoords.x, self.forwardCoords.y)
@@ -1106,7 +1159,7 @@ class Being():
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveUp, (x,))
-            if self.facing == "up": 
+            if self.facing == directionList["up"]: 
               self.forwardCoords.y = self.coords.y - bits - bits/2
               self.forwardCoords.x = self.coords.x
         else:
@@ -1135,7 +1188,7 @@ class Being():
             x = None
             thread.start_new_thread(self.threadMoveDown, (x,))
             self.sprite.moveTo(self.coords.x, self.coords.y)
-            if self.facing == "down":
+            if self.facing == directionList["down"]:
               self.forwardCoords.y = self.coords.y + bits + bits/2
               self.forwardCoords.x = self.coords.x
         else:
@@ -1163,7 +1216,7 @@ class Being():
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveLeft, (x,))
-            if self.facing == "left":
+            if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - bits - bits/2 
         else:
@@ -1190,7 +1243,7 @@ class Being():
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveRight, (x,))
-            if self.facing == "right":
+            if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + bits+ bits/2
         else:
@@ -1215,8 +1268,8 @@ class Being():
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != "up":
-          self.facing = "up"
+        if self.facing != directionList["up"]:
+          self.facing = directionList["up"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[0], self.coords.x, self.coords.y)
           self.sprite.spawnSprite(self.coords.x, self.coords.y)
@@ -1227,8 +1280,8 @@ class Being():
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != "down":
-          self.facing = "down"
+        if self.facing != directionList["down"]:
+          self.facing = directionList["down"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[1], self.coords.x, self.coords.y)
           self.sprite.spawnSprite(self.coords.x, self.coords.y)
@@ -1239,8 +1292,8 @@ class Being():
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != "left":
-          self.facing = "left"
+        if self.facing != directionList["left"]:
+          self.facing = directionList["left"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[2], self.coords.x, self.coords.y)
           self.sprite.spawnSprite(self.coords.x, self.coords.y)
@@ -1251,8 +1304,8 @@ class Being():
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != "right":
-          self.facing = "right"
+        if self.facing != directionList["right"]:
+          self.facing = directionList["right"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[3], self.coords.x, self.coords.y)
           self.sprite.spawnSprite(self.coords.x, self.coords.y)
@@ -1315,13 +1368,18 @@ class Enemy(Being):
         #play animation
         #delete coordinate data from grid
         self.dropLoot();
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        beingList.remove(self)
+        del self
         
 
 
 
 
                
-        # returns a random inventory item the being has
+        # returns a random item from the inv list
 
     def randomInvItem(self):
         possibilities = len(self.inv)
@@ -1506,8 +1564,13 @@ class User(Being):
                 item = target.randomInvItem()
                 target.inv.remove(item)
                 self.inv.append(item)
+                label = gui.Label("You stole "  + item.name)
+                showLabel(label)
             else:
+                label = gui.Label("You messed up now!")
+                showLabel(label)
                 target.hostile = true
+            delayRemoveObject(label, 2)
 
     def talk(self):
         target = self.getFrontTarget()
@@ -1516,6 +1579,8 @@ class User(Being):
         delayRemoveObject(speech, 2)
 
     def dead(self):
+        for files in self.bloodySprites:
+            os.remove(files)
         self.__init__("bot1", "Stick", userSpritePaths, 32, 32)
 
 
