@@ -443,13 +443,15 @@ class Coords():
 
 
 class Tile():
-  def __init__(self, tile, isTraversable, isPassable, desc):
+  def __init__(self, tile, isTraversable, isPassable, isTough, desc):
     self.desc = desc
     self.tileImg = tile
     #can a being walk over
     self.isTraversable = isTraversable
     #can a projectile go over
     self.isPassable = isPassable
+    #ai gets 2 turns if player is on this tile
+    self.isTough = isTough
     self.beings = {} #array of beings in that tile
 
   def getImg(self):
@@ -1604,8 +1606,8 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
-stone = Tile(getTexture(textCoordToSpot(3,24)), false, true, "stone")
-grass = Tile(getTexture(textCoordToSpot(10,19)), true, true, "grass")
+stone = Tile(getTexture(textCoordToSpot(3,24)), false, true, false, "stone")
+grass = Tile(getTexture(textCoordToSpot(10,19)), true, true, false, "grass")
 
 
 #create emply grass field will clean up later
