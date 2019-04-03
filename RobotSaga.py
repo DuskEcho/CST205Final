@@ -337,27 +337,27 @@ def loadIntro():
                               
 # any function passed to onKeyType() must have one and exactly one
 # parameter.  This parameter is how the function knows which key is pressed
-# gotta find some way to "pause" in between moves to create the illusion of animation. 
-# sleep() doesn't seem to work well
+
 
 def keyAction(a):
+  bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if a == "w":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveUp()
         turnPass()
   elif a == "s":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveDown()
         turnPass()
   elif a == "a":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveLeft()
         turnPass()
   elif a == "d":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
@@ -370,26 +370,26 @@ def keyAction(a):
   elif a == "S":
         bot1.faceDown()
         turnPass()
-  elif a == "D":
+  elif a == "D": 
         bot1.faceRight()
         turnPass()
 
-  elif a == "f":
-    if bot1.isMoving == false:
+  elif a == "f": #attack
+    if bot1Ready:
         bot1.meleeAtk()
         turnPass()
-  elif a == "g":
-    #steal(targetLocatedAt(self.forwardX, self.forwardY)
-    if bot1.isMoving == false and bot1.weapon.displayed == False:
+  elif a == "g": #steal
+    if bot1Ready:
         bot1.steal(bot1.getFrontTarget())
         turnPass()
-  elif a == "q":
+  elif a == "q": 
     print("NotImplementedAtAll")
   elif a == "t":
-    #openMenu
     print("not implemented")
   elif a == "v":
     bot1.talk()
+  elif a == " ":
+      bot1.activateTarget()
 
 
 
@@ -427,16 +427,6 @@ def initialSetup():
 
         
   
-
-
-
-        
-def keyDownEvent():
-    print("NotImplemented")
-    #perform action (move, attack, etc.)
-    #if menu/shop window is not open, call turnPass()
-
-
 
 
 
@@ -698,7 +688,6 @@ class BeingSprite(Sprite):
 
 
 
-
         
       # not a huge fan of the weaponOut flag, but it works for now.
       # without the check in putAwayWeap, JES complains  
@@ -849,7 +838,11 @@ class Being():
 
 
 
+         
 
+
+    def activateTarget(self):
+      self.getFrontTarget().activate()
 
 
         # Updates wallet by amount
@@ -1739,7 +1732,8 @@ class User(Being):
 
 
 
-
+    def giblets():
+        None
 
 
                # EQUIPMENT CLUSTER
