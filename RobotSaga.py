@@ -520,9 +520,58 @@ class Map():
 
 
 
+
+
+
+class Doodad():
+    def __init__(self, filepaths, x, y):
+        self.destructible = false
+        self.sprites = filepaths
+        self.coords = Coords(x, y)
+        self.sprite = Sprite(filepaths, x, y)
+        self.sprite.spawnSprite()
+        self.isAnimating == false
+        spriteList.append(self.sprite)
+
+
+
+class LightSource(Doodad):
+    def __init__(self, filepaths, x, y):
+        Doodad.__init__(self, filepaths, x, y)
+        self.isOn == false
+
+    def activate(self):
+        if self.isOn == true:
+            self.turnOn()
+        else:
+            self.turnOff()
+
+    def turnOn(self):
+        if self.isOn == false:
+            self.isOn = true
+            self.sprite.removeSprite()
+            self.sprite = self.spriteList[1]
+            self.sprite.spawnSprite()
+            spriteList.append(self.sprite)
+    def turnOff(self):
+        if self.isOn == true:
+            self.isOn = false
+            self.sprite.removeSprite()
+            spriteList.remove(self.sprite)
+            self.sprite = self.sprites[0]
+            self.sprite.spawnSprite()
+            spriteList.append(self.sprite)
+
+
+
+
+
+
+
+
 # Class for merchant items and "buy/sell" transaction
 
-class itemForSale():
+class ItemForSale():
     def __init__(self, price, item):
         self.price = price
         self.item = item
@@ -1930,15 +1979,14 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotMovingRight.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif"]
-
+lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
+                        path + "ObjectSprites/lampOn.gif"]
 display.drawImage(path + "newBack.png", 0, 0)
 
 counter = TurnCounter()
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-spawnEnemy()
-spawnEnemy()
-spawnEnemy()
+
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
