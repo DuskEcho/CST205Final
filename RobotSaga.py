@@ -528,23 +528,23 @@ class Doodad():
         self.destructible = false
         self.sprites = filepaths
         self.coords = Coords(x, y)
-        self.sprite = Sprite(filepaths, x, y)
+        self.sprite = Sprite(filepaths[0], x, y)
         self.sprite.spawnSprite()
-        self.isAnimating == false
-        spriteList.append(self.sprite)
+        self.isAnimating = false
+        objectList.append(self)
 
 
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y):
         Doodad.__init__(self, filepaths, x, y)
-        self.isOn == false
+        self.isOn = false
 
     def activate(self):
         if self.isOn == true:
-            self.turnOn()
-        else:
             self.turnOff()
+        else:
+            self.turnOn()
 
     def turnOn(self):
         if self.isOn == false:
@@ -1960,7 +1960,7 @@ baseMap = Map(home)
 
 
 display = gui.Display("Robot Saga", backWidth, backHeight)
-loadIntro()
+#loadIntro()
 text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 display.add(text)
@@ -1986,7 +1986,7 @@ display.drawImage(path + "newBack.png", 0, 0)
 counter = TurnCounter()
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-
+light = LightSource(lightpostSpritePaths, 256, 256)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
