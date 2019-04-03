@@ -531,6 +531,7 @@ class Doodad():
         self.sprite = Sprite(filepaths[0], x, y)
         self.sprite.spawnSprite()
         self.isAnimating = false
+        self.animatedSprite = StationaryAnimatedSprite(filepaths[1], filepaths[2], x, y)
         objectList.append(self)
 
 
@@ -550,17 +551,15 @@ class LightSource(Doodad):
         if self.isOn == false:
             self.isOn = true
             self.sprite.removeSprite()
-            self.sprite = self.spriteList[1]
-            self.sprite.spawnSprite()
-            spriteList.append(self.sprite)
+            self.animatedSprite.animate()
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
+            animatedSpriteList.remove(self.animatedSprite.animatedSpriteList[0])
+            animatedSpriteList.remove(self.animatedSprite.animatedSpriteList[1])
             self.sprite.removeSprite()
-            spriteList.remove(self.sprite)
             self.sprite = self.sprites[0]
             self.sprite.spawnSprite()
-            spriteList.append(self.sprite)
 
 
 
@@ -1980,7 +1979,8 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif"]
 lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
-                        path + "ObjectSprites/lampOn.gif"]
+                        path + "ObjectSprites/lampOn.gif",
+                        path + "ObjectSprites/lampBright.gif"]
 display.drawImage(path + "newBack.png", 0, 0)
 
 counter = TurnCounter()
