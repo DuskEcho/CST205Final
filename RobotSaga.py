@@ -528,10 +528,11 @@ class Doodad():
         self.destructible = false
         self.sprites = filepaths
         self.coords = Coords(x, y)
+        self.spriteList = filepaths
         self.sprite = Sprite(filepaths[0], x, y)
         self.sprite.spawnSprite()
         self.isAnimating = false
-        self.animatedSprite = StationaryAnimatedSprite(filepaths[1], filepaths[2], x, y)
+        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y)
         objectList.append(self)
 
 
@@ -550,6 +551,7 @@ class LightSource(Doodad):
     def turnOn(self):
         if self.isOn == false:
             self.isOn = true            
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y)
             self.animatedSprite.animate()
             self.sprite.removeSprite()
     def turnOff(self):
