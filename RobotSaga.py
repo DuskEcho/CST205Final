@@ -46,6 +46,7 @@ objectList = []
 #gore pieces
 gibList = []
 animatedSpriteList = []
+lightSources = []
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
         #add select game folder (to allow more portable loading of assets to path)
@@ -142,7 +143,13 @@ def showLabel(label):
     display.add(label, 1280*(2/5), 0)
 
 
+# Deletes all files in folderpath whose name contains targetString
 
+def deleteFilesWithString(folderPath, targetString):
+        for file in os.listdir(folderPath):
+            print(folderPath)
+            if targetString in file:
+                os.remove(file)
 
 
 
@@ -189,7 +196,7 @@ def slideRight(object, targetXBig, sprite):
 
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
-def spawnEnemy(name = ("EnemyBorn" + str(turnCounter)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
     enemy = Enemy(name, weap, spritePaths, x, y, species, level)
     enemy.sprite.spawnSprite(enemy.coords.x, enemy.coords.y)
     
@@ -443,6 +450,11 @@ class TurnCounter():
     def __init__(self):
         self.turn = 0
 
+
+counter = TurnCounter()
+
+
+
 # universal coordinates object 
 
 class Coords():
@@ -541,6 +553,8 @@ class LightSource(Doodad):
     def __init__(self, filepaths, x, y):
         Doodad.__init__(self, filepaths, x, y)
         self.isOn = false
+        self.type = "light"
+        lightSources.append(self)
 
     def activate(self):
         if self.isOn == true:
@@ -563,6 +577,7 @@ class LightSource(Doodad):
             self.sprite = Sprite(self.sprites[0], self.coords.x, self.coords.y)
             self.sprite.spawnSprite()
 
+    
 
 
 
@@ -871,6 +886,7 @@ class Being():
         self.inv = []
         self.coords = Coords(xSpawn, ySpawn)
         self.forwardCoords = Coords(self.coords.x + bits, self.coords.y)
+        self.unchangedSpritePaths = spritePaths
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
@@ -881,6 +897,8 @@ class Being():
                              "Yes?",
                              "Can I Help you?"]
         self.bloodySprites = []
+        self.lightSprites = []
+        self.darkSprites = []
         self.inv.append(self.weapon)
         if itemList != None:
             self.inv += itemList
@@ -1170,7 +1188,69 @@ class Being():
         del self
 
 
+        # Handles lighting of sprites. If a valid light object is within the range
+        # currently set to bits * 3, a new set of sprites will be created and applied
+        # to simulate lighting.
+        # Starts a new thread.
 
+    def lightenDarken(self):
+        bright = self.lightWithinRange(bits * 3)
+        if self.spritePaths != self.lightSprites and bright:
+            self.lightenPixels()
+        elif self.spritePaths == self.lightSprites and not bright:
+            self.resumePixels()
+            deletePath = path + "RobotSprites"
+            deleteKey = self.name + str(beingList.index(self)) + "lightSprite"
+            x = None
+            thread.start_new_thread(self.threadDeleteLightSprites, (x,))
+
+
+
+
+        # Helper for lightenDarken(). Separated to allow for early returns. Determins if
+        # a valid light source is within the range passed
+
+    def lightWithinRange(self, range):
+        for light in lightSources:
+            distanceX = abs(self.coords.x - light.coords.x)
+            distanceY = abs(self.coords.y - light.coords.y)
+            if distanceX <= range and distanceY <= range and light.isOn:
+                return true  
+        return false
+
+
+    def threadDeleteLightSprites(self, x):
+        for sprite in self.lightSprites:
+            os.remove(sprite)
+        self.lightSprites = []
+
+    def resumePixels(self):
+        self.spritePaths = self.darkSprites
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[self.facing], self.coords.x, self.coords.y)
+        self.sprite.spawnSprite(self.coords.x, self.coords.y)
+
+
+    def lightenPixels(self):
+        self.darkSprites = self.spritePaths
+        spriteNum = 0
+        for sprites in range(0, len(self.spritePaths)):
+            pic = makePicture(self.spritePaths[sprites])
+            for x in range(0, getWidth(pic)-1):
+                for y in range(0, getHeight(pic)-1):
+                    p = getPixel(pic, x, y)
+                    color = getColor(p)
+                    if color != makeColor(0, 0, 0):
+                        setColor(p, makeColor(getRed(p)*1.5, getGreen(p)*1.5, getBlue(p)*1.5))
+            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
+            writePictureTo(pic, newPicPath)
+            self.lightSprites.append(newPicPath)
+            spriteNum += 1
+        self.spritePaths = self.lightSprites
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.lightSprites[self.facing], self.coords.x, self.coords.y)
+        self.sprite.spawnSprite(self.coords.x, self.coords.y)
+        
 
     def bloodify(self):
         spriteNum = 0
@@ -1346,6 +1426,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
         
 
     def moveDown(self):
@@ -1375,6 +1456,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
 
     def moveLeft(self):
@@ -1403,6 +1485,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
     def moveRight(self):
         self.faceRight()
@@ -1431,6 +1514,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
 
         # changes the being's sprite to one facing the corresponding
@@ -1985,7 +2069,6 @@ lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
                         path + "ObjectSprites/lampBright.gif"]
 display.drawImage(path + "newBack.png", 0, 0)
 
-counter = TurnCounter()
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 light = LightSource(lightpostSpritePaths, 256, 256)
