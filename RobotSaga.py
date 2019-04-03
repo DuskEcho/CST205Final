@@ -549,16 +549,16 @@ class LightSource(Doodad):
 
     def turnOn(self):
         if self.isOn == false:
-            self.isOn = true
-            self.sprite.removeSprite()
+            self.isOn = true            
             self.animatedSprite.animate()
+            self.sprite.removeSprite()
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
-            animatedSpriteList.remove(self.animatedSprite.animatedSpriteList[0])
-            animatedSpriteList.remove(self.animatedSprite.animatedSpriteList[1])
+            animatedSpriteList.remove(self.animatedSprite.spriteList[0])
+            animatedSpriteList.remove(self.animatedSprite.spriteList[1])
             self.sprite.removeSprite()
-            self.sprite = self.sprites[0]
+            self.sprite = Sprite(self.sprites[0], self.coords.x, self.coords.y)
             self.sprite.spawnSprite()
 
 
