@@ -50,7 +50,7 @@ lightSources = []
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
         #add select game folder (to allow more portable loading of assets to path)
-try: 
+try:
            path #test to see if path exists
 except NameError: #if path does not exist make new path
            printNow("Please select your game install folder")
