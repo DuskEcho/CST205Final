@@ -767,7 +767,7 @@ class BeingSprite(Sprite):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self, x, y):
-        display.add(self, x, y)
+        display.addOrder(self, 1, x, y)
 
 
 
@@ -2082,7 +2082,9 @@ text.onKeyType(keyAction)
 display.add(text)
 #create background (probably prerender home background later)
 
-display.drawImage(path + "newBack.png", 0, 0)
+bg = Sprite(path + "newBack.png", 0, 0)
+display.addOrder(bg)
+#display.drawImage(path + "newBack.png", 0, 0)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
