@@ -38,6 +38,24 @@ heightTiles = 24
 shopKeeperX = 5*bits
 shopKeeperY = 2*bits
 
+userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
+               path + "RobotSprites/botBlueFront.gif",
+               path + "RobotSprites/botBlueSideLeft.gif",
+               path + "RobotSprites/botBlueSideRight.gif",
+               path + "RobotSprites/botBlueMovingLeft.gif",
+               path + "RobotSprites/botBlueMovingRight.gif",]
+blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
+               path + "RobotSprites/blueRobotFront.gif",
+               path + "RobotSprites/BlueRobotSideLeft.gif",
+               path + "RobotSprites/BlueRobotSideRight.gif",
+               path + "RobotSprites/BlueRobotMovingLeft.gif",
+               path + "RobotSprites/BlueRobotMovingRight.gif",]
+shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif"]
+lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
+                        path + "ObjectSprites/lampOn.gif",
+                        path + "ObjectSprites/lampBright.gif"]
+
 
 #beings
 beingList = []
@@ -153,6 +171,13 @@ def deleteFilesWithString(folderPath, targetString):
 
 
 
+
+class TurnCounter():
+    def __init__(self):
+        self.turn = 0
+
+
+counter = TurnCounter()
 # All actions that depend on the turn counter go here
 
 def turnPass():
@@ -446,13 +471,6 @@ def initialSetup():
         ####################
 
 
-class TurnCounter():
-    def __init__(self):
-        self.turn = 0
-
-
-counter = TurnCounter()
-
 
 
 # universal coordinates object 
@@ -720,6 +738,7 @@ class BeingSprite(Sprite):
       self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
+      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -2052,23 +2071,6 @@ text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 display.add(text)
 #create background (probably prerender home background later)
-userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
-               path + "RobotSprites/botBlueFront.gif",
-               path + "RobotSprites/botBlueSideLeft.gif",
-               path + "RobotSprites/botBlueSideRight.gif",
-               path + "RobotSprites/botBlueMovingLeft.gif",
-               path + "RobotSprites/botBlueMovingRight.gif",]
-blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
-               path + "RobotSprites/blueRobotFront.gif",
-               path + "RobotSprites/BlueRobotSideLeft.gif",
-               path + "RobotSprites/BlueRobotSideRight.gif",
-               path + "RobotSprites/BlueRobotMovingLeft.gif",
-               path + "RobotSprites/BlueRobotMovingRight.gif",]
-shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif"]
-lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
-                        path + "ObjectSprites/lampOn.gif",
-                        path + "ObjectSprites/lampBright.gif"]
 display.drawImage(path + "newBack.png", 0, 0)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)

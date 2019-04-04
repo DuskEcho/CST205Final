@@ -1,9 +1,9 @@
 #bits is how many pixels are in each texture
 bits = 32
 #how many tiles there are wide
-widthTiles = 40
+widthTiles = 32 #old value 40
 #how many tiles there are tall
-heightTiles = 24
+heightTiles = 18 #old value 22
 
 try:
            path #test to see if path exists
@@ -89,6 +89,7 @@ class Map():
             #elif tiles[spot] == "p": placeTex(player, spot)
             #elif tiles[spot] == "w": placeTex(wall, spot)
         writePictureTo(self.map, path + "newBack.png")
+        explore(self.map)
 
 
     def isTraversable(self, spot):
@@ -115,30 +116,24 @@ grass = Tile(getTexture(textCoordToSpot(10,19), textureMap), true, true, false, 
 
 
 #create emply grass field will clean up later
-home  = "ssssssssssssssssssssssssssssssssssssssss"
-home += "sggsggggggggggggggsgsgsgsgsgsgsgsgsgsgss"
-home += "sggsgggggggggggggsgsgsgsgssggggggggggggs"
-home += "sggsssgggggggsgggggggggggggggggggggggggs"
-home += "sgggssgggggggsgggggggggggggggggggggggggs"
-home += "sgggssssssssssgggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "ssssssssssssssssssssssssssssssssssssssss"
+home  = "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
+home += "gggggggggggggggggggggggggggggggg"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
