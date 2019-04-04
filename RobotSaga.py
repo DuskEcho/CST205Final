@@ -33,22 +33,34 @@ bits = 32
 #how many tiles there are wide
 widthTiles = 40
 #how many tiles there are tall
-heightTiles = 22
+heightTiles = 24
 
 shopKeeperX = 5*bits
 shopKeeperY = 2*bits
 
 
+class TurnCounter():
+    def __init__(self):
+        self.turn = 0
+
+
+counter = TurnCounter()
 
 #beings
 beingList = []
 #interactable objects
 objectList = []
+#gore pieces
+gibList = []
+animatedSpriteList = []
+lightSources = []
+
+
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
         #add select game folder (to allow more portable loading of assets to path)
-try: 
+try:
            path #test to see if path exists
 except NameError: #if path does not exist make new path
            printNow("Please select your game install folder")
@@ -63,6 +75,23 @@ else: printNow("Welcome Back") #welcome the player back to the game
 # Dictionaries for items
 # Numbers correspond to stats
 # arrays in form [attack/def, spritePaths]
+userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
+               path + "RobotSprites/botBlueFront.gif",
+               path + "RobotSprites/botBlueSideLeft.gif",
+               path + "RobotSprites/botBlueSideRight.gif",
+               path + "RobotSprites/botBlueMovingLeft.gif",
+               path + "RobotSprites/botBlueMovingRight.gif",]
+blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
+               path + "RobotSprites/blueRobotFront.gif",
+               path + "RobotSprites/BlueRobotSideLeft.gif",
+               path + "RobotSprites/BlueRobotSideRight.gif",
+               path + "RobotSprites/BlueRobotMovingLeft.gif",
+               path + "RobotSprites/BlueRobotMovingRight.gif",]
+shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif"]
+lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
+                        path + "ObjectSprites/lampOn.gif",
+                        path + "ObjectSprites/lampBright.gif"]
 
 weaponStatsList = {    
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
@@ -141,21 +170,31 @@ def showLabel(label):
     display.add(label, 1280*(2/5), 0)
 
 
+# Deletes all files in folderpath whose name contains targetString
 
+def deleteFilesWithString(folderPath, targetString):
+        for file in os.listdir(folderPath):
+            print(folderPath)
+            if targetString in file:
+                os.remove(file)
 
 
 
 # All actions that depend on the turn counter go here
 
 def turnPass():
+    counter.turn += 1
+    if counter.turn % 20 == 0:
+        spawnEnemy()
     for person in beingList:
         if person.hostile == true:
-            simpleEnemyAI(person)
+            person.simpleHostileAI()
     if bot1.hp <= 0:
         bot1.coords.x = 0
         bot1.coords.y = 0
         bot1.sprite.spawnSprite(bot1.coords.x, bot1.coords.y)
     clearBadSprites()
+
     #total action counter to affect shop/store stock
     
 
@@ -174,6 +213,20 @@ def slideRight(object, targetXBig, sprite):
         thread.start_new_thread(slideRight, (object, targetXBig, sprite))
 
 
+
+        self, name, weapName, spritePaths, xSpawn, ySpawn, species, level
+
+
+
+
+
+
+# Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
+
+def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+    enemy = Enemy(name, weap, spritePaths, x, y, species, level)
+    enemy.sprite.spawnSprite(enemy.coords.x, enemy.coords.y)
+    
 
 
 
@@ -208,6 +261,19 @@ def clearBadSprites():
         if sprite not in goodSprites and type(sprite) == BeingSprite:
             display.remove(sprite)
 
+
+
+
+
+
+
+# clears giblets from the display()
+
+def clearGibList():
+    for sprite in gibList:
+        display.remove(sprite)
+        gibList.remove(sprite)
+        del sprite
 
 
 
@@ -288,24 +354,15 @@ def getTexture(spot):
 # intro credits, adjust to add fade, etc.
 
 def loadIntro():
-    display.drawImage(path + "LogoOmega.png", 0, 0)
+    display.drawImage(path + "Fullscreens\\LogoOmega.png", 0, 0)
     time.sleep(1.5)
-    display.drawImage(path + "dummyStartScreen.png", 0, 0)
+    display.drawImage(path + "Fullscreens\\dummyStartScreen.png", 0, 0)
     time.sleep(1.5)
 
 
 
 
-# Basic enemy AI. Enemy moves in a random direction and attacks if 
-# the player is directly in front.
-# parameters:
-#   enemy           - enemy to perform the actions
 
-def simpleEnemyAI(enemy):
-    if enemy.forwardCoords.x == bot1.coords.x and enemy.forwardCoords.y == bot1.coords.y:
-        enemy.meleeAtk()
-    else:
-        moveRandom(enemy)
 
 
 
@@ -314,46 +371,59 @@ def simpleEnemyAI(enemy):
                               
 # any function passed to onKeyType() must have one and exactly one
 # parameter.  This parameter is how the function knows which key is pressed
-# gotta find some way to "pause" in between moves to create the illusion of animation. 
-# sleep() doesn't seem to work well
+
 
 def keyAction(a):
+  bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if a == "w":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveUp()
         turnPass()
   elif a == "s":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveDown()
         turnPass()
   elif a == "a":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveLeft()
         turnPass()
   elif a == "d":
-    if bot1.isMoving == false:
+    if bot1Ready:
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
-  elif a == "f":
-    if bot1.isMoving == false:
+  elif a == "W":
+        bot1.faceUp()
+        turnPass()
+  elif a == "A":
+        bot1.faceLeft()
+        turnPass()
+  elif a == "S":
+        bot1.faceDown()
+        turnPass()
+  elif a == "D": 
+        bot1.faceRight()
+        turnPass()
+
+  elif a == "f": #attack
+    if bot1Ready:
         bot1.meleeAtk()
         turnPass()
-  elif a == "g":
-    #steal(targetLocatedAt(self.forwardX, self.forwardY)
-    if bot1.isMoving == false and bot1.weapon.displayed == False:
+  elif a == "g": #steal
+    if bot1Ready:
         bot1.steal(bot1.getFrontTarget())
         turnPass()
-  elif a == "q":
+  elif a == "q": 
     print("NotImplementedAtAll")
   elif a == "t":
-    #openMenu
     print("not implemented")
   elif a == "v":
     bot1.talk()
+  elif a == " ":
+      bot1.activateTarget()
 
 
 
@@ -390,33 +460,7 @@ def initialSetup():
 
 
         
-# Moves a being in a random direction
-# Parameters:
-#   Being           - being to be moved
-
-
-def moveRandom(Being):
-    randNum = random.randint(0, 3)
-    if randNum == 0:
-        Being.moveUp()
-    elif randNum == 1:
-        Being.moveDown()
-    elif randNum == 2:
-        Being.moveLeft()
-    else:
-        Being.moveRight()
-
-                                    
-
-
-
-        
-def keyDownEvent():
-    print("NotImplemented")
-    #perform action (move, attack, etc.)
-    #if menu/shop window is not open, call turnPass()
-
-
+  
 
 
 
@@ -427,9 +471,6 @@ def keyDownEvent():
         #      CLASSES     #
         #                  #
         ####################
-
-
-
 
 
 
@@ -509,6 +550,77 @@ class Map():
 
 
 
+
+
+
+
+
+class Doodad():
+    def __init__(self, filepaths, x, y):
+        self.destructible = false
+        self.sprites = filepaths
+        self.coords = Coords(x, y)
+        self.spriteList = filepaths
+        self.sprite = Sprite(filepaths[0], x, y)
+        self.sprite.spawnSprite()
+        self.isAnimating = false
+        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y)
+        objectList.append(self)
+
+
+
+class LightSource(Doodad):
+    def __init__(self, filepaths, x, y):
+        Doodad.__init__(self, filepaths, x, y)
+        self.isOn = false
+        self.type = "light"
+        lightSources.append(self)
+
+    def activate(self):
+        if self.isOn == true:
+            self.turnOff()
+        else:
+            self.turnOn()
+
+    def turnOn(self):
+        if self.isOn == false:
+            self.isOn = true            
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y)
+            self.animatedSprite.animate()
+            self.sprite.removeSprite()
+    def turnOff(self):
+        if self.isOn == true:
+            self.isOn = false
+            animatedSpriteList.remove(self.animatedSprite.spriteList[0])
+            animatedSpriteList.remove(self.animatedSprite.spriteList[1])
+            self.sprite.removeSprite()
+            self.sprite = Sprite(self.sprites[0], self.coords.x, self.coords.y)
+            self.sprite.spawnSprite()
+
+    
+
+
+
+
+
+
+
+# Class for merchant items and "buy/sell" transaction
+
+class ItemForSale():
+    def __init__(self, price, item):
+        self.price = price
+        self.item = item
+
+    def buy(self, buyer, seller):
+        buyer.inventoryAdd(self.item)
+        buyer.changeWallet(self.price * - 1)
+        seller.changeWallet(self.price)
+        seller.inventoryRemove(self)
+        del self
+        
+
+
 class Lootbag():
     def __init__(self, itemList, coords):
         self.contents = itemList
@@ -528,7 +640,7 @@ class Lootbag():
 
 
     def spawnSprite(self):
-        display.add(self.sprite, self.coords.x, self.coords.y)
+        display.addOrder(self.sprite, 1, self.coords.x, self.coords.y)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -563,7 +675,7 @@ class Lootbag():
 
 class Sprite(gui.Icon):
 
-  def __init__(self, filename, x, y):
+  def __init__(self, filename, x, y, layer = 2):
       gui.JPanel.__init__(self)
       gui.Widget.__init__(self)
       filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM- LEGACY, NOT SURE OF NECESSITY
@@ -572,7 +684,9 @@ class Sprite(gui.Icon):
       self.position = (0,0)              # assume placement at a Display's origin- LEGACY, NOT SURE OF NECESSITY
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
+      self.layer = layer
 
+      #printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -592,12 +706,21 @@ class Sprite(gui.Icon):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self):
-        display.add(self, self.coords.x, self.coords.y)
+        display.addOrder(self, self.layer, self.coords.x, self.coords.y)
  
+      # adds the sprite to the display in the foreground (closest to the user)
 
+  def spawnSpriteFront(self):
+      self.layer = 1
+      self.spawnSprite()
 
+      
+      # adds the sprite to the display in the background (closest to the map, just in front of it)
+      # order number of 3 spawns behind the background
 
-
+  def spawnSpriteBack(self):
+      self.layer = 3
+      self.spawnSprite()
 
       # removes the sprite from the display
         
@@ -619,7 +742,7 @@ class Sprite(gui.Icon):
   # ownership to sub-sprites (e.g., weapon)
 
 class BeingSprite(Sprite):
-  def __init__(self, filename, x, y):
+  def __init__(self, filename, x, y, layer = 2):
       gui.JPanel.__init__(self)
       gui.Widget.__init__(self)
       filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM - LEGACY, UNUSED FOR NOW
@@ -629,6 +752,8 @@ class BeingSprite(Sprite):
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
       self.icon = gui.ImageIO.read(File(filename))
+      self.coords = Coords(x, y)
+      self.layer = layer
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
 
@@ -646,7 +771,7 @@ class BeingSprite(Sprite):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self, x, y):
-        display.add(self, x, y)
+        display.addOrder(self, self.layer, x, y)
 
 
 
@@ -657,7 +782,6 @@ class BeingSprite(Sprite):
 
   def removeSprite(self):
         display.remove(self)
-
 
 
 
@@ -795,15 +919,19 @@ class Being():
         self.inv = []
         self.coords = Coords(xSpawn, ySpawn)
         self.forwardCoords = Coords(self.coords.x + bits, self.coords.y)
+        self.unchangedSpritePaths = spritePaths
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
+        self.wallet = 0
         self.facing = directionList["right"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
                              "Yes?",
                              "Can I Help you?"]
         self.bloodySprites = []
+        self.lightSprites = []
+        self.darkSprites = []
         self.inv.append(self.weapon)
         if itemList != None:
             self.inv += itemList
@@ -811,6 +939,33 @@ class Being():
 
 
 
+         
+
+
+    def activateTarget(self):
+      self.getFrontTarget().activate()
+
+
+        # Updates wallet by amount
+
+    def changeWallet(self, amount):
+        self.wallet += amount
+        if self.wallet <= 0:
+            self.wallet == 0
+            
+
+
+
+
+            
+        # Adds item to inventory list
+
+    def inventoryAdd(self, item):
+        self.inv.append(item)
+
+
+    def inventoryRemove(self, item):
+        self.inv.Remove(item)
 
 
 
@@ -963,6 +1118,73 @@ class Being():
 
 
 
+# Basic enemy AI. Enemy moves in a random direction and attacks if 
+# the player is directly in front.
+
+    def simpleHostileAI(self):
+        distanceX = self.coords.x - bot1.coords.x
+        distanceY = self.coords.y - bot1.coords.y
+        closeProximity = bits * 3
+        if self.forwardCoords.x == bot1.coords.x and self.forwardCoords.y == bot1.coords.y:
+            self.meleeAtk()
+        elif self.coords.x-bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+            self.faceLeft()
+            self.meleeAtk()
+        elif self.coords.x+bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+            self.faceRight()
+            self.meleeAtk()
+        elif self.coords.x == bot1.coords.x and self.coords.y+bits == bot1.coords.y:
+            self.faceDown()
+            self.meleeAtk()
+        elif self.coords.x == bot1.coords.x and self.coords.y-bits == bot1.coords.y:
+            self.faceUp()
+            self.meleeAtk()
+        elif abs(self.coords.x - bot1.coords.x) < bits and abs(self.coords.y - bot1.coords.y) < bits:
+            self.moveRandom()
+        elif abs(self.coords.x - bot1.coords.x) <= closeProximity and abs(self.coords.y - bot1.coords.y) <= closeProximity:
+            self.moveTowardsPlayer(distanceX, distanceY)
+        else:
+            self.moveRandom()
+
+
+
+
+
+
+        # Moves towards bot1. Distances should be passed in form self.x - bot1.x, same for y
+
+    def moveTowardsPlayer(self, distanceX, distanceY):
+        if abs(distanceX) > abs(distanceY):
+            if distanceX < 0:
+                self.moveRight()
+            else:
+                self.moveLeft()
+        else:
+            if distanceY < 0:
+                self.moveDown()
+            else:
+                self.moveUp()
+
+
+# Moves a being in a random direction
+
+    def moveRandom(self):
+        randNum = random.randint(0, 3)
+        if randNum == 0:
+            self.moveUp()
+        elif randNum == 1:
+            self.moveDown()
+        elif randNum == 2:
+            self.moveLeft()
+        else:
+            self.moveRight()
+
+
+
+
+
+
+                                  
         # returns a random item from the inv list
 
     def randomInvItem(self):
@@ -999,11 +1221,73 @@ class Being():
         del self
 
 
+        # Handles lighting of sprites. If a valid light object is within the range
+        # currently set to bits * 3, a new set of sprites will be created and applied
+        # to simulate lighting.
+        # Starts a new thread.
 
+    def lightenDarken(self):
+        bright = self.lightWithinRange(bits * 3)
+        if self.spritePaths != self.lightSprites and bright:
+            self.lightenPixels()
+        elif self.spritePaths == self.lightSprites and not bright:
+            self.resumePixels()
+            deletePath = path + "RobotSprites"
+            deleteKey = self.name + str(beingList.index(self)) + "lightSprite"
+            x = None
+            thread.start_new_thread(self.threadDeleteLightSprites, (x,))
+
+
+
+
+        # Helper for lightenDarken(). Separated to allow for early returns. Determins if
+        # a valid light source is within the range passed
+
+    def lightWithinRange(self, range):
+        for light in lightSources:
+            distanceX = abs(self.coords.x - light.coords.x)
+            distanceY = abs(self.coords.y - light.coords.y)
+            if distanceX <= range and distanceY <= range and light.isOn:
+                return true  
+        return false
+
+
+    def threadDeleteLightSprites(self, x):
+        for sprite in self.lightSprites:
+            os.remove(sprite)
+        self.lightSprites = []
+
+    def resumePixels(self):
+        self.spritePaths = self.darkSprites
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.spritePaths[self.facing], self.coords.x, self.coords.y)
+        self.sprite.spawnSprite(self.coords.x, self.coords.y)
+
+
+    def lightenPixels(self):
+        self.darkSprites = self.spritePaths
+        spriteNum = 0
+        for sprites in range(0, len(self.spritePaths)):
+            pic = makePicture(self.spritePaths[sprites])
+            for x in range(0, getWidth(pic)-1):
+                for y in range(0, getHeight(pic)-1):
+                    p = getPixel(pic, x, y)
+                    color = getColor(p)
+                    if color != makeColor(0, 0, 0):
+                        setColor(p, makeColor(getRed(p)*1.5, getGreen(p)*1.5, getBlue(p)*1.5))
+            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
+            writePictureTo(pic, newPicPath)
+            self.lightSprites.append(newPicPath)
+            spriteNum += 1
+        self.spritePaths = self.lightSprites
+        self.sprite.removeSprite()
+        self.sprite = BeingSprite(self.lightSprites[self.facing], self.coords.x, self.coords.y)
+        self.sprite.spawnSprite(self.coords.x, self.coords.y)
+        
 
     def bloodify(self):
         spriteNum = 0
-        for sprites in range(0, len(self.spritePaths)-1):
+        for sprites in range(0, len(self.spritePaths)):
             pic = makePicture(self.spritePaths[sprites])
             for x in range(0, getWidth(pic)-1):
                 for y in range(0, getHeight(pic)-1):
@@ -1011,7 +1295,7 @@ class Being():
                     if getColor(p) != makeColor(0, 0, 0):
                         if random.randint(0, 100) > (self.hp*100)/self.maxHp:
                             setColor(p, makeColor(114, 87, 7))
-            newPicPath = path + r"RobotSprites\bloodySprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.bloodySprites.append(newPicPath)
             spriteNum += 1
@@ -1175,6 +1459,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
         
 
     def moveDown(self):
@@ -1204,6 +1489,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
 
     def moveLeft(self):
@@ -1232,6 +1518,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
     def moveRight(self):
         self.faceRight()
@@ -1260,6 +1547,7 @@ class Being():
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.isMoving = false
         self.pickUpLoot(self.coords)
+        self.lightenDarken()
 
 
         # changes the being's sprite to one facing the corresponding
@@ -1324,6 +1612,43 @@ class Being():
 
 
 
+class ShopKeeper(Being):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
+        Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
+        self.gibSpriteList = [Sprite(path + r"RobotSprites/shopKeeperGib1.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites/shopKeeperGib2.gif", self.coords.x, self.coords.y)
+                              ]
+
+
+
+
+
+
+
+
+    def giblets(self):
+        animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
+        animatedGib.animate()
+
+
+
+    def dead(self):
+        #play animation
+        #delete coordinate data from grid
+        self.giblets()
+        self.dropLoot();
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        beingList.remove(self)
+        del self
+
+
+
+
+
+
+
 
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
@@ -1344,7 +1669,14 @@ class Enemy(Being):
         self.species = species 
         for val in range(0, level):
             self.levelUp()
+        self.gibSpriteList = [Sprite(path + r"RobotSprites\enemyArmGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyLegGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyLegGib2.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyBodyGib.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites\enemyHeadGib.gif", self.coords.x, self.coords.y),
+                              ]
         self.hostile = true
+        
 
 
 
@@ -1355,12 +1687,26 @@ class Enemy(Being):
 
     def dropLoot(self):
         items = []
-        items.append(self.randomInvItem)
+        items.append(self.randomInvItem())
         loot = Lootbag(items, self.coords)
         objectList.append(loot)
 
 
 
+
+
+    def gibSpawn(self, gibSprite, x, y):
+        gibList.append(gibSprite)
+        display.add(gibSprite, x, y)
+
+
+
+    def giblets(self):
+        gibIndex = 0
+        for i in range(0, random.randint(0, len(self.gibSpriteList))):
+            self.gibSpawn(self.gibSpriteList[gibIndex], random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
+            print(gibIndex)
+            gibIndex += 1
 
 
 
@@ -1369,6 +1715,7 @@ class Enemy(Being):
     def dead(self):
         #play animation
         #delete coordinate data from grid
+        self.giblets()
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
@@ -1411,12 +1758,119 @@ class Armor():
 
 
 
+# used for sprite animation, flickering between two sprites at random
+# used for twitching/sparking/flames
+
+
+class AnimatedGiblets():
+    def __init__(self, filename1, filename2, x, y):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, x, y),
+                           Sprite(filename2, x, y)]
+        self.sprite = self.spriteList[0]
+        gibList.append(self.spriteList[0])
+        gibList.append(self.spriteList[1])
+        self.coords = Coords(x, y)
+
+
+
+
+        #activates animation
+
+    def animate(self):
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
 
 
 
 
 
+
+        # sprite addition and removal to and from display
+
+    def spawnSprite(self):
+        display.addOrder(self.sprite, 3, self.coords.x, self.coords.y)
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+    def threadAnimate(self, container):
+        while self.spriteList[0] in gibList or self.spriteList[1] in gibList:
+            time.sleep(random.randint(0, 2)/10.0)
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+        if self not in animatedSpriteList:
+            self.removeSprite()
+            del self
                      
+            
+
+
+
+
+
+
+
+
+
+
+
+# used for sprite animation, flickering between two sprites at random
+# used for twitching/sparking/flames
+
+
+class StationaryAnimatedSprite():
+    def __init__(self, filename1, filename2, x, y, layer = 1):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, x, y),
+                           Sprite(filename2, x, y)]
+        self.sprite = self.spriteList[0]
+        animatedSpriteList.append(self.spriteList[0])
+        animatedSpriteList.append(self.spriteList[1])
+        self.coords = Coords(x, y)
+        self.layer = layer
+
+
+
+
+    def animate(self):
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
+
+    def spawnSprite(self):
+        display.addOrder(self.sprite, self.layer, self.coords.x, self.coords.y)
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+    def threadAnimate(self, container):
+        while self.spriteList[0] in animatedSpriteList or self.spriteList[1] in animatedSpriteList:
+            time.sleep(random.randint(0, 2)/10.0)
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+        if self not in animatedSpriteList:
+            self.removeSprite()
+            del self
+
+
+
+
+
+
+
+
+
+
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
@@ -1439,33 +1893,15 @@ class User(Being):
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
-        self.wallet = 0
+
         self.sprite.spawnSprite(self.coords.x, self.coords.y)
 
 
 
 
 
-
-        # Updates wallet by amount
-
-    def changeWallet(amount):
-        wallet += amount
-        if wallet <= 0:
-            wallet == 0
-            
-
-
-
-
-            
-        # Adds item to inventory list
-
-    def inventoryAdd(self, item):
-        inv.append(item)
-
-
-
+    def giblets():
+        None
 
 
                # EQUIPMENT CLUSTER
@@ -1581,6 +2017,7 @@ class User(Being):
         delayRemoveObject(speech, 2)
 
     def dead(self):
+        self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
         self.__init__("bot1", "Stick", userSpritePaths, 32, 32)
@@ -1632,6 +2069,8 @@ home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "ssssssssssssssssssssssssssssssssssssssss"
 #initailize background image
 backWidth = bits * widthTiles
@@ -1641,36 +2080,57 @@ baseMap = Map(home)
 #updateBackground(home)
 
 
-display = gui.Display("Robot Saga", backWidth, backHeight)
-#loadIntro()
-text = gui.TextField("", 1)
-text.onKeyType(keyAction)
-display.add(text)
-#create background (probably prerender home background later)
-userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
-               path + "RobotSprites/botBlueFront.gif",
-               path + "RobotSprites/botBlueSideLeft.gif",
-               path + "RobotSprites/botBlueSideRight.gif",
-               path + "RobotSprites/botBlueMovingLeft.gif",
-               path + "RobotSprites/botBlueMovingRight.gif",]
-blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
-               path + "RobotSprites/blueRobotFront.gif",
-               path + "RobotSprites/BlueRobotSideLeft.gif",
-               path + "RobotSprites/BlueRobotSideRight.gif",
-               path + "RobotSprites/BlueRobotMovingLeft.gif",
-               path + "RobotSprites/BlueRobotMovingRight.gif",]
-shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif"]
 
-display.drawImage(path + "newBack.png", 0, 0)
+display = gui.Display("Robot Saga", backWidth, backHeight)
+
+# DO NOT REMOVE LAYERS, needed for layer positioning of sprites
+# Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
+layer0 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer1 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer2 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer3 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer4 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+display.add(layer0)
+display.add(layer1)
+display.add(layer2)
+display.add(layer3)
+display.add(layer4)
+
+
+
+#create background (probably prerender home background later)
+bg = Sprite(path + "newBack.png", 0, 0)
+display.addOrder(bg, 4)
+
+#loadIntro()  - Intro credits for production build. see loadIntro() definition for details
+
+
+
+# Currently acts as the "controller" to read inputs
+text = gui.TextField("", 1) 
+
+# text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
+# setting "function" to a different function will alter controls. Make sure to pass a function
+# that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
+# so for example:
+# 
+# def randomFunction(key) 
+#   if key == "h":
+#       doSomething
+# 
+# text.onKeyType(randomFunction) 
+#
+# would activate doSomething if "h" was pressed.
+text.onKeyType(keyAction) 
+
+
+display.add(text)
+
+#display.drawImage(path + "newBack.png", 0, 0)
+
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
-bot2 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-bot3 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-bot4 = Enemy("Enemy", "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, "orc", 1)
-shopKeeper = Being("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-bot2.sprite.spawnSprite(bot2.coords.x, bot2.coords.y)
-bot3.sprite.spawnSprite(bot3.coords.x, bot3.coords.y)
-bot4.sprite.spawnSprite(bot4.coords.x, bot4.coords.y)
+shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
+light = LightSource(lightpostSpritePaths, 256, 256)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
