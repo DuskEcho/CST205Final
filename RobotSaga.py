@@ -38,23 +38,6 @@ heightTiles = 24
 shopKeeperX = 5*bits
 shopKeeperY = 2*bits
 
-userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
-               path + "RobotSprites/botBlueFront.gif",
-               path + "RobotSprites/botBlueSideLeft.gif",
-               path + "RobotSprites/botBlueSideRight.gif",
-               path + "RobotSprites/botBlueMovingLeft.gif",
-               path + "RobotSprites/botBlueMovingRight.gif",]
-blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
-               path + "RobotSprites/blueRobotFront.gif",
-               path + "RobotSprites/BlueRobotSideLeft.gif",
-               path + "RobotSprites/BlueRobotSideRight.gif",
-               path + "RobotSprites/BlueRobotMovingLeft.gif",
-               path + "RobotSprites/BlueRobotMovingRight.gif",]
-shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif"]
-lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
-                        path + "ObjectSprites/lampOn.gif",
-                        path + "ObjectSprites/lampBright.gif"]
 
 
 #beings
@@ -83,6 +66,23 @@ else: printNow("Welcome Back") #welcome the player back to the game
 # Dictionaries for items
 # Numbers correspond to stats
 # arrays in form [attack/def, spritePaths]
+userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
+               path + "RobotSprites/botBlueFront.gif",
+               path + "RobotSprites/botBlueSideLeft.gif",
+               path + "RobotSprites/botBlueSideRight.gif",
+               path + "RobotSprites/botBlueMovingLeft.gif",
+               path + "RobotSprites/botBlueMovingRight.gif",]
+blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
+               path + "RobotSprites/blueRobotFront.gif",
+               path + "RobotSprites/BlueRobotSideLeft.gif",
+               path + "RobotSprites/BlueRobotSideRight.gif",
+               path + "RobotSprites/BlueRobotMovingLeft.gif",
+               path + "RobotSprites/BlueRobotMovingRight.gif",]
+shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif"]
+lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
+                        path + "ObjectSprites/lampOn.gif",
+                        path + "ObjectSprites/lampBright.gif"]
 
 weaponStatsList = {    
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
@@ -683,6 +683,7 @@ class Sprite(gui.Icon):
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
 
+      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -1601,8 +1602,8 @@ class Being():
 class ShopKeeper(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
-        self.gibSpriteList = [Sprite(path + r"RobotSprites\shopKeeperGib1.gif", self.coords.x, self.coords.y),
-                              Sprite(path + r"RobotSprites\shopKeeperGib2.gif", self.coords.x, self.coords.y)
+        self.gibSpriteList = [Sprite(path + r"RobotSprites/shopKeeperGib1.gif", self.coords.x, self.coords.y),
+                              Sprite(path + r"RobotSprites/shopKeeperGib2.gif", self.coords.x, self.coords.y)
                               ]
 
 
@@ -1613,7 +1614,7 @@ class ShopKeeper(Being):
 
 
     def giblets(self):
-        animatedGib = AnimatedGiblets(path + r"RobotSprites\shopKeeperGib1.gif", path + r"RobotSprites\shopKeeperGib2.gif", random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
+        animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
         animatedGib.animate()
 
 
