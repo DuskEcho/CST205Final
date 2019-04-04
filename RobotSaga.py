@@ -640,7 +640,7 @@ class Lootbag():
 
 
     def spawnSprite(self):
-        display.add(self.sprite, self.coords.x, self.coords.y)
+        display.addOrder(self.sprite, 1, self.coords.x, self.coords.y)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -675,7 +675,7 @@ class Lootbag():
 
 class Sprite(gui.Icon):
 
-  def __init__(self, filename, x, y):
+  def __init__(self, filename, x, y, layer = 2):
       gui.JPanel.__init__(self)
       gui.Widget.__init__(self)
       filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM- LEGACY, NOT SURE OF NECESSITY
@@ -684,6 +684,7 @@ class Sprite(gui.Icon):
       self.position = (0,0)              # assume placement at a Display's origin- LEGACY, NOT SURE OF NECESSITY
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
+      self.layer = layer
 
       #printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
@@ -705,19 +706,21 @@ class Sprite(gui.Icon):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self):
-        display.addOrder(self, 1, self.coords.x, self.coords.y)
+        display.addOrder(self, self.layer, self.coords.x, self.coords.y)
  
       # adds the sprite to the display in the foreground (closest to the user)
 
   def spawnSpriteFront(self):
-      display.addOrder(self, 0, self.coords.x, self.coords.y)
+      self.layer = 1
+      self.spawnSprite()
 
       
       # adds the sprite to the display in the background (closest to the map, just in front of it)
       # order number of 3 spawns behind the background
 
   def spawnSpriteBack(self):
-      display.addOrder(self, 2, self.coords.x, self.coords.y)
+      self.layer = 3
+      self.spawnSprite()
 
       # removes the sprite from the display
         
@@ -739,7 +742,7 @@ class Sprite(gui.Icon):
   # ownership to sub-sprites (e.g., weapon)
 
 class BeingSprite(Sprite):
-  def __init__(self, filename, x, y):
+  def __init__(self, filename, x, y, layer = 2):
       gui.JPanel.__init__(self)
       gui.Widget.__init__(self)
       filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM - LEGACY, UNUSED FOR NOW
@@ -750,6 +753,7 @@ class BeingSprite(Sprite):
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
       self.icon = gui.ImageIO.read(File(filename))
       self.coords = Coords(x, y)
+      self.layer = layer
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
 
@@ -767,7 +771,7 @@ class BeingSprite(Sprite):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self, x, y):
-        display.add(self, x, y)
+        display.addOrder(self, self.layer, x, y)
 
 
 
@@ -1785,7 +1789,7 @@ class AnimatedGiblets():
         # sprite addition and removal to and from display
 
     def spawnSprite(self):
-        display.add(self.sprite, self.coords.x, self.coords.y)
+        display.addOrder(self.sprite, 3, self.coords.x, self.coords.y)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -1821,7 +1825,7 @@ class AnimatedGiblets():
 
 
 class StationaryAnimatedSprite():
-    def __init__(self, filename1, filename2, x, y):
+    def __init__(self, filename1, filename2, x, y, layer = 1):
         self.coords = Coords(x, y)
         self.spriteList = [Sprite(filename1, x, y),
                            Sprite(filename2, x, y)]
@@ -1829,6 +1833,7 @@ class StationaryAnimatedSprite():
         animatedSpriteList.append(self.spriteList[0])
         animatedSpriteList.append(self.spriteList[1])
         self.coords = Coords(x, y)
+        self.layer = layer
 
 
 
@@ -1838,7 +1843,7 @@ class StationaryAnimatedSprite():
         thread.start_new_thread(self.threadAnimate, (x,))
 
     def spawnSprite(self):
-        display.add(self.sprite, self.coords.x, self.coords.y)
+        display.addOrder(self.sprite, self.layer, self.coords.x, self.coords.y)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -2075,14 +2080,53 @@ baseMap = Map(home)
 #updateBackground(home)
 
 
-display = gui.Display("Robot Saga", backWidth, backHeight)
-#loadIntro()
-text = gui.TextField("", 1)
-text.onKeyType(keyAction)
-display.add(text)
-#create background (probably prerender home background later)
 
-display.drawImage(path + "newBack.png", 0, 0)
+display = gui.Display("Robot Saga", backWidth, backHeight)
+
+# DO NOT REMOVE LAYERS, needed for layer positioning of sprites
+# Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
+layer0 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer1 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer2 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer3 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer4 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+display.add(layer0)
+display.add(layer1)
+display.add(layer2)
+display.add(layer3)
+display.add(layer4)
+
+
+
+#create background (probably prerender home background later)
+bg = Sprite(path + "newBack.png", 0, 0)
+display.addOrder(bg, 4)
+
+#loadIntro()  - Intro credits for production build. see loadIntro() definition for details
+
+
+
+# Currently acts as the "controller" to read inputs
+text = gui.TextField("", 1) 
+
+# text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
+# setting "function" to a different function will alter controls. Make sure to pass a function
+# that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
+# so for example:
+# 
+# def randomFunction(key) 
+#   if key == "h":
+#       doSomething
+# 
+# text.onKeyType(randomFunction) 
+#
+# would activate doSomething if "h" was pressed.
+text.onKeyType(keyAction) 
+
+
+display.add(text)
+
+#display.drawImage(path + "newBack.png", 0, 0)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
