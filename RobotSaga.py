@@ -39,6 +39,12 @@ shopKeeperX = 5*bits
 shopKeeperY = 2*bits
 
 
+class TurnCounter():
+    def __init__(self):
+        self.turn = 0
+
+
+counter = TurnCounter()
 
 #beings
 beingList = []
@@ -48,6 +54,9 @@ objectList = []
 gibList = []
 animatedSpriteList = []
 lightSources = []
+
+
+
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
         #add select game folder (to allow more portable loading of assets to path)
@@ -171,13 +180,6 @@ def deleteFilesWithString(folderPath, targetString):
 
 
 
-
-class TurnCounter():
-    def __init__(self):
-        self.turn = 0
-
-
-counter = TurnCounter()
 # All actions that depend on the turn counter go here
 
 def turnPass():
@@ -683,7 +685,7 @@ class Sprite(gui.Icon):
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
 
-      printNow(filename)
+      #printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -703,12 +705,19 @@ class Sprite(gui.Icon):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self):
-        display.add(self, self.coords.x, self.coords.y)
+        display.addOrder(self, 1, self.coords.x, self.coords.y)
  
+      # adds the sprite to the display in the foreground (closest to the user)
 
+  def spawnSpriteFront(self):
+      display.addOrder(self, 0, self.coords.x, self.coords.y)
 
+      
+      # adds the sprite to the display in the background (closest to the map, just in front of it)
+      # order number of 3 spawns behind the background
 
-
+  def spawnSpriteBack(self):
+      display.addOrder(self, 2, self.coords.x, self.coords.y)
 
       # removes the sprite from the display
         
@@ -739,8 +748,8 @@ class BeingSprite(Sprite):
       self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
-      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
+      self.coords = Coords(x, y)
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
 
@@ -2072,6 +2081,7 @@ text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 display.add(text)
 #create background (probably prerender home background later)
+
 display.drawImage(path + "newBack.png", 0, 0)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
