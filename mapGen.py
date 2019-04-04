@@ -3,7 +3,7 @@ bits = 32
 #how many tiles there are wide
 widthTiles = 40
 #how many tiles there are tall
-heightTiles = 22
+heightTiles = 24
 
 try:
            path #test to see if path exists
@@ -104,7 +104,7 @@ class Map():
 
 
 textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
-#explore(textureMap)
+explore(textureMap)
 
 #get width and height
 texWidth = getWidth(textureMap)
@@ -127,6 +127,8 @@ home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"

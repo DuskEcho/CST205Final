@@ -33,7 +33,7 @@ bits = 32
 #how many tiles there are wide
 widthTiles = 40
 #how many tiles there are tall
-heightTiles = 22
+heightTiles = 24
 
 shopKeeperX = 5*bits
 shopKeeperY = 2*bits
@@ -2026,6 +2026,8 @@ home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
 home += "gggggggggggggggggggggggggggggggggggggggg"
+home += "sggggggggggggggggggggggggggggggggggggggs"
+home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
 home += "sggggggggggggggggggggggggggggggggggggggs"
