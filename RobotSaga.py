@@ -145,6 +145,8 @@ directionList = {
     "movingRight":5
     }
 
+mapNameList = ["town", "dungeon", "path"]
+
 
 
 
@@ -214,6 +216,8 @@ def turnPass():
         bot1.coords.y = 0
         bot1.sprite.spawnSprite(bot1.coords.x, bot1.coords.y)
     clearBadSprites()
+    #if coords offscreen, load next screen, clear gore, delete old beings? leave their logic? but then they will move around/spawn.
+    #maybe split being list into active and passive? 
 
     #total action counter to affect shop/store stock
     
