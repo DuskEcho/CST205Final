@@ -104,7 +104,10 @@ weaponStatsList = {
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
                   path + "WeaponSprites/Stick/stickDown.gif",
                   path + "WeaponSprites/Stick/stickLeft.gif",
-                  path + "WeaponSprites/Stick/stickRight.gif"], true],
+                  path + "WeaponSprites/Stick/stickRight.gif"], true, [path + "WeaponSprites/Stick/stickFireUp.gif",
+                  path + "WeaponSprites/Stick/stickFireDown.gif",
+                  path + "WeaponSprites/Stick/stickFireLeft.gif",
+                  path + "WeaponSprites/Stick/stickFireRight.gif"]],
    "Rock": [2, "spritePath"]
    }
 helmStatsList = {
@@ -841,7 +844,9 @@ class Weapon():
     def __init__(self, weapName):
         self.name = weapName
         if self.name != None:
-          self.sprites = weaponStatsList[self.name][1]
+          self.originalSprites = weaponStatsList[self.name][1]
+          self.sprites = self.originalSprites
+          self.burningSprites = weaponStatsList[self.name][3]
           self.sprite = Sprite(self.sprites[3], 0, 0)
           self.power = weaponStatsList[self.name][0]
           self.isBurnable = weaponStatsList[self.name][2]
@@ -851,7 +856,8 @@ class Weapon():
     def burn(self):
         x = None
         self.onFire = true
-        thread.start_new_thread(threadFireCountdown, (x, ))
+        self.sprites = self.burningSprites
+        thread.start_new_thread(self.threadFireCountdown, (x, ))
 
     def threadFireCountdown(self, x):
         start = counter.turn
@@ -859,6 +865,7 @@ class Weapon():
         while counter.turn < finish:
             None
         self.onFire = false
+        self.sprites = self.originalSprites
     
 
 
@@ -1370,9 +1377,10 @@ class Being():
         thread.start_new_thread(threadRemoveSprite, (.2, self.weapon.sprite))
         self.weapon.displayed = false
         for target in self.getFrontTargetList():
-            if target.isBurnable and target.isOn and self.weapon.isBurnable:
+            if isinstance(target, LightSource):
+              if target.isBurnable and target.isOn and self.weapon.isBurnable:
                 self.weapon.burn()
-            elif target.isBurnable and not target.isOn and self.weapon.onFire:
+              elif target.isBurnable and not target.isOn and self.weapon.onFire:
                 target.turnOn()
             else:    
               if target != bot1:
