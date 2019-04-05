@@ -1,3 +1,5 @@
+import random
+
 #bits is how many pixels are in each texture
 bits = 32
 #how many tiles there are wide
@@ -25,10 +27,10 @@ rightDownLeft = right | down | left | downAndLeft | downAndRight
 allRound = up | down | left | right | downAndLeft | downAndRight | upAndRight | upAndLeft
 
 try:
-           path #test to see if path exists
+    path #test to see if path exists
 except NameError: #if path does not exist make new path
-           printNow("Please select your game install folder")
-           path = pickAFolder()
+    printNow("Please select your game install folder")
+    path = pickAFolder()
 else: printNow("Welcome Back") #welcome the player back to the game
 
 class Coords():
@@ -49,6 +51,9 @@ class Tile():
         #ai gets 2 turns if player is on this tile
         self.isTough = isTough
         self.beings = {} #array of beings in that tile
+
+    def getBase(self, it):
+        return self.tileArr[it]
 
     def getImg(self, around):
         # 1110 1111
@@ -120,12 +125,26 @@ def getTexture(spot, texMap):
 
 
 class Map():
-    def __init__(self, tileMap):
+    def __init__(self, tileMap, baseTile):
         self.tileMap = {} #change to make map
         #beings will probably be a dictionary with coords as the key and value is the being at the spot
         self.beings = {} #master holder for all of the beings
         self.map = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
+        self.baseTile = baseTile
+        self.fillBack(self.baseTile)
         self.updateBackground(tileMap, self.map)
+
+
+    def fillBack(self, tex):
+        baseSpots = [5,11,17,9]
+        for startx in range(0, widthTiles):
+            for starty in range(0, heightTiles):
+                num = random.randint(0,3)
+                printNow(num)
+                img = tex.getBase(baseSpots[num])
+                for x in range(0, bits):
+                    for y in range(0, bits):
+                        setColor(getPixel(self.map, x + startx * bits, y + starty * bits), getColor(getPixel(img, x, y)))
 
 
     def placeTex(self, tex, spot, around):
@@ -137,6 +156,7 @@ class Map():
         img = tex.getImg(around)
         for x in range(0, bits):
             for y in range(0, bits):
+                if getColor(getPixel(img, x, y)) == white: continue
                 setColor(getPixel(self.map, startx + x, starty + y), getColor(getPixel(img, x, y)))
 
     def updateBackground(self, tiles, back):
@@ -155,7 +175,9 @@ class Map():
                     around = around | d[2] #bitwise or direction with around
                     #printNow(around)
                     #d[2] = true
-            if   tiles[spot] == "g": self.placeTex(grass, spot, around)
+            if   tiles[spot] == "g":
+                continue
+                self.placeTex(grass, spot, around)
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
             elif tiles[spot] == "h": self.placeTex(houseWall, spot, around)
@@ -237,4 +259,4 @@ home += "gggggggggggggggggggggggggggggggg"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
-baseMap = Map(home)
+baseMap = Map(home, grass)
