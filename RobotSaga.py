@@ -72,9 +72,6 @@ else: printNow("Welcome Back") #welcome the player back to the game
 
 
 
-# Dictionaries for items
-# Numbers correspond to stats
-# arrays in form [attack/def, spritePaths]
 userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
                path + "RobotSprites/botBlueFront.gif",
                path + "RobotSprites/botBlueSideLeft.gif",
@@ -100,7 +97,9 @@ bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
                         path + "ObjectSprites/metalBigTorchOn1.gif",
                         path + "ObjectSprites/metalBigTorchOn2.gif"]
 
-
+# Dictionaries for items
+# Numbers correspond to stats
+# arrays in form [attack/def, spritePaths, isBurnable (for weapons only)]
 weaponStatsList = {    
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
                   path + "WeaponSprites/Stick/stickDown.gif",
@@ -178,13 +177,6 @@ def showLabel(label):
     display.add(label, 1280*(2/5), 0)
 
 
-# Deletes all files in folderpath whose name contains targetString
-
-def deleteFilesWithString(folderPath, targetString):
-        for file in os.listdir(folderPath):
-            print(folderPath)
-            if targetString in file:
-                os.remove(file)
 
 
 
@@ -209,20 +201,21 @@ def turnPass():
 
 
 
+    # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
+    # parameters:
+    # object        - object to be moved (must have a sprite)
+    # targetXBig    - x coord target (must be greater than object.coords.x)
 
-def slideRight(object, targetXBig, sprite):
+def slideRight(toBeMoved, targetXBig):
     time.sleep(.005)
-    object.coords.x += 1 
-    object.forwardCoords.x += 1
-    display.remove(object.sprite)
-    object.sprite = sprite
-    display.add(object.sprite, object.coords.x, object.coords.y)
-    if object.coords.x < targetXBig:
-        thread.start_new_thread(slideRight, (object, targetXBig, sprite))
+    toBeMoved.coords.x += 1 
+    toBeMoved.forwardCoords.x += 1
+    display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.x < targetXBig:
+        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
 
 
 
-        self, name, weapName, spritePaths, xSpawn, ySpawn, species, level
 
 
 
@@ -561,7 +554,7 @@ class Map():
 
 
 
-
+# class for placeable objects (torches, trees, blocks, tc.)
 
 class Doodad():
     def __init__(self, filepaths, x, y, layer = 2):
@@ -577,6 +570,8 @@ class Doodad():
         objectList.append(self)
 
 
+# special animated doodad that emits light within 3 tiles. if is burnable, attacking
+# with an onFire weapon will turnOn the light source
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 2):
@@ -853,10 +848,12 @@ class Weapon():
           self.onFire = false
         self.displayed = false
 
-    def onFire(self):
+    def burn(self):
+        x = None
         self.onFire = true
+        thread.start_new_thread(threadFireCountdown, (x, ))
 
-    def threadFireCountdown(self):
+    def threadFireCountdown(self, x):
         start = counter.turn
         finish = start + 15
         while counter.turn < finish:
@@ -1373,17 +1370,21 @@ class Being():
         thread.start_new_thread(threadRemoveSprite, (.2, self.weapon.sprite))
         self.weapon.displayed = false
         for target in self.getFrontTargetList():
-            if target != bot1:
-                target.hostile = true
-            damage = self.atk
-            if damage <= 0:
-                damage = 1
-            target.changeHp(damage*(-1))
-            target.displayDamage()
-            if target.hp <= 0:
-                self.changeXp(target.xpValue)
             if target.isBurnable and target.isOn and self.weapon.isBurnable:
-                self.weapon.onFire()
+                self.weapon.burn()
+            elif target.isBurnable and not target.isOn and self.weapon.onFire:
+                target.turnOn()
+            else:    
+              if target != bot1:
+                target.hostile = true
+                damage = self.atk
+              if damage <= 0:
+                damage = 1
+              target.changeHp(damage*(-1))
+              target.displayDamage()
+              if target.hp <= 0:
+                self.changeXp(target.xpValue)
+
                     
             
 
