@@ -53,22 +53,30 @@ class Tile():
     def getImg(self, around):
         # 1110 1111
         #&0001 0000
-        #printNow(not around & upAndRight)
+        printNow(not around & upAndRight)
         if not around ^ allRound: return self.tileArr[9]
-        elif around & upRightDown: return self.tileArr[3]
-        elif around & upLeftDown: return self.tileArr[15]
-        elif around & rightUpLeft: return self.tileArr[10]
-        elif around & rightDownLeft: return self.tileArr[8]
-        elif around & upDownLeftRight: return self.tileArr[9]
-        elif around & upDownLeftRight: return self.tileArr[9]
-        elif not around ^ downRight: return self.tileArr[2]
-        elif not around ^ downLeft: return self.tileArr[14]
-        elif not around ^ upRight: return self.tileArr[4]
-        elif not around ^ upLeft: return self.tileArr[16]
-        elif not around & upAndRight: return self.tileArr[7]
-        elif not around & upAndLeft: return self.tileArr[13]
-        elif not around & downAndRight: return self.tileArr[6]
-        elif not around & downAndLeft: return self.tileArr[12]
+        if not around ^ upAndRight: return self.tileArr[7]
+        if not around ^ upAndLeft: return self.tileArr[13]
+        if not around ^ downAndRight: return self.tileArr[6]
+        if not around ^ downAndLeft: return self.tileArr[12]
+        if around & up:
+            if around & right:
+                if around & down: return self.tileArr[3]
+                if around & left: return self.tileArr[10]
+                return self.tileArr[4]
+            if around & left:
+                #if around & right: return self.tileArr[10] #redundent
+                if around & down: return self.tileArr[15]
+                return self.tileArr[16]
+        if around & down:
+            if around & right:
+                #if around & up: return self.tileArr[3]
+                if around & left: return self.tileArr[8]
+                return self.tileArr[2]
+            if around & left:
+                #if around & right: return self.tileArr[8] #redundent
+                #if around & up: return self.tileArr[15]
+                return self.tileArr[14]
         return self.tileArr[1]
 
     def getTraversable(self):
