@@ -695,7 +695,7 @@ class Sprite(gui.Icon):
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
       self.layer = layer
 
-      #printNow(filename)
+      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -2095,11 +2095,11 @@ display = gui.Display("Robot Saga", backWidth, backHeight)
 
 # DO NOT REMOVE LAYERS, needed for layer positioning of sprites
 # Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
-layer0 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer1 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer2 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer3 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer4 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer0 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer1 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer2 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer3 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer4 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 display.add(layer0)
 display.add(layer1)
 display.add(layer2)
