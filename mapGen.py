@@ -53,15 +53,17 @@ class Tile():
     def getImg(self, around):
         # 1110 1111
         #&0001 0000
-        printNow(not around & upAndRight)
-        if not around ^ allRound: return self.tileArr[9]
-        if not around ^ upAndRight: return self.tileArr[7]
-        if not around ^ upAndLeft: return self.tileArr[13]
-        if not around ^ downAndRight: return self.tileArr[6]
-        if not around ^ downAndLeft: return self.tileArr[12]
+        #printNow(not around & upAndRight)
+        if not around ^ allRound: return self.tileArr[17]
         if around & up:
             if around & right:
-                if around & down: return self.tileArr[3]
+                if around & down:
+                    if around & left:
+                        if not around & upAndRight: return self.tileArr[7]
+                        if not around & upAndLeft: return self.tileArr[13]
+                        if not around & downAndRight: return self.tileArr[6]
+                        if not around & downAndLeft: return self.tileArr[12]
+                    return self.tileArr[3]
                 if around & left: return self.tileArr[10]
                 return self.tileArr[4]
             if around & left:
@@ -131,7 +133,7 @@ class Map():
         starty = ((spot * bits) / backWidth) * bits
         #printNow(spot)
         self.tileMap.update({spot: tex})
-        printNow(around)
+        #printNow(around)
         img = tex.getImg(around)
         for x in range(0, bits):
             for y in range(0, bits):
@@ -168,10 +170,10 @@ class Map():
 
 
     def isTraversable(self, spot):
-        printNow(spot)
+        #printNow(spot)
         if spot < 0 or spot > len(self.tileMap) - 1: return false
-        printNow(self.tileMap[spot].getTraversable())
-        printNow(self.tileMap[spot].getDesc())
+        #printNow(self.tileMap[spot].getTraversable())
+        #printNow(self.tileMap[spot].getDesc())
         return self.tileMap[spot].getTraversable()
 
 
@@ -190,7 +192,7 @@ def tileMapToArr(tileMap):
                     setColor(getPixel(tile, x, y), getColor(getPixel(tileMap, x + startx * bits, y + starty * bits)))
             #explore(tile)
             tileArr.append(tile)
-    printNow(len(tileArr))
+    #printNow(len(tileArr))
     return tileArr
 
 
