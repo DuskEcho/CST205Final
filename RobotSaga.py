@@ -646,6 +646,11 @@ class LightSource(Doodad):
             self.isOn = true            
             self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
+            for being in beingList:
+                distanceX = abs(being.coords.x - light.coords.x)
+                distanceY = abs(being.coords.y - light.coords.y)
+                if distanceX <= bits*3 and distanceY <= range:
+                    being.lightenDarken()
             #self.sprite.removeSprite()
     def turnOff(self):
         if self.isOn == true:
@@ -654,9 +659,13 @@ class LightSource(Doodad):
             animatedSpriteList.remove(self.animatedSprite.spriteList[1])
             self.sprite.removeSprite()
             self.sprite.spawnSprite()
+            for being in beingList:
+                distanceX = abs(being.coords.x - light.coords.x)
+                distanceY = abs(being.coords.y - light.coords.y)
+                if distanceX <= bits*3 and distanceY <= range:
+                    being.lightenDarken()
 
     
-
 
 
 
@@ -1002,7 +1011,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[1], xSpawn, ySpawn)
         self.weapon = Weapon(weapName)
         self.wallet = 0
-        self.facing = directionList["right"]
+        self.facing = directionList["down"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
                              "Yes?",
