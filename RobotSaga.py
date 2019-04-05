@@ -249,6 +249,9 @@ def slideRight(toBeMoved, targetXBig):
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
 def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+    while not isTraversable(x, y):
+        x = random.randint(0, 10)*32
+        y =  random.randint(0, 10)*32
     enemy = Enemy(name, weap, spritePaths, x, y, species, level)
     enemy.sprite.spawnSprite(enemy.coords.x, enemy.coords.y)
     
@@ -345,7 +348,7 @@ def coordToTile(coord):
 
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
-    coord = coordToTile(Coords(x,y))
+    coord = spotToCoord(Coords(x,y))
     return currentMap.isTraversable(tileCoordToSpot(coord))
 
 
@@ -1777,9 +1780,12 @@ class Enemy(Being):
     def giblets(self):
         gibIndex = 0
         for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            self.gibSpawn(self.gibSpriteList[gibIndex], random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
-            print(gibIndex)
-            gibIndex += 1
+            x = random.randint(self.coords.x - bits, self.coords.x + bits)
+            y = random.randint(self.coords.y - bits, self.coords.y + bits)
+            if isTraversable(x, y):
+                self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
+                print(gibIndex)
+                gibIndex += 1
 
 
 
