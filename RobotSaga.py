@@ -92,6 +92,14 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
 lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
                         path + "ObjectSprites/lampOn.gif",
                         path + "ObjectSprites/lampBright.gif"]
+torchSpritePaths = [path + "ObjectSprites/metalTorchOff.gif",
+                        path + "ObjectSprites/metalTorchOn1.gif.gif",
+                        path + "ObjectSprites/metalTorchOn2.gif.gif"]
+
+bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
+                        path + "ObjectSprites/metalBigTorchOn1.gif",
+                        path + "ObjectSprites/metalBigTorchOn2.gif"]
+
 
 weaponStatsList = {    
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
@@ -556,24 +564,26 @@ class Map():
 
 
 class Doodad():
-    def __init__(self, filepaths, x, y):
+    def __init__(self, filepaths, x, y, layer = 2):
         self.destructible = false
         self.sprites = filepaths
         self.coords = Coords(x, y)
+        self.layer = layer
         self.spriteList = filepaths
-        self.sprite = Sprite(filepaths[0], x, y)
+        self.sprite = Sprite(filepaths[0], x, y, layer)
         self.sprite.spawnSprite()
         self.isAnimating = false
-        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y)
+        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
         objectList.append(self)
 
 
 
 class LightSource(Doodad):
-    def __init__(self, filepaths, x, y):
-        Doodad.__init__(self, filepaths, x, y)
+    def __init__(self, filepaths, x, y, burnable = false, layer = 2):
+        Doodad.__init__(self, filepaths, x, y, layer)
         self.isOn = false
         self.type = "light"
+        self.isBurnable = burnable
         lightSources.append(self)
 
     def activate(self):
@@ -585,16 +595,15 @@ class LightSource(Doodad):
     def turnOn(self):
         if self.isOn == false:
             self.isOn = true            
-            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y)
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
-            self.sprite.removeSprite()
+            #self.sprite.removeSprite()
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
             animatedSpriteList.remove(self.animatedSprite.spriteList[0])
             animatedSpriteList.remove(self.animatedSprite.spriteList[1])
             self.sprite.removeSprite()
-            self.sprite = Sprite(self.sprites[0], self.coords.x, self.coords.y)
             self.sprite.spawnSprite()
 
     
@@ -1827,13 +1836,13 @@ class AnimatedGiblets():
 class StationaryAnimatedSprite():
     def __init__(self, filename1, filename2, x, y, layer = 1):
         self.coords = Coords(x, y)
-        self.spriteList = [Sprite(filename1, x, y),
-                           Sprite(filename2, x, y)]
+        self.spriteList = [Sprite(filename1, x, y, layer),
+                           Sprite(filename2, x, y, layer)]
         self.sprite = self.spriteList[0]
         animatedSpriteList.append(self.spriteList[0])
         animatedSpriteList.append(self.spriteList[1])
         self.coords = Coords(x, y)
-        self.layer = layer
+        self.sprite.layer = layer
 
 
 
@@ -1843,7 +1852,7 @@ class StationaryAnimatedSprite():
         thread.start_new_thread(self.threadAnimate, (x,))
 
     def spawnSprite(self):
-        display.addOrder(self.sprite, self.layer, self.coords.x, self.coords.y)
+        self.sprite.spawnSprite()
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -1851,6 +1860,7 @@ class StationaryAnimatedSprite():
     def threadAnimate(self, container):
         while self.spriteList[0] in animatedSpriteList or self.spriteList[1] in animatedSpriteList:
             time.sleep(random.randint(0, 2)/10.0)
+            placeHolderSprite = self.spriteList[0]
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
                 self.sprite = self.spriteList[1]
@@ -2130,7 +2140,7 @@ display.add(text)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-light = LightSource(lightpostSpritePaths, 256, 256)
+light = LightSource(bigTorchSpritePaths, 256, 256, 1)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
