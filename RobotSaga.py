@@ -1057,7 +1057,7 @@ class Being():
         self.changeMaxHP(random.randint(0, 8))
         self.changeAtk(random.randint(0, 4))
         self.changeDf(random.randint(0, 4))
-        self.hp = maxHp
+        self.hp = self.maxHp
 
     
 
@@ -1799,7 +1799,7 @@ class Enemy(Being):
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
-        os.remove(files)
+          os.remove(files)
         beingList.remove(self)
         del self
         
