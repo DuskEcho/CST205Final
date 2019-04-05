@@ -343,7 +343,10 @@ def coordToTileCoord(coord):
 def coordToTile(coord):
     return coord.x/bits + (coord.y * widthTiles)/bits
 
-
+#takes pixel coordanates and returns if the tile at that location is
+def isTraversable(x, y):
+    coord = coordToTile(Coords(x,y))
+    return currentMap.isTraversable(tileCoordToSpot(coord))
 
 
 def placeTex(tex, spot, back):
@@ -575,10 +578,6 @@ class Map():
             elif tiles[spot] == "o": self.placeTex(door, spot)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
-            #not in files yet
-            #elif tiles[spot] == "m": placeTex(monster, spot)
-            #elif tiles[spot] == "p": placeTex(player, spot)
-            #elif tiles[spot] == "w": placeTex(wall, spot)
 
     def isTraversable(self, spot):
         printNow(spot)
@@ -2165,6 +2164,7 @@ backWidth = bits * widthTiles
 backHeight = bits * heightTiles
 back = makePicture(path + "newBack.png")
 baseMap = Map(home, back)
+currentMap = baseMap
 
 layer0 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer1 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
