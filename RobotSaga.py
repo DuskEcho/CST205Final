@@ -72,9 +72,6 @@ else: printNow("Welcome Back") #welcome the player back to the game
 
 
 
-# Dictionaries for items
-# Numbers correspond to stats
-# arrays in form [attack/def, spritePaths]
 userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
                path + "RobotSprites/botBlueFront.gif",
                path + "RobotSprites/botBlueSideLeft.gif",
@@ -92,12 +89,22 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
 lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
                         path + "ObjectSprites/lampOn.gif",
                         path + "ObjectSprites/lampBright.gif"]
+torchSpritePaths = [path + "ObjectSprites/metalTorchOff.gif",
+                        path + "ObjectSprites/metalTorchOn1.gif.gif",
+                        path + "ObjectSprites/metalTorchOn2.gif.gif"]
 
+bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
+                        path + "ObjectSprites/metalBigTorchOn1.gif",
+                        path + "ObjectSprites/metalBigTorchOn2.gif"]
+
+# Dictionaries for items
+# Numbers correspond to stats
+# arrays in form [attack/def, spritePaths, isBurnable (for weapons only)]
 weaponStatsList = {    
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
                   path + "WeaponSprites/Stick/stickDown.gif",
                   path + "WeaponSprites/Stick/stickLeft.gif",
-                  path + "WeaponSprites/Stick/stickRight.gif"]],
+                  path + "WeaponSprites/Stick/stickRight.gif"], true],
    "Rock": [2, "spritePath"]
    }
 helmStatsList = {
@@ -170,13 +177,6 @@ def showLabel(label):
     display.add(label, 1280*(2/5), 0)
 
 
-# Deletes all files in folderpath whose name contains targetString
-
-def deleteFilesWithString(folderPath, targetString):
-        for file in os.listdir(folderPath):
-            print(folderPath)
-            if targetString in file:
-                os.remove(file)
 
 
 
@@ -201,20 +201,21 @@ def turnPass():
 
 
 
+    # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
+    # parameters:
+    # object        - object to be moved (must have a sprite)
+    # targetXBig    - x coord target (must be greater than object.coords.x)
 
-def slideRight(object, targetXBig, sprite):
+def slideRight(toBeMoved, targetXBig):
     time.sleep(.005)
-    object.coords.x += 1 
-    object.forwardCoords.x += 1
-    display.remove(object.sprite)
-    object.sprite = sprite
-    display.add(object.sprite, object.coords.x, object.coords.y)
-    if object.coords.x < targetXBig:
-        thread.start_new_thread(slideRight, (object, targetXBig, sprite))
+    toBeMoved.coords.x += 1 
+    toBeMoved.forwardCoords.x += 1
+    display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.x < targetXBig:
+        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
 
 
 
-        self, name, weapName, spritePaths, xSpawn, ySpawn, species, level
 
 
 
@@ -553,27 +554,31 @@ class Map():
 
 
 
-
+# class for placeable objects (torches, trees, blocks, tc.)
 
 class Doodad():
-    def __init__(self, filepaths, x, y):
+    def __init__(self, filepaths, x, y, layer = 2):
         self.destructible = false
         self.sprites = filepaths
         self.coords = Coords(x, y)
+        self.layer = layer
         self.spriteList = filepaths
-        self.sprite = Sprite(filepaths[0], x, y)
+        self.sprite = Sprite(filepaths[0], x, y, layer)
         self.sprite.spawnSprite()
         self.isAnimating = false
-        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y)
+        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
         objectList.append(self)
 
 
+# special animated doodad that emits light within 3 tiles. if is burnable, attacking
+# with an onFire weapon will turnOn the light source
 
 class LightSource(Doodad):
-    def __init__(self, filepaths, x, y):
-        Doodad.__init__(self, filepaths, x, y)
+    def __init__(self, filepaths, x, y, burnable = false, layer = 2):
+        Doodad.__init__(self, filepaths, x, y, layer)
         self.isOn = false
         self.type = "light"
+        self.isBurnable = burnable
         lightSources.append(self)
 
     def activate(self):
@@ -585,16 +590,15 @@ class LightSource(Doodad):
     def turnOn(self):
         if self.isOn == false:
             self.isOn = true            
-            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y)
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
-            self.sprite.removeSprite()
+            #self.sprite.removeSprite()
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
             animatedSpriteList.remove(self.animatedSprite.spriteList[0])
             animatedSpriteList.remove(self.animatedSprite.spriteList[1])
             self.sprite.removeSprite()
-            self.sprite = Sprite(self.sprites[0], self.coords.x, self.coords.y)
             self.sprite.spawnSprite()
 
     
@@ -686,7 +690,7 @@ class Sprite(gui.Icon):
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
       self.layer = layer
 
-      #printNow(filename)
+      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -840,7 +844,21 @@ class Weapon():
           self.sprites = weaponStatsList[self.name][1]
           self.sprite = Sprite(self.sprites[3], 0, 0)
           self.power = weaponStatsList[self.name][0]
+          self.isBurnable = weaponStatsList[self.name][2]
+          self.onFire = false
         self.displayed = false
+
+    def burn(self):
+        x = None
+        self.onFire = true
+        thread.start_new_thread(threadFireCountdown, (x, ))
+
+    def threadFireCountdown(self, x):
+        start = counter.turn
+        finish = start + 15
+        while counter.turn < finish:
+            None
+        self.onFire = false
     
 
 
@@ -1352,15 +1370,21 @@ class Being():
         thread.start_new_thread(threadRemoveSprite, (.2, self.weapon.sprite))
         self.weapon.displayed = false
         for target in self.getFrontTargetList():
-            if target != bot1:
+            if target.isBurnable and target.isOn and self.weapon.isBurnable:
+                self.weapon.burn()
+            elif target.isBurnable and not target.isOn and self.weapon.onFire:
+                target.turnOn()
+            else:    
+              if target != bot1:
                 target.hostile = true
-            damage = self.atk
-            if damage <= 0:
+                damage = self.atk
+              if damage <= 0:
                 damage = 1
-            target.changeHp(damage*(-1))
-            target.displayDamage()
-            if target.hp <= 0:
+              target.changeHp(damage*(-1))
+              target.displayDamage()
+              if target.hp <= 0:
                 self.changeXp(target.xpValue)
+
                     
             
 
@@ -1827,13 +1851,13 @@ class AnimatedGiblets():
 class StationaryAnimatedSprite():
     def __init__(self, filename1, filename2, x, y, layer = 1):
         self.coords = Coords(x, y)
-        self.spriteList = [Sprite(filename1, x, y),
-                           Sprite(filename2, x, y)]
+        self.spriteList = [Sprite(filename1, x, y, layer),
+                           Sprite(filename2, x, y, layer)]
         self.sprite = self.spriteList[0]
         animatedSpriteList.append(self.spriteList[0])
         animatedSpriteList.append(self.spriteList[1])
         self.coords = Coords(x, y)
-        self.layer = layer
+        self.sprite.layer = layer
 
 
 
@@ -1843,7 +1867,7 @@ class StationaryAnimatedSprite():
         thread.start_new_thread(self.threadAnimate, (x,))
 
     def spawnSprite(self):
-        display.addOrder(self.sprite, self.layer, self.coords.x, self.coords.y)
+        self.sprite.spawnSprite()
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -1851,6 +1875,7 @@ class StationaryAnimatedSprite():
     def threadAnimate(self, container):
         while self.spriteList[0] in animatedSpriteList or self.spriteList[1] in animatedSpriteList:
             time.sleep(random.randint(0, 2)/10.0)
+            placeHolderSprite = self.spriteList[0]
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
                 self.sprite = self.spriteList[1]
@@ -2085,11 +2110,11 @@ display = gui.Display("Robot Saga", backWidth, backHeight)
 
 # DO NOT REMOVE LAYERS, needed for layer positioning of sprites
 # Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
-layer0 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer1 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer2 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer3 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
-layer4 = Sprite(path + "EffectSprites\\blankSprite.gif", 0, 0)
+layer0 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer1 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer2 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer3 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
+layer4 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 display.add(layer0)
 display.add(layer1)
 display.add(layer2)
@@ -2130,7 +2155,7 @@ display.add(text)
 
 bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
-light = LightSource(lightpostSpritePaths, 256, 256)
+light = LightSource(bigTorchSpritePaths, 256, 256, 1)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
 
 
