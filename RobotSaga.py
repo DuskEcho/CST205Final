@@ -567,6 +567,7 @@ class Map():
             elif tiles[spot] == "w": self.placeTex(water, spot)
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
+            elif tiles[spot] == "o": self.placeTex(door, spot)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             #not in files yet
@@ -2116,7 +2117,9 @@ grass = Tile(true, true, false, "grass")
 #add Stone
 stone = Tile(true, true, false, "stone")
 #add Water
-water = Tile(false, true, false, "stone")
+water = Tile(false, true, false, "water")
+#add Door tile
+door = Tile(true, false, false, "door")
 #add Blank
 blank = Tile(false, false, false, "Filler for structure class")
 
