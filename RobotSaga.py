@@ -1012,7 +1012,7 @@ class Being():
         self.changeMaxHP(random.randint(0, 8))
         self.changeAtk(random.randint(0, 4))
         self.changeDf(random.randint(0, 4))
-
+        self.changeHp(self.maxHp-self.hp)
 
     
 
@@ -1383,9 +1383,9 @@ class Being():
               elif target.isBurnable and not target.isOn and self.weapon.onFire:
                 target.turnOn()
             else:    
+              damage = self.atk
               if target != bot1:
                 target.hostile = true
-                damage = self.atk
               if damage <= 0:
                 damage = 1
               target.changeHp(damage*(-1))
