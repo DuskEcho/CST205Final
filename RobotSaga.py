@@ -341,12 +341,13 @@ def coordToTileCoord(coord):
 
 #probably bad?
 def coordToTile(coord):
-    return coord.x/bits + (coord.y * widthTiles)/bits
+    return coord.x/bits + (coord.y/bits) * widthTiles
 
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
-    coord = coordToTile(Coords(x,y))
-    return currentMap.isTraversable(tileCoordToSpot(coord))
+    spot = coordToTile(Coords(x,y))
+    printNow(spot)
+    return currentMap.isTraversable(spot)
 
 
 def placeTex(tex, spot, back):
