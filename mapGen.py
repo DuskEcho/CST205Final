@@ -140,7 +140,7 @@ class Map():
         for startx in range(0, widthTiles):
             for starty in range(0, heightTiles):
                 num = random.randint(0,3)
-                printNow(num)
+                #printNow(num)
                 img = tex.getBase(baseSpots[num])
                 for x in range(0, bits):
                     for y in range(0, bits):
@@ -173,13 +173,14 @@ class Map():
                 #if tileCoordToSpot(new) >= len(tiles): continue
                 if tiles[tileCoordToSpot(new)] == tiles[spot]:
                     around = around | d[2] #bitwise or direction with around
-                    #printNow(around)
-                    #d[2] = true
+                elif tiles[spot] in paths and tiles[tileCoordToSpot(new)] in paths:
+                    around = around | d[2] #bitwise or direction with around
             if   tiles[spot] == "g":
                 continue
                 self.placeTex(grass, spot, around)
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
+            elif tiles[spot] == "w": self.placeTex(water, spot, around)
             elif tiles[spot] == "h": self.placeTex(houseWall, spot, around)
             elif tiles[spot] == "r": self.placeTex(houseRoof, spot, around)
             repaint(self.map)
@@ -220,41 +221,48 @@ def tileMapToArr(tileMap):
 
 tilesPath = path + "Tiles/LPC/tiles/"
 textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
+#add Dirt
 dirtMap = makePicture(tilesPath + "dirt.png")
 dirtArr = tileMapToArr(dirtMap)
+dirt = Tile(dirtArr, true, true, false, "dirt")
+#add Grass
 grassMap = makePicture(tilesPath + "grass.png")
 grassArr = tileMapToArr(grassMap)
+grass = Tile(grassArr, true, true, false, "grass")
+#add Stone
 stoneMap = makePicture(tilesPath + "stone.png")
 stoneArr = tileMapToArr(stoneMap)
+stone = Tile(stoneArr, true, true, false, "stone")
+#add Water
+waterMap = makePicture(tilesPath + "water.png")
+waterArr = tileMapToArr(waterMap)
+water = Tile(waterArr, false, true, false, "stone")
 
 #get width and height
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
 #  Tile(imgArr, isTraversable, isPassable, isTough, desc)
-dirt = Tile(dirtArr, false, true, false, "dirt")
-grass = Tile(grassArr, true, true, false, "grass")
-stone = Tile(stoneArr, true, true, false, "stone")
 
-
+paths = ["d", "s", "h", "r"]
 #create emply grass field will clean up later
-home  = "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "ggggggssssggggggggggggggddgggggg"
-home += "ggggggssssgggggggggggggddddggggg"
-home += "ggggggssssgggggggggggggddddggggg"
-home += "ggggggsssggggggggggggggddggggggg"
-home += "gggggssssggggggggggggggggggggggg"
-home += "ggggsssssggggggggggggggggggggggg"
-home += "ggggsssssggggggggggggggggggggggg"
-home += "ggggggssgggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggg"
+home  = "gggggggggggggddddggggggggggggggg"
+home += "gggggggggggggddddggggggggggggggg"
+home += "ggggggssssgggddddgggggggddgggggg"
+home += "ggggggssssgggddddggggggddddggggg"
+home += "ggggggssssgggddddggggggddddggggg"
+home += "ggggggsssggggddddgggggdddddggggg"
+home += "gggggssssddddddddddddddddggggggg"
+home += "ggggsssssddddddddddddddddggggddd"
+home += "ggggsssssggggddddggggggggggddddd"
+home += "ggggggssgggggddddgggggggggddddgg"
+home += "ggggggggggggdddddddddddddddddggg"
+home += "ggggggggggdddddddddddddddddddggg"
+home += "gggggggdddddddwwwwwddggggggggggg"
+home += "ggggggdddddddwwwwwwddggggggggggg"
+home += "ggdddddddwwwwwwwwwdddggggggggggg"
+home += "ggdddddddwwwwwwwddddddddddddddgg"
+home += "ggggggggggggggggddddddddddddddgg"
 home += "gggggggggggggggggggggggggggggggg"
 #initailize background image
 backWidth = bits * widthTiles
