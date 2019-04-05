@@ -1357,6 +1357,8 @@ class Being():
 
     def bloodify(self):
         spriteNum = 0
+        
+        self.bloodySprites = []
         for sprites in range(0, len(self.spritePaths)):
             pic = makePicture(self.spritePaths[sprites])
             for x in range(0, getWidth(pic)-1):
@@ -2101,6 +2103,7 @@ class User(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
+        beingList.remove(self)
         self.__init__("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
 
 
