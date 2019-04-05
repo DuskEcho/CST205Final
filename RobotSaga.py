@@ -851,7 +851,9 @@ class BeingSprite(Sprite):
       #moves sprite to location given
 
   def moveTo(self, x, y):
-    display.add(self, x, y)
+      self.coords.x = x
+      self.coords.y = y
+      display.add(self, x, y)
 
 
 
@@ -996,8 +998,12 @@ class Being():
 
 
 
-         
+        # use this moveTo when moving beings around
 
+    def moveTo(self, x, y):
+        self.sprite.moveTo(x, y)
+        self.coords.x = x
+        self.coords.y = y
 
     def activateTarget(self):
       self.getFrontTarget().activate()
