@@ -169,10 +169,27 @@ def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
 
 
 
+# untested, experimental load-new-area function
 
-
-
+def loadNextArea(backgroundMapWithFilepathInfo, bot1NewX, bot1NewY, newCharSpawnList, objectsToLoadList, animatedItemsToLoadList, otherSpritesToLoadList):
+    loadingScreen()
+    bot1.coords.x = bot1NewX
+    bot1.coords.y = bot1NewY
+    bot1.sprite.spawnSprite()
+    for being in newCharSpawnList:
+        being.spawnSprite(being.coords.x, being.coords.y)
+    for thing in objectsToLoadList:
+        thing.spawnSprite(thing.coords.x, thing.coords.y)
+    for animated in animatedItemsToLoadList:
+        animated.spawnSprite(animated.coords.x, animated.coords.y)
+    for other in otherSpritesToLoadList:
+        other.spawnSprite(other.coords.x, other.coords.y)
+    display.remove(loading)
     
+
+
+
+
 # TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
 # Adds the given gui.Label to the display at the Label's coords (default 0, 0)
 
@@ -366,12 +383,22 @@ def loadIntro():
 
 
 
+def loadingScreen():
+    display.removeAll()
+    setUpLayers()
+    loading.spawnSprite()
 
 
 
 
-
-
+def setUpLayers():
+    # DO NOT REMOVE LAYERS, needed for layer positioning of sprites
+    # Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
+    display.add(layer0)
+    display.add(layer1)
+    display.add(layer2)
+    display.add(layer3)
+    display.add(layer4)
                               
 # any function passed to onKeyType() must have one and exactly one
 # parameter.  This parameter is how the function knows which key is pressed
@@ -380,7 +407,7 @@ def loadIntro():
 def keyAction(a):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if a == "w":
-    if bot1Ready:
+    if bot1Ready:        
         bot1.isMoving = true
         bot1.moveUp()
         turnPass()
@@ -652,7 +679,7 @@ class Lootbag():
 
 
     def spawnSprite(self):
-        display.addOrder(self.sprite, 1, self.coords.x, self.coords.y)
+        display.place(self.sprite, self.coords.x, self.coords.y, 1)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -718,7 +745,7 @@ class Sprite(gui.Icon):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self):
-        display.addOrder(self, self.layer, self.coords.x, self.coords.y)
+        display.place(self, self.coords.x, self.coords.y, self.layer)
  
       # adds the sprite to the display in the foreground (closest to the user)
 
@@ -783,7 +810,7 @@ class BeingSprite(Sprite):
       # moves the sprite to the self.coords location
 
   def spawnSprite(self, x, y):
-        display.addOrder(self, self.layer, x, y)
+        display.place(self, x, y, self.layer)
 
 
 
@@ -1826,7 +1853,7 @@ class AnimatedGiblets():
         # sprite addition and removal to and from display
 
     def spawnSprite(self):
-        display.addOrder(self.sprite, 3, self.coords.x, self.coords.y)
+        display.place(self.sprite, self.coords.x, self.coords.y, 3)
     def removeSprite(self):
         display.remove(self.sprite)
 
@@ -2125,24 +2152,17 @@ backHeight = bits * heightTiles
 back = makePicture(path + "newBack.png")
 baseMap = Map(home, back)
 
-
-
-display = gui.Display("Robot Saga", backWidth, backHeight)
-
-# DO NOT REMOVE LAYERS, needed for layer positioning of sprites
-# Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
 layer0 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer1 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer2 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer3 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer4 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
-display.add(layer0)
-display.add(layer1)
-display.add(layer2)
-display.add(layer3)
-display.add(layer4)
+loading = Sprite(path + "Fullscreens\\LogoOmega.png", 0, 0, 0)
+
+display = gui.Display("Robot Saga", backWidth, backHeight)
 
 
+setUpLayers()
 
 #create background (probably prerender home background later)
 bg = Sprite(path + "newBack.png", 0, 0)
