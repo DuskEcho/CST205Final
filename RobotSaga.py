@@ -31,9 +31,9 @@ moveAnimationSleep = .12  # any lower and coords get messed up
 #bits is how many pixels are in each texture
 bits = 32
 #how many tiles there are wide
-widthTiles = 40
+widthTiles = 32
 #how many tiles there are tall
-heightTiles = 24
+heightTiles = 18
 
 shopKeeperX = 5*bits
 shopKeeperY = 2*bits
@@ -488,9 +488,9 @@ class Coords():
 
 
 class Tile():
-  def __init__(self, tile, isTraversable, isPassable, isTough, desc):
+  def __init__(self, isTraversable, isPassable, isTough, desc):
     self.desc = desc
-    self.tileImg = tile
+    #self.tileImg = tile
     #can a being walk over
     self.isTraversable = isTraversable
     #can a projectile go over
@@ -498,9 +498,6 @@ class Tile():
     #ai gets 2 turns if player is on this tile
     self.isTough = isTough
     self.beings = {} #array of beings in that tile
-
-  def getImg(self):
-    return self.tileImg
 
   def getTraversable(self):
     return self.isTraversable
@@ -513,36 +510,48 @@ class Tile():
 
 
 class Map():
-    def __init__(self, tileMap):
+    def __init__(self, tileMap, back):
+        self.map = back
         self.tileMap = {} #change to make map
         #beings will probably be a dictionary with coords as the key and value is the being at the spot
         self.beings = {} #master holder for all of the beings
-        self.Map = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
-        self.updateBackground(tileMap, self.Map)
+        #self.Map = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
+        self.updateMap(tileMap)
         #for key, value in self.tileMap.iteritems():
             #printNow(key)
 
-
     def placeTex(self, tex, spot):
+        self.tileMap.update({spot: tex})
+
+
+    def placeStruct(self, struct, spot):
         startx = (spot * bits) % backWidth
         starty = ((spot * bits) / backWidth) * bits
-        #printNow(spot)
-        self.tileMap.update({spot: tex})
-        #placeTex(tex.getImg(), spot, self.Map)
-        for x in range(0, bits):
-            for y in range(0, bits):
-                setColor(getPixel(self.Map, startx + x, starty + y), getColor(getPixel(tex.getImg(), x, y)))
+        structWidth = getWidth(struct) / bits
+        structHeight = getHeight(struct) / bits
+        for structx in range(0, structWidth):
+            for structy in range(0, structHeight):
+                curr = spotToCoord(spot)
+                newSpot = tileCoordToSpot(Coords(curr.x + structx, curr.y + structy))
+                self.tileMap.update({newSpot: water}) #replace water with a blank tile
 
 
-    def updateBackground(self, tiles, back):
+    def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
-            if   tiles[spot] == "g": self.placeTex(grass, spot)
+            if   tiles[spot] == "g":
+                continue
+                self.placeTex(grass, spot, around)
             elif tiles[spot] == "s": self.placeTex(stone, spot)
+            elif tiles[spot] == "d": self.placeTex(dirt, spot)
+            elif tiles[spot] == "w": self.placeTex(water, spot)
+            elif tiles[spot] == "h": self.placeStruct(house, spot)
+            elif tiles[spot] == "t": self.placeStruct(tree1, spot)
+            repaint(self.map)
             #not in files yet
             #elif tiles[spot] == "m": placeTex(monster, spot)
             #elif tiles[spot] == "p": placeTex(player, spot)
             #elif tiles[spot] == "w": placeTex(wall, spot)
-        writePictureTo(self.Map, path + "newBack.png")
+        explore(self.map)
 
     def isTraversable(self, spot):
         printNow(spot)
@@ -2067,50 +2076,58 @@ class User(Being):
 
 
 
-
-
+tilesPath = path + "Tiles/LPC/tiles/"
+#Old, probably dont need textureMap anymore
 textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
-#explore(textureMap)
+
+#initailize textures
+#  Tile(isTraversable, isPassable, isTough, desc)
+#add Dirt
+dirt = Tile(true, true, false, "dirt")
+#add Grass
+grass = Tile(true, true, false, "grass")
+#add Stone
+stone = Tile(true, true, false, "stone")
+#add Water
+water = Tile(false, true, false, "stone")
+#add Blank
+blank = Tile(false, false, false, "Filler for structure class")
+
+#structures
+structPath = path + "Tiles/LPC/structures/"
+house = makePicture(structPath + "house.png")
+tree1 = makePicture(structPath + "tree1.png")
 
 #get width and height
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
-#initailize textures
-stone = Tile(getTexture(textCoordToSpot(3,24)), false, true, false, "stone")
-grass = Tile(getTexture(textCoordToSpot(10,19)), true, true, false, "grass")
 
 
+paths = ["d", "s", "h", ".", "o"]
 #create emply grass field will clean up later
-home  = "ssssssssssssssssssssssssssssssssssssssss"
-home += "sggsggggggggggggggsgsgsgsgsgsgsgsgsgsgss"
-home += "sggsgggggggggggggsgsgsgsgssggggggggggggs"
-home += "sggsssgggggggsgggggggggggggggggggggggggs"
-home += "sgggssgggggggsgggggggggggggggggggggggggs"
-home += "sgggssssssssssgggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "gggggggggggggggggggggggggggggggggggggggg"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "sggggggggggggggggggggggggggggggggggggggs"
-home += "ssssssssssssssssssssssssssssssssssssssss"
+home  = "fffffffffffffddddfffffffffffffff"
+home += "fh......ggt,,ddddgh......ggggggf"
+home += "f.......gg,,,ddddg.......dgggggf"
+home += "f.......gg,,,ddddg.......ddggggf"
+home += "f.......gggggddddg..o....ddggggf"
+home += "f.......gggggddddg..o....ddggggf"
+home += "fgsssssssddddddddddddddddddggggf"
+home += "fgsssssssddddddddddddddddddggddd"
+home += "fgggsssssggggddddddddddddddddddd"
+home += "fgggddssgggggddddddddddddddddddf"
+home += "fgggdddggggwwwwddddddh......gggf"
+home += "fgggdddgggwwwwwwddddd.......gggf"
+home += "fgggdddwwwwwwwwwwwwdd.......gggf"
+home += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
+home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
+home += "fgdddddddwwwwwwwdddddddddddd,,,f"
+home += "fggddddddgggggggddddddddddddgdgf"
+home += "ffffffffffffffffffffffffffffffff"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
-baseMap = Map(home)
-#background = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
-#updateBackground(home)
+back = makePicture(path + "newBack.png")
+baseMap = Map(home, back)
 
 
 
@@ -2161,7 +2178,7 @@ display.add(text)
 
 #display.drawImage(path + "newBack.png", 0, 0)
 
-bot1 = User("bot1", "Stick", userSpritePaths, 32, 32)
+bot1 = User("bot1", "Stick", userSpritePaths, 13*bits, 1*bits)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 light = LightSource(bigTorchSpritePaths, 256, 256, 1)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
