@@ -176,7 +176,6 @@ class Map():
 
     def updateBackground(self, tiles, back):
         for spot in range(0, len(tiles)):
-            # dirs [right, left, up, down, downRight, downLeft, upRight, upLeft]
             around = 0
             #dirs = [[1,0,right],[-1,0,left],[0,-1,up],[0,1,down]]
             dirs = [[1,0,right],[-1,0,left],[0,-1,up],[0,1,down],[1,1,downAndRight],[-1,1,downAndLeft],[1,-1,upAndRight],[-1,-1,upAndLeft]]
