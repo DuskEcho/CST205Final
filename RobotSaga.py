@@ -35,8 +35,8 @@ widthTiles = 32
 #how many tiles there are tall
 heightTiles = 18
 
-shopKeeperX = 5*bits
-shopKeeperY = 2*bits
+shopKeeperX = 3*bits
+shopKeeperY = 6*bits
 
 
 class TurnCounter():
@@ -78,6 +78,18 @@ userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
                path + "RobotSprites/botBlueSideRight.gif",
                path + "RobotSprites/botBlueMovingLeft.gif",
                path + "RobotSprites/botBlueMovingRight.gif",]
+friendlyGreenSpritePaths = [path + "RobotSprites/botGreenBack.gif",
+               path + "RobotSprites/botGreenFront.gif",
+               path + "RobotSprites/botGreenSideLeft.gif",
+               path + "RobotSprites/botGreenSideRight.gif",
+               path + "RobotSprites/botGreenMovingLeft.gif",
+               path + "RobotSprites/botGreenMovingRight.gif",]
+friendlyOrangeSpritePaths = [path + "RobotSprites/botOrangeBack.gif",
+               path + "RobotSprites/botOrangeFront.gif",
+               path + "RobotSprites/botOrangeSideLeft.gif",
+               path + "RobotSprites/botOrangeSideRight.gif",
+               path + "RobotSprites/botOrangeMovingLeft.gif",
+               path + "RobotSprites/botOrangeMovingRight.gif",]
 blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/blueRobotFront.gif",
                path + "RobotSprites/BlueRobotSideLeft.gif",
@@ -2222,8 +2234,10 @@ bot1 = User("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 light = LightSource(bigTorchSpritePaths, 256, 256, 1)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
-
-
+friendlyOrange = Being("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*bits)
+friendlyGreen = Being("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*bits)
+friendlyOrange.sprite.spawnSprite(friendlyOrange.coords.x, friendlyOrange.coords.y)
+friendlyGreen.sprite.spawnSprite(friendlyGreen.coords.x, friendlyOrange.coords.y)
 
 
 
