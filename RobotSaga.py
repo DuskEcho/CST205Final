@@ -105,7 +105,7 @@ weaponStatsList = {
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
                   path + "WeaponSprites/Stick/stickDown.gif",
                   path + "WeaponSprites/Stick/stickLeft.gif",
-                  path + "WeaponSprites/Stick/stickRight.gif"]],
+                  path + "WeaponSprites/Stick/stickRight.gif"], true],
    "Rock": [2, "spritePath"]
    }
 helmStatsList = {
@@ -849,7 +849,19 @@ class Weapon():
           self.sprites = weaponStatsList[self.name][1]
           self.sprite = Sprite(self.sprites[3], 0, 0)
           self.power = weaponStatsList[self.name][0]
+          self.isBurnable = weaponStatsList[self.name][2]
+          self.onFire = false
         self.displayed = false
+
+    def onFire(self):
+        self.onFire = true
+
+    def threadFireCountdown(self):
+        start = counter.turn
+        finish = start + 15
+        while counter.turn < finish:
+            None
+        self.onFire = false
     
 
 
@@ -1370,6 +1382,8 @@ class Being():
             target.displayDamage()
             if target.hp <= 0:
                 self.changeXp(target.xpValue)
+            if target.isBurnable and target.isOn and self.weapon.isBurnable:
+                self.weapon.onFire()
                     
             
 
