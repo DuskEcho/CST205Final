@@ -556,25 +556,23 @@ class Map():
             for structy in range(0, structHeight):
                 curr = spotToCoord(spot)
                 newSpot = tileCoordToSpot(Coords(curr.x + structx, curr.y + structy))
-                self.tileMap.update({newSpot: water}) #replace water with a blank tile
+                self.tileMap.update({newSpot: blank}) #replace water with a blank tile
 
 
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
-            if   tiles[spot] == "g":
-                continue
-                self.placeTex(grass, spot, around)
+            if   tiles[spot] == "g": self.placeTex(grass, spot)
             elif tiles[spot] == "s": self.placeTex(stone, spot)
             elif tiles[spot] == "d": self.placeTex(dirt, spot)
             elif tiles[spot] == "w": self.placeTex(water, spot)
+            elif tiles[spot] == ".": self.placeTex(blank, spot)
+            elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
-            repaint(self.map)
             #not in files yet
             #elif tiles[spot] == "m": placeTex(monster, spot)
             #elif tiles[spot] == "p": placeTex(player, spot)
             #elif tiles[spot] == "w": placeTex(wall, spot)
-        explore(self.map)
 
     def isTraversable(self, spot):
         printNow(spot)
@@ -2127,7 +2125,7 @@ texHeight = getHeight(textureMap)
 
 
 paths = ["d", "s", "h", ".", "o"]
-#create emply grass field will clean up later
+#create empty grass field will clean up later
 home  = "fffffffffffffddddfffffffffffffff"
 home += "fh......ggt,,ddddgh......ggggggf"
 home += "f.......gg,,,ddddg.......dgggggf"
@@ -2157,7 +2155,7 @@ layer1 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer2 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer3 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
 layer4 = Sprite(path + "EffectSprites/blankSprite.gif", 0, 0)
-loading = Sprite(path + "Fullscreens\\LogoOmega.png", 0, 0, 0)
+loading = Sprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
 
 display = gui.Display("Robot Saga", backWidth, backHeight)
 
