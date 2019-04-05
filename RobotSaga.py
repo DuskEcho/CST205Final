@@ -249,6 +249,9 @@ def slideRight(toBeMoved, targetXBig):
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
 def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+    while not isTraversable(x, y):
+        x = random.randint(0, 10)*32
+        y =  random.randint(0, 10)*32
     enemy = Enemy(name, weap, spritePaths, x, y, species, level)
     enemy.sprite.spawnSprite(enemy.coords.x, enemy.coords.y)
     
@@ -1054,7 +1057,7 @@ class Being():
         self.changeMaxHP(random.randint(0, 8))
         self.changeAtk(random.randint(0, 4))
         self.changeDf(random.randint(0, 4))
-        self.changeHp(self.maxHp-self.hp)
+        self.hp = maxHp
 
     
 
@@ -1424,7 +1427,7 @@ class Being():
                 self.weapon.burn()
               elif target.isBurnable and not target.isOn and self.weapon.onFire:
                 target.turnOn()
-            else:    
+            elif isinstance(target, Being) or isinstance(target, Enemy):    
               damage = self.atk
               if target != bot1:
                 target.hostile = true
@@ -1778,9 +1781,12 @@ class Enemy(Being):
     def giblets(self):
         gibIndex = 0
         for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            self.gibSpawn(self.gibSpriteList[gibIndex], random.randint(self.coords.x - bits, self.coords.x + bits), random.randint(self.coords.y - bits, self.coords.y + bits))
-            print(gibIndex)
-            gibIndex += 1
+            x = random.randint(self.coords.x - bits, self.coords.x + bits)
+            y = random.randint(self.coords.y - bits, self.coords.y + bits)
+            if isTraversable(x, y):
+                self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
+                print(gibIndex)
+                gibIndex += 1
 
 
 
@@ -1793,7 +1799,7 @@ class Enemy(Being):
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
-            os.remove(files)
+        os.remove(files)
         beingList.remove(self)
         del self
         
