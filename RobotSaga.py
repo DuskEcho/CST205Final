@@ -401,16 +401,12 @@ def keyAction(a):
         turnPass()
   elif a == "W":
         bot1.faceUp()
-        turnPass()
   elif a == "A":
         bot1.faceLeft()
-        turnPass()
   elif a == "S":
         bot1.faceDown()
-        turnPass()
   elif a == "D": 
         bot1.faceRight()
-        turnPass()
 
   elif a == "f": #attack
     if bot1Ready:
@@ -2062,7 +2058,7 @@ class User(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        self.__init__("bot1", "Stick", userSpritePaths, 32, 32)
+        self.__init__("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
 
 
 
@@ -2177,8 +2173,8 @@ text.onKeyType(keyAction)
 display.add(text)
 
 #display.drawImage(path + "newBack.png", 0, 0)
-
-bot1 = User("bot1", "Stick", userSpritePaths, 13*bits, 1*bits)
+bot1Spawn = Coords(13*bits, 1*bits)
+bot1 = User("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
 light = LightSource(bigTorchSpritePaths, 256, 256, 1)
 shopKeeper.sprite.spawnSprite(shopKeeper.coords.x, shopKeeper.coords.y)
