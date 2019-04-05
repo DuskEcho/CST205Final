@@ -565,6 +565,7 @@ class Map():
             elif tiles[spot] == "s": self.placeTex(stone, spot)
             elif tiles[spot] == "d": self.placeTex(dirt, spot)
             elif tiles[spot] == "w": self.placeTex(water, spot)
+            elif tiles[spot] == "f": self.placeTex(fence, spot)
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "o": self.placeTex(door, spot)
@@ -2118,6 +2119,8 @@ grass = Tile(true, true, false, "grass")
 stone = Tile(true, true, false, "stone")
 #add Water
 water = Tile(false, true, false, "water")
+#add Fence
+fence = Tile(false, true, false, "fence")
 #add Door tile
 door = Tile(true, false, false, "door")
 #add Blank
