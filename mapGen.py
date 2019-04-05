@@ -84,6 +84,16 @@ class Tile():
                 #if around & right: return self.tileArr[8] #redundent
                 #if around & up: return self.tileArr[15]
                 return self.tileArr[14]
+        if self.desc == "fence":
+            if around & right:
+                if around & left: return self.tileArr[8]
+                return self.tileArr[6]
+            if around & up:
+                if around & down: return self.tileArr[3]
+                return self.tileArr[7]
+            if around & left: return self.tileArr[12]
+            if around & down: return self.tileArr[13]
+
         return self.tileArr[1]
 
     def getTraversable(self):
@@ -195,6 +205,7 @@ class Map():
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
             elif tiles[spot] == "w": self.placeTex(water, spot, around)
+            elif tiles[spot] == "f": self.placeTex(fence, spot, around)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             repaint(self.map)
@@ -251,6 +262,10 @@ stone = Tile(stoneArr, true, true, false, "stone")
 waterMap = makePicture(tilesPath + "water.png")
 waterArr = tileMapToArr(waterMap)
 water = Tile(waterArr, false, true, false, "stone")
+#add Fence
+fenceMap = makePicture(tilesPath + "fence.png")
+fenceArr = tileMapToArr(fenceMap)
+fence = Tile(fenceArr, false, true, false, "fence")
 
 #structures
 structPath = path + "Tiles/LPC/structures/"
