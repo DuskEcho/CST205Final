@@ -159,6 +159,21 @@ class Map():
                 if getColor(getPixel(img, x, y)) == white: continue
                 setColor(getPixel(self.map, startx + x, starty + y), getColor(getPixel(img, x, y)))
 
+    def placeStruct(self, struct, spot):
+        startx = (spot * bits) % backWidth
+        starty = ((spot * bits) / backWidth) * bits
+        structWidth = getWidth(struct) / bits
+        structHeight = getHeight(struct) / bits
+        for structx in range(0, structWidth):
+            for structy in range(0, structHeight):
+                curr = spotToCoord(spot)
+                newSpot = tileCoordToSpot(Coords(curr.x + structx, curr.y + structy))
+                self.tileMap.update({newSpot: water}) #replace water with a blank tile
+                for x in range(0,bits):
+                    for y in range(0,bits):
+                        if getColor(getPixel(struct, x + structx * bits, y + structy * bits)) == white: continue
+                        setColor(getPixel(self.map, startx + x + structx * bits, starty + y + structy * bits), getColor(getPixel(struct, x + structx * bits, y + structy * bits)))
+
     def updateBackground(self, tiles, back):
         for spot in range(0, len(tiles)):
             # dirs [right, left, up, down, downRight, downLeft, upRight, upLeft]
@@ -181,8 +196,8 @@ class Map():
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
             elif tiles[spot] == "w": self.placeTex(water, spot, around)
-            elif tiles[spot] == "h": self.placeTex(houseWall, spot, around)
-            elif tiles[spot] == "r": self.placeTex(houseRoof, spot, around)
+            elif tiles[spot] == "h": self.placeStruct(house, spot)
+            elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             repaint(self.map)
             #not in files yet
             #elif tiles[spot] == "m": placeTex(monster, spot)
@@ -238,32 +253,37 @@ waterMap = makePicture(tilesPath + "water.png")
 waterArr = tileMapToArr(waterMap)
 water = Tile(waterArr, false, true, false, "stone")
 
+#structures
+structPath = path + "Tiles/LPC/structures/"
+house = makePicture(structPath + "house.png")
+tree1 = makePicture(structPath + "tree1.png")
+
 #get width and height
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
 #initailize textures
 #  Tile(imgArr, isTraversable, isPassable, isTough, desc)
 
-paths = ["d", "s", "h", "r"]
+paths = ["d", "s", "h", ".", "o"]
 #create emply grass field will clean up later
-home  = "gggggggggggggddddggggggggggggggg"
-home += "gggggggggggggddddggggggggggggggg"
-home += "ggggggssssgggddddgggggggddgggggg"
-home += "ggggggssssgggddddggggggddddggggg"
-home += "ggggggssssgggddddggggggddddggggg"
-home += "ggggggsssggggddddgggggdddddggggg"
-home += "gggggssssddddddddddddddddggggggg"
-home += "ggggsssssddddddddddddddddggggddd"
-home += "ggggsssssggggddddggggggggggddddd"
-home += "ggggggssgggggddddgggggggggddddgg"
-home += "ggggggggggggdddddddddddddddddggg"
-home += "ggggggggggdddddddddddddddddddggg"
-home += "gggggggdddddddwwwwwddggggggggggg"
-home += "ggggggdddddddwwwwwwddggggggggggg"
-home += "ggdddddddwwwwwwwwwdddggggggggggg"
-home += "ggdddddddwwwwwwwddddddddddddddgg"
-home += "ggggggggggggggggddddddddddddddgg"
-home += "gggggggggggggggggggggggggggggggg"
+home  = "fffffffffffffddddfffffffffffffff"
+home += "fh......ggt,,ddddgh......ggggggf"
+home += "f.......gg,,,ddddg.......dgggggf"
+home += "f.......gg,,,ddddg.......ddggggf"
+home += "f.......gggggddddg..o....ddggggf"
+home += "f.......gggggddddg..o....ddggggf"
+home += "fgsssssssddddddddddddddddddggggf"
+home += "fgsssssssddddddddddddddddddggddd"
+home += "fgggsssssggggddddddddddddddddddd"
+home += "fgggddssgggggddddddddddddddddddf"
+home += "fgggdddggggwwwwddddddh......gggf"
+home += "fgggdddgggwwwwwwddddd.......gggf"
+home += "fgggdddwwwwwwwwwwwwdd.......gggf"
+home += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
+home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
+home += "fgdddddddwwwwwwwdddddddddddd,,,f"
+home += "fggddddddgggggggddddddddddddgdgf"
+home += "ffffffffffffffffffffffffffffffff"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
