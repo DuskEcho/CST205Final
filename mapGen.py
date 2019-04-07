@@ -125,7 +125,8 @@ def getTexture(spot, texMap):
 
 
 class Map():
-    def __init__(self, tileMap, baseTile):
+    def __init__(self, tileMap, baseTile, filePath):
+        self.filePath = filePath
         self.tileMap = {} #change to make map
         #beings will probably be a dictionary with coords as the key and value is the being at the spot
         self.beings = {} #master holder for all of the beings
@@ -202,8 +203,7 @@ class Map():
             #elif tiles[spot] == "m": placeTex(monster, spot)
             #elif tiles[spot] == "p": placeTex(player, spot)
             #elif tiles[spot] == "w": placeTex(wall, spot)
-        writePictureTo(self.map, path + "newBack.png")
-        explore(self.map)
+        writePictureTo(self.map, path + self.filePath)
 
 
     def isTraversable(self, spot):
@@ -257,6 +257,10 @@ structPath = path + "Tiles/LPC/structures/"
 house = makePicture(structPath + "house.png")
 tree1 = makePicture(structPath + "tree1.png")
 
+#initailize background image
+backWidth = bits * widthTiles
+backHeight = bits * heightTiles
+
 #get width and height
 texWidth = getWidth(textureMap)
 texHeight = getHeight(textureMap)
@@ -265,25 +269,42 @@ texHeight = getHeight(textureMap)
 
 paths = ["d", "s", "h", ".", "o"]
 #create emply grass field will clean up later
-home  = "fffffffffffffddddfffffffffffffff"
-home += "fh......ggt,,ddddgh......ggggggf"
-home += "f.......gg,,,ddddg.......dgggggf"
-home += "f.......gg,,,ddddg.......ddggggf"
-home += "f.......gggggddddg..o....ddggggf"
-home += "f.......gggggddddg..o....ddggggf"
-home += "fgsssssssddddddddddddddddddggggf"
-home += "fgsssssssddddddddddddddddddggddd"
-home += "fgggsssssggggddddddddddddddddddd"
-home += "fgggddssgggggddddddddddddddddddf"
-home += "fgggdddggggwwwwddddddh......gggf"
-home += "fgggdddgggwwwwwwddddd.......gggf"
-home += "fgggdddwwwwwwwwwwwwdd.......gggf"
-home += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
-home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
-home += "fgdddddddwwwwwwwdddddddddddd,,,f"
-home += "fggddddddgggggggddddddddddddgdgf"
-home += "ffffffffffffffffffffffffffffffff"
-#initailize background image
-backWidth = bits * widthTiles
-backHeight = bits * heightTiles
-baseMap = Map(home, grass)
+town  = "fffffffffffffddddfffffffffffffff"
+town += "fh......ggt,,ddddgh......ggggggf"
+town += "f.......gg,,,ddddg.......dgggggf"
+town += "f.......gg,,,ddddg.......ddggggf"
+town += "f.......gggggddddg..o....ddggggf"
+town += "f.......gggggddddg..o....ddggggf"
+town += "fgsssssssddddddddddddddddddggggf"
+town += "fgsssssssddddddddddddddddddggddd"
+town += "fgggsssssggggddddddddddddddddddd"
+town += "fgggddssgggggddddddddddddddddddf"
+town += "fgggdddggggwwwwddddddh......gggf"
+town += "fgggdddgggwwwwwwddddd.......gggf"
+town += "fgggdddwwwwwwwwwwwwdd.......gggf"
+town += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
+town += "fgdddddwwwwwwwwwwwddd..o....,,,f"
+town += "fgdddddddwwwwwwwdddddddddddd,,,f"
+town += "fggddddddgggggggddddddddddddgdgf"
+town += "ffffffffffffffffffffffffffffffff"
+baseMap = Map(town, grass, "townMap.png")
+
+field  = "ffffffffffffffffffffffffffffffff"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "gggggggggggggggggggggggggggggggd"
+field += "gggggggggggggggggggggggggggggggd"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fffffffffffffggggfffffffffffffff"
+baseMap = Map(field, grass, "fieldMap.png")
