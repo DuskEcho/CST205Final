@@ -380,12 +380,13 @@ def isTraversable(x, y):
     return currentMap.isTraversable(spot)
 
 
+#depricated can Delete
 def placeTex(tex, spot, back):
     startx = (spot * bits) % backWidth;
     starty = ((spot * bits) / backWidth) * bits;
     for x in range(0, bits):
         for y in range(0, bits):
-            setColor(getPixel(baseMap, startx + x, starty + y), getColor(getPixel(tex, x, y)))
+            setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
 
 
 
@@ -1575,7 +1576,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.y >= 0 and baseMap.isTraversable(targetSpot):
+        if self.coords.y >= 0 and currentMap.isTraversable(targetSpot):
             self.coords.y -= bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[0], self)
@@ -1611,7 +1612,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.y < backHeight and baseMap.isTraversable(targetSpot):
+        if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
             self.coords.y += bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[1], self)
@@ -1646,7 +1647,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x >= 0 and baseMap.isTraversable(targetSpot):
+        if self.coords.x >= 0 and currentMap.isTraversable(targetSpot):
             self.coords.x -= bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[4], self)
@@ -1679,7 +1680,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x < backWidth and baseMap.isTraversable(targetSpot):
+        if self.coords.x < backWidth and currentMap.isTraversable(targetSpot):
             self.coords.x += bits/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[5], self)
@@ -2323,9 +2324,9 @@ home += "ffffffffffffffffffffffffffffffff"
 #initailize background image
 backWidth = bits * widthTiles
 backHeight = bits * heightTiles
-back = makePicture(path + "newBack.png")
-baseMap = Map(home, back)
-currentMap = baseMap
+town = makePicture(path + "newBack.png")
+townMap = Map(home, town)
+currentMap = currentMap
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
