@@ -1767,9 +1767,45 @@ class Being():
 
 
 
+class Friendly(Being):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
+        Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
+        self.gibSpriteList = [Sprite(path + r"RobotSprites\friendlyBigGib1.gif", self),
+                              Sprite(path + r"RobotSprites\friendlyBigGib2.gif", self),
+                              Sprite(path + r"RobotSprites\friendlyHead.gif", self),
+                              ]
 
+    def gibSpawn(self, gibSprite, x, y):
+        gibList.append(gibSprite)
+        display.add(gibSprite, x, y)
 
+    def giblets(self):
+        x = random.randint(self.coords.x - bits, self.coords.x + bits)
+        y = random.randint(self.coords.y - bits, self.coords.y + bits)
+        if isTraversable(x, y):
+          animatedGib = AnimatedGiblets(path + r"RobotSprites\friendlyBigGib1.gif", path + r"RobotSprites\friendlyBigGib2.gif", x, y)
+          animatedGib.animate()
+        possibilities = random.randint(0, 3)
+        if possibilities == 3:
+          for i in range(0, random.randint(0, len(self.gibSpriteList))):
+            x = random.randint(self.coords.x - bits, self.coords.x + bits)
+            y = random.randint(self.coords.y - bits, self.coords.y + bits)
+            if isTraversable(x, y):
+              self.gibSpawn(self.gibSpriteList[3], x, y)
 
+        # Actions to be taken on hp <= 0
+
+    def dead(self):
+        self.giblets()
+        self.dropLoot()
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        beingList.remove(self)
+        del self
+        dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+        music.Play(dead)
+        
 
 class ShopKeeper(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
@@ -1788,8 +1824,9 @@ class ShopKeeper(Being):
     def giblets(self):
         x = random.randint(self.coords.x - bits, self.coords.x + bits)
         y = random.randint(self.coords.y - bits, self.coords.y + bits)
-        animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", x, y)
-        animatedGib.animate()
+        if isTraversable(x, y):
+          animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", x, y)
+          animatedGib.animate()
 
 
 
@@ -2339,8 +2376,8 @@ shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX,
 light = LightSource(bigTorchSpritePaths, 416, 288, 1)
 light2 = LightSource(bigTorchSpritePaths, 384, 288, 1)
 shopKeeper.sprite.spawnSprite()
-friendlyOrange = Being("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*bits)
-friendlyGreen = Being("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*bits)
+friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*bits)
+friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*bits)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
 
