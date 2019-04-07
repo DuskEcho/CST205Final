@@ -604,8 +604,10 @@ class Map():
         for spot in range(0, len(tiles)):
             if   tiles[spot] == "g": self.placeTex(grass, spot)
             elif tiles[spot] == "s": self.placeTex(stone, spot)
+            elif tiles[spot] == "l": self.placeTex(lavaRock, spot)
             elif tiles[spot] == "d": self.placeTex(dirt, spot)
             elif tiles[spot] == "w": self.placeTex(water, spot)
+            elif tiles[spot] == "L": self.placeTex(lava, spot)
             elif tiles[spot] == "f": self.placeTex(fence, spot)
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
@@ -2268,7 +2270,9 @@ class music:
 
 
 
-
+#initailize background image
+backWidth = bits * widthTiles
+backHeight = bits * heightTiles
 
 tilesPath = path + "Tiles/LPC/tiles/"
 #Old, probably dont need textureMap anymore
@@ -2282,8 +2286,12 @@ dirt = Tile(true, true, false, "dirt")
 grass = Tile(true, true, false, "grass")
 #add Stone
 stone = Tile(true, true, false, "stone")
+#add lavaRock
+lavaRock = Tile(true, true, false, "lavaRock")
 #add Water
 water = Tile(false, true, false, "water")
+#add Lava
+lava = Tile(false, true, false, "lava")
 #add Fence
 fence = Tile(false, true, false, "fence")
 #add Door tile
@@ -2321,12 +2329,51 @@ home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
 home += "fgdddddddwwwwwwwdddddddddddd,,,f"
 home += "fggddddddgggggggddddddddddddgdgf"
 home += "ffffffffffffffffffffffffffffffff"
-#initailize background image
-backWidth = bits * widthTiles
-backHeight = bits * heightTiles
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 currentMap = townMap
+
+field  = "ffffffffffffffffffffffffffffffff"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggwwwwwwwgggf"
+field += "fggggggggggggggggggggwwwwwwwwwgf"
+field += "fggggggggggggggggggggwwwwwwwwwgf"
+field += "fgggggggggggggggggggggggggwwwwgf"
+field += "fggggggggggggggggggggggggwwwwwgf"
+field += "ggggggggggggggggggggggggwwwwwwgf"
+field += "ggggggggggggggggggggggggwwwwwggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fggggggggggggggggggggggggggggggf"
+field += "fffffffffffffggggfffffffffffffff"
+fieldImg = makePicture(path + "fieldMap.png")
+fieldMap = Map(field, fieldImg)
+
+dungeon  = "ffffffffffffffffffffffffffffffff"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllLLLLllllllllllllllllllf"
+dungeon += "fllllllllLLLLLLLLllllllllllllllf"
+dungeon += "fllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "flllllllllllLLLLLLLLlllllllllllf"
+dungeon += "flllllllllllLLLLlllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fffffffffffffllllfffffffffffffff"
+dungeonImg = makePicture(path + "dungeonMap.png")
+dungeonMap = Map(dungeon, dungeonImg)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
