@@ -414,9 +414,9 @@ def getTexture(spot):
 # intro credits, adjust to add fade, etc.
 
 def loadIntro():
-    display.drawImage(path + "Fullscreens\\LogoOmega.png", 0, 0)
+    display.drawImage(path + "Fullscreens/LogoOmega.png", 0, 0)
     time.sleep(1.5)
-    display.drawImage(path + "Fullscreens\\dummyStartScreen.png", 0, 0)
+    display.drawImage(path + "Fullscreens/dummyStartScreen.png", 0, 0)
     time.sleep(1.5)
 
 
@@ -710,8 +710,8 @@ class Lootbag():
     def __init__(self, itemList, coords):
         self.contents = itemList
         self.coords = coords
-        self.spriteList = [Sprite(path + r"EffectSprites\lootBag.gif", self),
-                           Sprite(path + r"EffectSprites\lootBag2.gif", self)]
+        self.spriteList = [Sprite(path + r"EffectSprites/lootBag.gif", self),
+                           Sprite(path + r"EffectSprites/lootBag2.gif", self)]
         self.sprite = self.spriteList[0]
         self.type = "lootbag"
         
@@ -1404,7 +1404,7 @@ class Being():
                     color = getColor(p)
                     if color != makeColor(0, 0, 0):
                         setColor(p, makeColor(getRed(p)*1.5, getGreen(p)*1.5, getBlue(p)*1.5))
-            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites/" + self.name + str(beingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.lightSprites.append(newPicPath)
             spriteNum += 1
@@ -1426,7 +1426,7 @@ class Being():
                     if getColor(p) != makeColor(0, 0, 0):
                         if random.randint(0, 100) > (self.hp*100)/self.maxHp:
                             setColor(p, makeColor(114, 87, 7))
-            newPicPath = path + "RobotSprites\\" + self.name + str(beingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites/" + self.name + str(beingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.bloodySprites.append(newPicPath)
             spriteNum += 1
@@ -1509,7 +1509,7 @@ class Being():
         # the given location. Uses multithreading.
 
     def displayDamage(self):
-        damage = Sprite(path + r"EffectSprites\damage.gif", self)
+        damage = Sprite(path + r"EffectSprites/damage.gif", self)
         display.add(damage, self.coords.x, self.coords.y)
         thread.start_new_thread(threadRemoveSprite, (.25, damage))
 
@@ -1771,9 +1771,9 @@ class Being():
 class Friendly(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
-        self.gibSpriteList = [Sprite(path + r"RobotSprites\friendlyBigGib1.gif", self),
-                              Sprite(path + r"RobotSprites\friendlyBigGib2.gif", self),
-                              Sprite(path + r"RobotSprites\friendlyHead.gif", self),
+        self.gibSpriteList = [Sprite(path + r"RobotSprites/friendlyBigGib1.gif", self),
+                              Sprite(path + r"RobotSprites/friendlyBigGib2.gif", self),
+                              Sprite(path + r"RobotSprites/friendlyHead.gif", self),
                               ]
 
     def gibSpawn(self, gibSprite, x, y):
@@ -1784,7 +1784,7 @@ class Friendly(Being):
         x = random.randint(self.coords.x - bits, self.coords.x + bits)
         y = random.randint(self.coords.y - bits, self.coords.y + bits)
         if isTraversable(x, y):
-          animatedGib = AnimatedGiblets(path + r"RobotSprites\friendlyBigGib1.gif", path + r"RobotSprites\friendlyBigGib2.gif", x, y)
+          animatedGib = AnimatedGiblets(path + r"RobotSprites/friendlyBigGib1.gif", path + r"RobotSprites/friendlyBigGib2.gif", x, y)
           animatedGib.animate()
         possibilities = random.randint(0, 3)
         if possibilities == 3:
@@ -1870,11 +1870,11 @@ class Enemy(Being):
         self.species = species 
         for val in range(0, level):
             self.levelUp()
-        self.gibSpriteList = [Sprite(path + r"RobotSprites\enemyArmGib.gif", self),
-                              Sprite(path + r"RobotSprites\enemyLegGib.gif", self),
-                              Sprite(path + r"RobotSprites\enemyLegGib2.gif", self),
-                              Sprite(path + r"RobotSprites\enemyBodyGib.gif", self),
-                              Sprite(path + r"RobotSprites\enemyHeadGib.gif", self),
+        self.gibSpriteList = [Sprite(path + r"RobotSprites/enemyArmGib.gif", self),
+                              Sprite(path + r"RobotSprites/enemyLegGib.gif", self),
+                              Sprite(path + r"RobotSprites/enemyLegGib2.gif", self),
+                              Sprite(path + r"RobotSprites/enemyBodyGib.gif", self),
+                              Sprite(path + r"RobotSprites/enemyHeadGib.gif", self),
                               ]
         self.hostile = true
         
@@ -2326,7 +2326,7 @@ backWidth = bits * widthTiles
 backHeight = bits * heightTiles
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
-currentMap = currentMap
+currentMap = townMap
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
