@@ -41,7 +41,8 @@ class Coords():
 
 
 class Tile():
-    def __init__(self, tile, isTraversable, isPassable, isTough, desc):
+    def __init__(self, tile, isTraversable, isPassable, isTough, desc, char):
+        self.char = char
         self.desc = desc
         self.tileArr = tile
         #can a being walk over
@@ -147,6 +148,7 @@ class Map():
 
 
     def fillBack(self, tex):
+        printNow(tex.desc)
         baseSpots = [5,11,17,9]
         for startx in range(0, widthTiles):
             for starty in range(0, heightTiles):
@@ -200,13 +202,14 @@ class Map():
                     around = around | d[2] #bitwise or direction with around
                 elif tiles[spot] in paths and tiles[tileCoordToSpot(new)] in paths:
                     around = around | d[2] #bitwise or direction with around
-            if   tiles[spot] == "g":
-                continue
-                self.placeTex(grass, spot, around)
+            if   tiles[spot] == self.baseTile.char: continue
+            elif tiles[spot] == "g": self.placeTex(grass, spot, around)
+            elif tiles[spot] == "l": self.placeTex(lavaRock, spot, around)
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
             elif tiles[spot] == "w": self.placeTex(water, spot, around)
             elif tiles[spot] == "f": self.placeTex(fence, spot, around)
+            elif tiles[spot] == "L": self.placeTex(lava, spot, around)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             repaint(self.map)
@@ -249,23 +252,32 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 #add Dirt
 dirtMap = makePicture(tilesPath + "dirt.png")
 dirtArr = tileMapToArr(dirtMap)
-dirt = Tile(dirtArr, true, true, false, "dirt")
+dirt = Tile(dirtArr, true, true, false, "dirt", "d")
 #add Grass
 grassMap = makePicture(tilesPath + "grass.png")
 grassArr = tileMapToArr(grassMap)
-grass = Tile(grassArr, true, true, false, "grass")
+grass = Tile(grassArr, true, true, false, "grass", "g")
 #add Stone
 stoneMap = makePicture(tilesPath + "stone.png")
 stoneArr = tileMapToArr(stoneMap)
-stone = Tile(stoneArr, true, true, false, "stone")
+stone = Tile(stoneArr, true, true, false, "stone", "s")
+#add lavaRock
+lavaRockMap = makePicture(tilesPath + "lavarock.png")
+explore(lavaRockMap)
+lavaRockArr = tileMapToArr(lavaRockMap)
+lavaRock = Tile(lavaRockArr, true, true, false, "lavaRock", "l")
 #add Water
 waterMap = makePicture(tilesPath + "water.png")
 waterArr = tileMapToArr(waterMap)
-water = Tile(waterArr, false, true, false, "stone")
+water = Tile(waterArr, false, true, false, "water", "w")
+#add lava
+lavaMap = makePicture(tilesPath + "lava.png")
+lavaArr = tileMapToArr(lavaMap)
+lava = Tile(lavaArr, false, true, false, "lava", "L")
 #add Fence
 fenceMap = makePicture(tilesPath + "fence.png")
 fenceArr = tileMapToArr(fenceMap)
-fence = Tile(fenceArr, false, true, false, "fence")
+fence = Tile(fenceArr, false, true, false, "fence", "f")
 
 #structures
 structPath = path + "Tiles/LPC/structures/"
@@ -302,17 +314,17 @@ town += "fgdddddwwwwwwwwwwwddd..o....,,,f"
 town += "fgdddddddwwwwwwwdddddddddddd,,,f"
 town += "fggddddddgggggggddddddddddddgdgf"
 town += "ffffffffffffffffffffffffffffffff"
-baseMap = Map(town, grass, "townMap.png")
+townMap = Map(town, grass, "townMap.png")
 
 field  = "ffffffffffffffffffffffffffffffff"
 field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "gggggggggggggggggggggggggggggggd"
-field += "gggggggggggggggggggggggggggggggd"
+field += "fggggggggggggggggggggwwwwwwwgggf"
+field += "fggggggggggggggggggggwwwwwwwwwgf"
+field += "fggggggggggggggggggggwwwwwwwwwgf"
+field += "fgggggggggggggggggggggggggwwwwgf"
+field += "fggggggggggggggggggggggggwwwwwgf"
+field += "ggggggggggggggggggggggggwwwwwwgf"
+field += "ggggggggggggggggggggggggwwwwwggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
@@ -322,4 +334,24 @@ field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fffffffffffffggggfffffffffffffff"
-baseMap = Map(field, grass, "fieldMap.png")
+fieldMap = Map(field, grass, "fieldMap.png")
+
+dungeon  = "ffffffffffffffffffffffffffffffff"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllLLLLllllllllllllllllllf"
+dungeon += "fllllllllLLLLLLLLllllllllllllllf"
+dungeon += "fllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
+dungeon += "flllllllllllLLLLLLLLlllllllllllf"
+dungeon += "flllllllllllLLLLlllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fllllllllllllllllllllllllllllllf"
+dungeon += "fffffffffffffllllfffffffffffffff"
+dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
