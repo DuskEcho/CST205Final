@@ -43,16 +43,17 @@ import os
 moveAnimationSleep = .12  # any lower and coords get messed up
 
 
-#bits is how many pixels are in each texture
-bits = 32
+#BITS is how many pixels are in each texture
+BITS = 32
 #how many tiles there are wide
-widthTiles = 32
+WIDTHTILES = 32
 #how many tiles there are tall
-heightTiles = 18
+HEIGHTTILES = 18
 
-shopKeeperX = 3*bits
-shopKeeperY = 6*bits
-
+TOWNAREA = None
+FIELDAREA = None
+DUNGEONAREA = None
+currentArea = None
 
 class TurnCounter():
     def __init__(self):
@@ -64,30 +65,15 @@ counter = TurnCounter()
 
     #CONTAINERS
 #beings	
-townBeingList = []
-fieldBeingList = []
-dungeonBeingList = []
-currentBeingList = townBeingList
-#interactable objects	
-townObjectList = []
-fieldObjectList = []
-dungeonObjectList = []
-objectList = townObjectList
-#gore pieces	#gore pieces
-townGibList = []
-fieldGibList = []
-dungeonGibList = []
-gibList = townGibList
+currentBeingList = []
+#interactable objects
+objectList = []
+#gore pieces	
+gibList = []
 #animated sprites
-townAnimatedSpriteList = []
-fieldAnimatedSpriteList = []
-dungeonAnimatedSpriteList = []
-animatedSpriteList = townAnimatedSpriteList
+animatedSpriteList = []
 #light sources
-townLightSources = []
-fieldLightSources = []
-dungeonLightSources = []
-lightSources = townLightSources
+lightSources = []
 
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
@@ -216,23 +202,7 @@ def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
 
 
 
-# untested, experimental load-new-area function
 
-def loadNextArea(backgroundMapWithFilepathInfo, bot1NewX, bot1NewY, newCharSpawnList, objectsToLoadList, animatedItemsToLoadList, otherSpritesToLoadList):
-    loadingScreen()
-    bot1.coords.x = bot1NewX
-    bot1.coords.y = bot1NewY
-    bot1.sprite.spawnSprite()
-    for being in newCharSpawnList:
-        being.spawnSprite()
-    for thing in objectsToLoadList:
-        thing.spawnSprite()
-    for animated in animatedItemsToLoadList:
-        animated.spawnSprite()
-    for other in otherSpritesToLoadList:
-        other.spawnSprite()
-    display.remove(loading)
-    
 
 
 
@@ -251,7 +221,7 @@ def showLabel(label):
 
 def turnPass():
     counter.turn += 1
-    if counter.turn % 20 == 0:
+    if counter.turn % 20 == 0 and currentArea != TOWNAREA:
         spawnEnemy()
     for person in currentBeingList:
         if person.hostile == true:
@@ -286,6 +256,35 @@ def slideRight(toBeMoved, targetXBig):
 
 
 
+
+def loadAreaCheck(player):
+  global FIELDAREA
+  global DUNGEONAREA
+  global TOWNAREA
+  global currentArea
+  if currentArea == TOWNAREA:
+    if player.coords.y <= 0:
+      loadNewArea(DUNGEONAREA)
+      bot1.area = DUNGEONAREA
+    elif player.coords.x >= 992:
+      loadNewArea(FIELDAREA)
+      bot1.area = FIELDAREA
+  elif currentArea == FIELDAREA:
+    if player.coords.x <= 0:
+      loadNewArea(TOWNAREA)
+      bot1.area = TOWNAREA
+    elif player.coords.y >= 544:
+      player.coods.x = -32
+      player.coords.y = 256
+      player.moveRight()
+  elif currentArea == DUNGEONAREA:
+    if player.coords.x <= 0:
+      player.coords.y = 576
+      player.coords.x = 480
+      player.moveUp()
+    elif player.coords.y >= 544:
+      loadNewArea(TOWNAREA)
+      bot1.area = TOWNAREA
 
 
 
@@ -373,23 +372,23 @@ def spotToCoord(spot):
     #if low set to 0d
     if spot < 0: spot = 0
     #if high set to max (should probably just throw error
-    if spot > widthTiles * heightTiles: spot = widthTiles * heightTiles - 1
-    return Coords(spot % widthTiles, spot / widthTiles)
+    if spot > WIDTHTILES * HEIGHTTILES: spot = WIDTHTILES * HEIGHTTILES - 1
+    return Coords(spot % WIDTHTILES, spot / WIDTHTILES)
 
 
 #given tile Coords give tile Spot in 1d array
 def tileCoordToSpot(coord):
-    return coord.x + coord.y * widthTiles
+    return coord.x + coord.y * WIDTHTILES
 
 
 #Goes from pixel coords to tile Coords
 def coordToTileCoord(coord):
-    return Coords(coord.x/bits, coord.y/bits)
+    return Coords(coord.x/bits, coord.y/BITS)
 
 
 #probably bad?
 def coordToTile(coord):
-    return coord.x/bits + (coord.y/bits) * widthTiles
+    return coord.x/BITS + (coord.y/BITS) * WIDTHTILES
 
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
@@ -400,10 +399,10 @@ def isTraversable(x, y):
 
 #depricated can Delete
 def placeTex(tex, spot, back):
-    startx = (spot * bits) % backWidth;
-    starty = ((spot * bits) / backWidth) * bits;
-    for x in range(0, bits):
-        for y in range(0, bits):
+    startx = (spot * BITS) % backWidth;
+    starty = ((spot * BITS) / backWidth) * bits;
+    for x in range(0, BITS):
+        for y in range(0, BITS):
             setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
 
 
@@ -415,12 +414,12 @@ def textCoordToSpot(x, y):
   return x + y*col
 
 def getTexture(spot):
-    texture = makeEmptyPicture(bits,bits)
+    texture = makeEmptyPicture(bits,BITS)
     #spot to coord conversion
-    startx = (spot * bits) % texWidth;
-    starty = ((spot * bits) / texWidth) * bits;
-    for x in range(0, bits):
-        for y in range(0, bits):
+    startx = (spot * BITS) % texWidth;
+    starty = ((spot * BITS) / texWidth) * bits;
+    for x in range(0, BITS):
+        for y in range(0, BITS):
             setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
     return texture
 
@@ -446,9 +445,10 @@ def loadingScreen():
     loading.spawnSprite()
 
 
-def loadNewArea(newMapSprite, mapObject, newPlayerCoords, newBeingList, newObjectList, newGibList, newAnimatedSprites, newLightSources):
+def loadNewArea(area):
     loadingScreen()
-    bot1.coords = newPlayerCoords
+    setUpLayers()
+    bot1.coords = area.spawnCoords
     global currentBeingList
     global gibList
     global animatedSpriteList
@@ -457,17 +457,20 @@ def loadNewArea(newMapSprite, mapObject, newPlayerCoords, newBeingList, newObjec
     global display
     global currentBg
     global currentMap
-    currentMap = mapObject
-    currentBg = newMapSprite
+    global currentArea
+    currentArea = area
+    bot1.area = area
+    currentMap = area.mapObject
+    currentBg = area.mapSprite
     currentBg.spawnSprite()
     display.add(text)
     currentBeingList.remove(bot1)
-    currentBeingList = newBeingList
+    currentBeingList = area.beingList
     currentBeingList.append(bot1)
-    objectList = newObjectList
-    gibList = newGibList
-    animatedSpriteList = newAnimatedSprites
-    lightSources = newLightSources
+    objectList = area.objectList
+    gibList = area.gibList
+    animatedSpriteList = area.animatedSpriteList
+    lightSources = area.lightSources
     for being in currentBeingList:
       being.sprite.spawnSprite()
     for thing in objectList:
@@ -504,30 +507,25 @@ def keyAction(a):
         bot1.isMoving = true
         bot1.moveUp()
         turnPass()
+        loadAreaCheck(bot1)
   elif a == "s":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveDown()
         turnPass()
+        loadAreaCheck(bot1)
   elif a == "a":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveLeft()
         turnPass()
+        loadAreaCheck(bot1)
   elif a == "d":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
-          if bot1.coords.x >= 992:#right edge of screen
-            global testBack
-            global testMap
-            global testCoords
-            global fieldBeingList
-            global fieldObjectList
-            global fieldGibList
-            global fieldLightSources
-            loadNewArea(testBack, testMap, Coords(0, bot1.coords.y), fieldBeingList, fieldObjectList, fieldGibList, fieldAnimatedSpriteList, fieldLightSources)
+        loadAreaCheck(bot1)
   elif a == "W":
         bot1.faceUp()
   elif a == "A":
@@ -602,7 +600,7 @@ def initialSetup():
         ####################
 
 
-class area():
+class Area():
     def __init__(self, mapSprite, mapObject, spawnLocation):
         self.beingList = []
         self.objectList = []
@@ -611,7 +609,7 @@ class area():
         self.lightSources = []
         self.mapSprite = mapSprite
         self.mapObject = mapObject
-        self.spawnCoords = Coords(0, 0)
+        self.spawnCoords = spawnLocation
 
 # universal coordinates object 
 
@@ -659,8 +657,8 @@ class Map():
 
 
     def placeStruct(self, struct, spot):
-        startx = (spot * bits) % backWidth
-        starty = ((spot * bits) / backWidth) * bits
+        startx = (spot * BITS) % backWidth
+        starty = ((spot * BITS) / backWidth) * bits
         structWidth = getWidth(struct) / bits
         structHeight = getHeight(struct) / bits
         for structx in range(0, structWidth):
@@ -1323,22 +1321,22 @@ class Being():
     def simpleHostileAI(self):
         distanceX = self.coords.x - bot1.coords.x
         distanceY = self.coords.y - bot1.coords.y
-        closeProximity = bits * 3
+        closeProximity = BITS * 3
         if self.forwardCoords.x == bot1.coords.x and self.forwardCoords.y == bot1.coords.y:
             self.meleeAtk()
-        elif self.coords.x-bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+        elif self.coords.x-BITS == bot1.coords.x and self.coords.y == bot1.coords.y:
             self.faceLeft()
             self.meleeAtk()
-        elif self.coords.x+bits == bot1.coords.x and self.coords.y == bot1.coords.y:
+        elif self.coords.x+BITS == bot1.coords.x and self.coords.y == bot1.coords.y:
             self.faceRight()
             self.meleeAtk()
-        elif self.coords.x == bot1.coords.x and self.coords.y+bits == bot1.coords.y:
+        elif self.coords.x == bot1.coords.x and self.coords.y+BITS == bot1.coords.y:
             self.faceDown()
             self.meleeAtk()
-        elif self.coords.x == bot1.coords.x and self.coords.y-bits == bot1.coords.y:
+        elif self.coords.x == bot1.coords.x and self.coords.y-BITS == bot1.coords.y:
             self.faceUp()
             self.meleeAtk()
-        elif abs(self.coords.x - bot1.coords.x) < bits and abs(self.coords.y - bot1.coords.y) < bits:
+        elif abs(self.coords.x - bot1.coords.x) < BITS and abs(self.coords.y - bot1.coords.y) < bits:
             self.moveRandom()
         elif abs(self.coords.x - bot1.coords.x) <= closeProximity and abs(self.coords.y - bot1.coords.y) <= closeProximity:
             self.moveTowardsPlayer(distanceX, distanceY)
@@ -1423,12 +1421,12 @@ class Being():
         music.Play(dead)
 
         # Handles lighting of sprites. If a valid light object is within the range
-        # currently set to bits * 3, a new set of sprites will be created and applied
+        # currently set to BITS * 3, a new set of sprites will be created and applied
         # to simulate lighting.
         # Starts a new thread.
 
     def lightenDarken(self):
-        bright = self.lightWithinRange(bits * 3)
+        bright = self.lightWithinRange(BITS * 3)
         if self.spritePaths != self.lightSprites and bright:
             self.lightenPixels()
         elif self.spritePaths == self.lightSprites and not bright:
@@ -1656,7 +1654,7 @@ class Being():
             x = None
             thread.start_new_thread(self.threadMoveUp, (x,))
             if self.facing == directionList["up"]: 
-              self.forwardCoords.y = self.coords.y - bits - bits/2
+              self.forwardCoords.y = self.coords.y - BITS - bits/2
               self.forwardCoords.x = self.coords.x
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
@@ -1693,7 +1691,7 @@ class Being():
             thread.start_new_thread(self.threadMoveDown, (x,))
             self.sprite.moveTo(self.coords.x, self.coords.y)
             if self.facing == directionList["down"]:
-              self.forwardCoords.y = self.coords.y + bits + bits/2
+              self.forwardCoords.y = self.coords.y + BITS + bits/2
               self.forwardCoords.x = self.coords.x
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
@@ -1728,7 +1726,7 @@ class Being():
             thread.start_new_thread(self.threadMoveLeft, (x,))
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x - bits - bits/2 
+              self.forwardCoords.x = self.coords.x - BITS - bits/2 
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
               music.Play(move)
@@ -1853,16 +1851,16 @@ class Friendly(Being):
         display.add(gibSprite, x, y)
 
     def giblets(self):
-        x = random.randint(self.coords.x - bits, self.coords.x + bits)
-        y = random.randint(self.coords.y - bits, self.coords.y + bits)
+        x = random.randint(self.coords.x - bits, self.coords.x + BITS)
+        y = random.randint(self.coords.y - bits, self.coords.y + BITS)
         if isTraversable(x, y):
           animatedGib = AnimatedGiblets(path + r"RobotSprites/friendlyBigGib1.gif", path + r"RobotSprites/friendlyBigGib2.gif", x, y)
           animatedGib.animate()
         possibilities = random.randint(0, 3)
         if possibilities == 3:
           for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - bits, self.coords.x + bits)
-            y = random.randint(self.coords.y - bits, self.coords.y + bits)
+            x = random.randint(self.coords.x - bits, self.coords.x + BITS)
+            y = random.randint(self.coords.y - bits, self.coords.y + BITS)
             if isTraversable(x, y):
               self.gibSpawn(self.gibSpriteList[3], x, y)
 
@@ -1895,8 +1893,8 @@ class ShopKeeper(Being):
 
 
     def giblets(self):
-        x = random.randint(self.coords.x - bits, self.coords.x + bits)
-        y = random.randint(self.coords.y - bits, self.coords.y + bits)
+        x = random.randint(self.coords.x - bits, self.coords.x + BITS)
+        y = random.randint(self.coords.y - bits, self.coords.y + BITS)
         if isTraversable(x, y):
           animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", x, y)
           animatedGib.animate()
@@ -1977,8 +1975,8 @@ class Enemy(Being):
     def giblets(self):
         gibIndex = 0
         for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - bits, self.coords.x + bits)
-            y = random.randint(self.coords.y - bits, self.coords.y + bits)
+            x = random.randint(self.coords.x - bits, self.coords.x + BITS)
+            y = random.randint(self.coords.y - bits, self.coords.y + BITS)
             if isTraversable(x, y):
                 self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
                 print(gibIndex)
@@ -2162,14 +2160,15 @@ class StationaryAnimatedSprite():
     #   level:          - Being's starting level
 
 class User(Being):
-    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn):
-        Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn)
+    def __init__(self, name, weapName, spritePaths, currentArea):
+        Being.__init__(self, name, weapName, spritePaths, currentArea.spawnCoords.x, currentArea.spawnCoords.y)
         self.name = name
         self.helm = "Hair"
         self.chest = "BDaySuit"
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
+        self.area = currentArea
 
         self.sprite.spawnSprite()
 
@@ -2298,7 +2297,7 @@ class User(Being):
         for files in self.bloodySprites:
             os.remove(files)
         currentBeingList.remove(self)
-        self.__init__("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
+        self.__init__("bot1", "Stick", userSpritePaths, self.area)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
 
@@ -2340,8 +2339,8 @@ class music:
 
 
 #initailize background image
-backWidth = bits * widthTiles
-backHeight = bits * heightTiles
+backWidth = BITS * WIDTHTILES
+backHeight = BITS * HEIGHTTILES
 
 tilesPath = path + "Tiles/LPC/tiles/"
 #Old, probably dont need textureMap anymore
@@ -2400,6 +2399,7 @@ home += "fggddddddgggggggddddddddddddgdgf"
 home += "ffffffffffffffffffffffffffffffff"
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
+townSpawn = Coords(13*bits, 1*BITS)
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
@@ -2421,6 +2421,7 @@ field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fffffffffffffggggfffffffffffffff"
 fieldImg = makePicture(path + "fieldMap.png")
+fieldSpawn = Coords(1*bits, 8*BITS)
 fieldMap = Map(field, fieldImg)
 
 dungeon  = "ffffffffffffffffffffffffffffffff"
@@ -2443,6 +2444,7 @@ dungeon += "fllllllllllllllllllllllllllllllf"
 dungeon += "fffffffffffffllllfffffffffffffff"
 dungeonImg = makePicture(path + "dungeonMap.png")
 dungeonMap = Map(dungeon, dungeonImg)
+dungeonSpawn = Coords(15*bits, 16*BITS)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
@@ -2458,33 +2460,25 @@ display = gui.Display("Robot Saga", backWidth, backHeight)
 
 setUpLayers()
 
-test  = "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-test += "gggggggggggggggggggggggggggggggg"
-testBack = RawSprite(path + "newBackold.png", 0, 0, 6)
-testMap = Map(test, testBack)
 
+TOWNAREA = Area(None, townMap, townSpawn)
+townSprite = RawSprite(path + "newBack.png", 0, 0, 6)
+TOWNAREA.mapSprite = townSprite
+FIELDAREA = Area(None, fieldMap, fieldSpawn)
+fieldSprite = RawSprite(path + "fieldMap.png", 0, 0, 6)
+FIELDAREA.mapSprite = fieldSprite
+DUNGEONAREA = Area(None, dungeonMap, dungeonSpawn)
+dungeonSprite = RawSprite(path + "dungeonMap.png", 0, 0, 6)
+DUNGEONAREA.mapSprite = dungeonSprite
 
-#create background (probably prerender home background later)
-townBg = RawSprite(path + "newBack.png", 0, 0, 6)
-currentBg = townBg
+currentArea = TOWNAREA
+currentBg = TOWNAREA.mapSprite
 currentBg.spawnSprite()
-
+currentBeingList = TOWNAREA.beingList
+objectList = TOWNAREA.objectList
+gibList = TOWNAREA.gibList
+animatedSpriteList = TOWNAREA.animatedSpriteList
+lightSources = TOWNAREA.lightSources
 #loadIntro()  - Intro credits for production build. see loadIntro() definition for details
 
 
@@ -2510,14 +2504,15 @@ text.onKeyType(keyAction)
 display.add(text)
 
 #display.drawImage(path + "newBack.png", 0, 0)
-bot1Spawn = Coords(13*bits, 1*bits)
-bot1 = User("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
-shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*bits, 6*bits)
+bot1Spawn = Coords(13*bits, 1*BITS)
+bot1 = User("bot1", "Stick", userSpritePaths, TOWNAREA)
+bot1.area = currentArea
+shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*bits, 6*BITS)
 light = LightSource(bigTorchSpritePaths, 416, 288, 1)
 light2 = LightSource(bigTorchSpritePaths, 384, 288, 1)
 shopKeeper.sprite.spawnSprite()
-friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*bits)
-friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*bits)
+friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*BITS)
+friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
 
@@ -2526,5 +2521,4 @@ friendlyGreen.sprite.spawnSprite()
 #music.repeat(background_music1)
 #music.Stop(background_music1)
 testCoords = Coords(0, 0)
-fieldBeingList.append(friendlyOrange)
-
+currentBeingList.append(friendlyOrange)
