@@ -452,7 +452,7 @@ def loadingScreen():
 def loadNewArea(area):
     loadingScreen()
     setUpLayers()
-    bot1.coords = area.spawnCoords
+    bot1.coords = Coords(area.spawnCoords.x, area.spawnCoords.y)
     global currentBeingList
     global gibList
     global animatedSpriteList
@@ -2308,8 +2308,7 @@ class User(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        loadNewArea(TOWNAREA)
-        self.__init__("bot1", "Stick", userSpritePaths, TOWNAREA)
+        self.__init__("bot1", "Stick", userSpritePaths, self.area)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
         
