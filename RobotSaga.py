@@ -383,7 +383,7 @@ def tileCoordToSpot(coord):
 
 #Goes from pixel coords to tile Coords
 def coordToTileCoord(coord):
-    return Coords(coord.x/bits, coord.y/BITS)
+    return Coords(coord.x/BITS, coord.y/BITS)
 
 
 #probably bad?
@@ -400,7 +400,7 @@ def isTraversable(x, y):
 #depricated can Delete
 def placeTex(tex, spot, back):
     startx = (spot * BITS) % backWidth;
-    starty = ((spot * BITS) / backWidth) * bits;
+    starty = ((spot * BITS) / backWidth) * BITS;
     for x in range(0, BITS):
         for y in range(0, BITS):
             setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
@@ -414,10 +414,10 @@ def textCoordToSpot(x, y):
   return x + y*col
 
 def getTexture(spot):
-    texture = makeEmptyPicture(bits,BITS)
+    texture = makeEmptyPicture(BITS,BITS)
     #spot to coord conversion
     startx = (spot * BITS) % texWidth;
-    starty = ((spot * BITS) / texWidth) * bits;
+    starty = ((spot * BITS) / texWidth) * BITS;
     for x in range(0, BITS):
         for y in range(0, BITS):
             setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
@@ -453,11 +453,14 @@ def loadNewArea(area):
     global gibList
     global animatedSpriteList
     global lightSources
+    global objectList
     global text
     global display
     global currentBg
     global currentMap
     global currentArea
+    for light in lightSources:
+      light.turnOff()
     currentArea = area
     bot1.area = area
     currentMap = area.mapObject
@@ -473,15 +476,10 @@ def loadNewArea(area):
     lightSources = area.lightSources
     for being in currentBeingList:
       being.sprite.spawnSprite()
-    for thing in objectList:
+    for thing in area.objectList:
         thing.sprite.spawnSprite()
     for gib in gibList:
-        gib.spawnSprite
-    for sprite in newAnimatedSprites:
-        sprite.spawnSprite()
-        sprite.animate()
-    for light in newLightSources:
-        light.sprite.spawnSprite()
+        display.add(gib)
     loading.removeSprite()
 
 
@@ -658,9 +656,9 @@ class Map():
 
     def placeStruct(self, struct, spot):
         startx = (spot * BITS) % backWidth
-        starty = ((spot * BITS) / backWidth) * bits
-        structWidth = getWidth(struct) / bits
-        structHeight = getHeight(struct) / bits
+        starty = ((spot * BITS) / backWidth) * BITS
+        structWidth = getWidth(struct) / BITS
+        structHeight = getHeight(struct) / BITS
         for structx in range(0, structWidth):
             for structy in range(0, structHeight):
                 curr = spotToCoord(spot)
@@ -737,20 +735,19 @@ class LightSource(Doodad):
             for being in currentBeingList:
                 distanceX = abs(being.coords.x - light.coords.x)
                 distanceY = abs(being.coords.y - light.coords.y)
-                if distanceX <= bits*3 and distanceY <= range:
+                if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
             #self.sprite.removeSprite()
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
-            animatedSpriteList.remove(self.animatedSprite.spriteList[0])
-            animatedSpriteList.remove(self.animatedSprite.spriteList[1])
+            animatedSpriteList.remove(self.animatedSprite)
             self.sprite.removeSprite()
             self.sprite.spawnSprite()
             for being in currentBeingList:
                 distanceX = abs(being.coords.x - light.coords.x)
                 distanceY = abs(being.coords.y - light.coords.y)
-                if distanceX <= bits*3 and distanceY <= range:
+                if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
     
@@ -1111,7 +1108,7 @@ class Being():
         self.hostile = false
         self.inv = []
         self.coords = Coords(xSpawn, ySpawn)
-        self.forwardCoords = Coords(self.coords.x + bits, self.coords.y)
+        self.forwardCoords = Coords(self.coords.x + BITS, self.coords.y)
         self.unchangedSpritePaths = spritePaths
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], self)
@@ -1336,7 +1333,7 @@ class Being():
         elif self.coords.x == bot1.coords.x and self.coords.y-BITS == bot1.coords.y:
             self.faceUp()
             self.meleeAtk()
-        elif abs(self.coords.x - bot1.coords.x) < BITS and abs(self.coords.y - bot1.coords.y) < bits:
+        elif abs(self.coords.x - bot1.coords.x) < BITS and abs(self.coords.y - bot1.coords.y) < BITS:
             self.moveRandom()
         elif abs(self.coords.x - bot1.coords.x) <= closeProximity and abs(self.coords.y - bot1.coords.y) <= closeProximity:
             self.moveTowardsPlayer(distanceX, distanceY)
@@ -1647,14 +1644,14 @@ class Being():
         targetCoord.y -= 1
         targetSpot = tileCoordToSpot(targetCoord)
         if self.coords.y >= 0 and currentMap.isTraversable(targetSpot):
-            self.coords.y -= bits/2
+            self.coords.y -= BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[0], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveUp, (x,))
             if self.facing == directionList["up"]: 
-              self.forwardCoords.y = self.coords.y - BITS - bits/2
+              self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
@@ -1668,7 +1665,7 @@ class Being():
                            
     def threadMoveUp(self, x):
         time.sleep(.15)
-        self.coords.y -= bits/2
+        self.coords.y -= BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[0], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1683,7 +1680,7 @@ class Being():
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
         if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
-            self.coords.y += bits/2
+            self.coords.y += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[1], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1691,7 +1688,7 @@ class Being():
             thread.start_new_thread(self.threadMoveDown, (x,))
             self.sprite.moveTo(self.coords.x, self.coords.y)
             if self.facing == directionList["down"]:
-              self.forwardCoords.y = self.coords.y + BITS + bits/2
+              self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
@@ -1703,7 +1700,7 @@ class Being():
                    
     def threadMoveDown(self, x):
         time.sleep(.15)
-        self.coords.y += bits/2
+        self.coords.y += BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1718,7 +1715,7 @@ class Being():
         targetCoord.x -= 1
         targetSpot = tileCoordToSpot(targetCoord)
         if self.coords.x >= 0 and currentMap.isTraversable(targetSpot):
-            self.coords.x -= bits/2
+            self.coords.x -= BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[4], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1726,7 +1723,7 @@ class Being():
             thread.start_new_thread(self.threadMoveLeft, (x,))
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x - BITS - bits/2 
+              self.forwardCoords.x = self.coords.x - BITS - BITS/2 
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
               music.Play(move)
@@ -1737,7 +1734,7 @@ class Being():
             
     def threadMoveLeft(self, x):
         time.sleep(.15)
-        self.coords.x -= bits/2
+        self.coords.x -= BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[2], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1751,7 +1748,7 @@ class Being():
         targetCoord.x += 1
         targetSpot = tileCoordToSpot(targetCoord)
         if self.coords.x < backWidth and currentMap.isTraversable(targetSpot):
-            self.coords.x += bits/2
+            self.coords.x += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[5], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1759,7 +1756,7 @@ class Being():
             thread.start_new_thread(self.threadMoveRight, (x,))
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x + bits+ bits/2
+              self.forwardCoords.x = self.coords.x + BITS+ BITS/2
               move = music(path+"Audio/footstep.wav")
               music.volume(move, .08)
               music.Play(move)
@@ -1771,7 +1768,7 @@ class Being():
 
     def threadMoveRight(self, x):
         time.sleep(.1)
-        self.coords.x += bits/2
+        self.coords.x += BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[3], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -1793,7 +1790,7 @@ class Being():
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[0], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.y = self.coords.y - bits
+          self.forwardCoords.y = self.coords.y - BITS
           self.forwardCoords.x = self.coords.x
                            
     def faceDown(self):
@@ -1805,7 +1802,7 @@ class Being():
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[1], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.y = self.coords.y + bits
+          self.forwardCoords.y = self.coords.y + BITS
           self.forwardCoords.x = self.coords.x
                    
     def faceLeft(self):
@@ -1817,7 +1814,7 @@ class Being():
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[2], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.x = self.coords.x - bits
+          self.forwardCoords.x = self.coords.x - BITS
           self.forwardCoords.y = self.coords.y
                    
     def faceRight(self):
@@ -1829,7 +1826,7 @@ class Being():
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[3], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.x = self.coords.x + bits
+          self.forwardCoords.x = self.coords.x + BITS
           self.forwardCoords.y = self.coords.y
 
 
@@ -1841,28 +1838,28 @@ class Being():
 class Friendly(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
-        self.gibSpriteList = [Sprite(path + r"RobotSprites/friendlyBigGib1.gif", self),
-                              Sprite(path + r"RobotSprites/friendlyBigGib2.gif", self),
-                              Sprite(path + r"RobotSprites/friendlyHead.gif", self),
+        self.gibSpriteList = [RawSprite(path + r"RobotSprites/friendlyBigGib1.gif", self.coords.x, self.coords.y),
+                              RawSprite(path + r"RobotSprites/friendlyBigGib2.gif", self.coords.x, self.coords.y),
+                              RawSprite(path + r"RobotSprites/friendlyHead.gif", self.coords.x, self.coords.y),
                               ]
 
     def gibSpawn(self, gibSprite, x, y):
-        gibList.append(gibSprite)
-        display.add(gibSprite, x, y)
+        gibList.append(gibSprite.sprite)
+        display.add(gibSprite.sprite, x, y)
 
     def giblets(self):
-        x = random.randint(self.coords.x - bits, self.coords.x + BITS)
-        y = random.randint(self.coords.y - bits, self.coords.y + BITS)
+        x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
+        y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
         if isTraversable(x, y):
           animatedGib = AnimatedGiblets(path + r"RobotSprites/friendlyBigGib1.gif", path + r"RobotSprites/friendlyBigGib2.gif", x, y)
           animatedGib.animate()
         possibilities = random.randint(0, 3)
         if possibilities == 3:
           for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - bits, self.coords.x + BITS)
-            y = random.randint(self.coords.y - bits, self.coords.y + BITS)
+            x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
+            y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
             if isTraversable(x, y):
-              self.gibSpawn(self.gibSpriteList[3], x, y)
+              self.gibSpawn(self.gibSpriteList[2], x, y)
 
         # Actions to be taken on hp <= 0
 
@@ -1871,9 +1868,13 @@ class Friendly(Being):
         self.dropLoot()
         self.sprite.removeSprite()
         for files in self.bloodySprites:
+          try:
             os.remove(files)
+          except:
+            None
         currentBeingList.remove(self)
-        del self
+        while self != None:
+          del self
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
         
@@ -1893,8 +1894,8 @@ class ShopKeeper(Being):
 
 
     def giblets(self):
-        x = random.randint(self.coords.x - bits, self.coords.x + BITS)
-        y = random.randint(self.coords.y - bits, self.coords.y + BITS)
+        x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
+        y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
         if isTraversable(x, y):
           animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", x, y)
           animatedGib.animate()
@@ -1975,8 +1976,8 @@ class Enemy(Being):
     def giblets(self):
         gibIndex = 0
         for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - bits, self.coords.x + BITS)
-            y = random.randint(self.coords.y - bits, self.coords.y + BITS)
+            x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
+            y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
             if isTraversable(x, y):
                 self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
                 print(gibIndex)
@@ -2045,7 +2046,6 @@ class AnimatedGiblets():
                            Sprite(filename2, self)]
         self.sprite = self.spriteList[0]
         gibList.append(self.spriteList[0])
-        gibList.append(self.spriteList[1])
 
 
 
@@ -2070,7 +2070,7 @@ class AnimatedGiblets():
 
 
     def threadAnimate(self, container):
-        while self.spriteList[0] in gibList or self.spriteList[1] in gibList:
+        while self.spriteList[0] in gibList:
             time.sleep(random.randint(0, 2)/10.0)
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -2079,7 +2079,7 @@ class AnimatedGiblets():
             else:
                 self.sprite = self.spriteList[0]
                 self.spawnSprite()
-        if self not in animatedSpriteList:
+        if self.spriteList[0] not in gibList:
             self.removeSprite()
             del self
                      
@@ -2105,14 +2105,16 @@ class StationaryAnimatedSprite():
         self.spriteList = [Sprite(filename1, self, layer),
                            Sprite(filename2, self, layer)]
         self.sprite = self.spriteList[0]
-        animatedSpriteList.append(self)
         self.coords = Coords(x, y)
         self.sprite.layer = layer
+        self.isAnimating = false
 
 
 
 
     def animate(self):
+        animatedSpriteList.append(self)
+        self.isAnimating = true
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
 
@@ -2296,10 +2298,11 @@ class User(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        currentBeingList.remove(self)
-        self.__init__("bot1", "Stick", userSpritePaths, self.area)
+        loadNewArea(TOWNAREA)
+        self.__init__("bot1", "Stick", userSpritePaths, TOWNAREA)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
+        
 
 
 
@@ -2399,7 +2402,7 @@ home += "fggddddddgggggggddddddddddddgdgf"
 home += "ffffffffffffffffffffffffffffffff"
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
-townSpawn = Coords(13*bits, 1*BITS)
+townSpawn = Coords(13*BITS, 1*BITS)
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
@@ -2421,7 +2424,7 @@ field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fffffffffffffggggfffffffffffffff"
 fieldImg = makePicture(path + "fieldMap.png")
-fieldSpawn = Coords(1*bits, 8*BITS)
+fieldSpawn = Coords(1*BITS, 7*BITS)
 fieldMap = Map(field, fieldImg)
 
 dungeon  = "ffffffffffffffffffffffffffffffff"
@@ -2444,7 +2447,7 @@ dungeon += "fllllllllllllllllllllllllllllllf"
 dungeon += "fffffffffffffllllfffffffffffffff"
 dungeonImg = makePicture(path + "dungeonMap.png")
 dungeonMap = Map(dungeon, dungeonImg)
-dungeonSpawn = Coords(15*bits, 16*BITS)
+dungeonSpawn = Coords(15*BITS, 16*BITS)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
@@ -2504,15 +2507,15 @@ text.onKeyType(keyAction)
 display.add(text)
 
 #display.drawImage(path + "newBack.png", 0, 0)
-bot1Spawn = Coords(13*bits, 1*BITS)
+bot1Spawn = Coords(13*BITS, 1*BITS)
 bot1 = User("bot1", "Stick", userSpritePaths, TOWNAREA)
 bot1.area = currentArea
-shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*bits, 6*BITS)
+shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
 light = LightSource(bigTorchSpritePaths, 416, 288, 1)
 light2 = LightSource(bigTorchSpritePaths, 384, 288, 1)
 shopKeeper.sprite.spawnSprite()
-friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*bits, 10*BITS)
-friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*bits, 10*BITS)
+friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
+friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
 
@@ -2520,5 +2523,3 @@ friendlyGreen.sprite.spawnSprite()
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #music.repeat(background_music1)
 #music.Stop(background_music1)
-testCoords = Coords(0, 0)
-currentBeingList.append(friendlyOrange)
