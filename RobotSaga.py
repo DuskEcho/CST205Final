@@ -485,7 +485,7 @@ def loadNewArea(area):
     for gib in gibList:
         display.add(gib)
     loading.removeSprite()
-
+    text.grabFocus()
 
 def setUpLayers():
     # DO NOT REMOVE LAYERS, needed for layer positioning of sprites
@@ -2528,7 +2528,7 @@ friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
-
+text.grabFocus()
 #background music
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #music.repeat(background_music1)
