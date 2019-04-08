@@ -602,6 +602,13 @@ def initialSetup():
         ####################
 
 
+class CustomDisplay(gui.Display):
+  def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
+    gui.Display.__init__(self, title, width, height, x, y, color)
+  def __del__(self):
+    #insert stop music logic here
+    gui.display.__del__(self)
+
 class Area():
     def __init__(self, mapSprite, mapObject, spawnLocation):
         self.beingList = []
@@ -2468,7 +2475,7 @@ layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
 layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
 loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
 
-display = gui.Display("Robot Saga", backWidth, backHeight)
+display = CustomDisplay("Robot Saga", backWidth, backHeight)
 
 
 setUpLayers()
