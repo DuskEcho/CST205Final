@@ -61,15 +61,33 @@ class TurnCounter():
 
 counter = TurnCounter()
 
-#beings
-beingList = []
-#interactable objects
-objectList = []
-#gore pieces
-gibList = []
-animatedSpriteList = []
-lightSources = []
 
+    #CONTAINERS
+#beings	
+townBeingList = []
+fieldBeingList = []
+dungeonBeingList = []
+currentBeingList = townBeingList
+#interactable objects	
+townObjectList = []
+fieldObjectList = []
+dungeonObjectList = []
+objectList = townObjectList
+#gore pieces	#gore pieces
+townGibList = []
+fieldGibList = []
+dungeonGibList = []
+gibList = townGibList
+#animated sprites
+townAnimatedSpriteList = []
+fieldAnimatedSpriteList = []
+dungeonAnimatedSpriteList = []
+animatedSpriteList = townAnimatedSpriteList
+#light sources
+townLightSources = []
+fieldLightSources = []
+dungeonLightSources = []
+lightSources = townLightSources
 
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
@@ -235,7 +253,7 @@ def turnPass():
     counter.turn += 1
     if counter.turn % 20 == 0:
         spawnEnemy()
-    for person in beingList:
+    for person in currentBeingList:
         if person.hostile == true:
             person.simpleHostileAI()
     if bot1.hp <= 0:
@@ -310,7 +328,7 @@ def threadDelayRemoveObject(object, delay):
 
 def clearBadSprites():
     goodSprites = []
-    for being in beingList:
+    for being in currentBeingList:
         goodSprites.append(being.sprite)
     for sprite in display.items:
         if sprite not in goodSprites and type(sprite) == BeingSprite:
@@ -428,6 +446,40 @@ def loadingScreen():
     loading.spawnSprite()
 
 
+def loadNewArea(newMapSprite, mapObject, newPlayerCoords, newBeingList, newObjectList, newGibList, newAnimatedSprites, newLightSources):
+    loadingScreen()
+    bot1.coords = newPlayerCoords
+    global currentBeingList
+    global gibList
+    global animatedSpriteList
+    global lightSources
+    global text
+    global display
+    global currentBg
+    global currentMap
+    currentMap = mapObject
+    currentBg = newMapSprite
+    currentBg.spawnSprite()
+    display.add(text)
+    currentBeingList.remove(bot1)
+    currentBeingList = newBeingList
+    currentBeingList.append(bot1)
+    objectList = newObjectList
+    gibList = newGibList
+    animatedSpriteList = newAnimatedSprites
+    lightSources = newLightSources
+    for being in currentBeingList:
+      being.sprite.spawnSprite()
+    for thing in objectList:
+        thing.sprite.spawnSprite()
+    for gib in gibList:
+        gib.spawnSprite
+    for sprite in newAnimatedSprites:
+        sprite.spawnSprite()
+        sprite.animate()
+    for light in newLightSources:
+        light.sprite.spawnSprite()
+    loading.removeSprite()
 
 
 def setUpLayers():
@@ -467,6 +519,15 @@ def keyAction(a):
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
+          if bot1.coords.x >= 992:#right edge of screen
+            global testBack
+            global testMap
+            global testCoords
+            global fieldBeingList
+            global fieldObjectList
+            global fieldGibList
+            global fieldLightSources
+            loadNewArea(testBack, testMap, Coords(0, bot1.coords.y), fieldBeingList, fieldObjectList, fieldGibList, fieldAnimatedSpriteList, fieldLightSources)
   elif a == "W":
         bot1.faceUp()
   elif a == "A":
@@ -541,7 +602,16 @@ def initialSetup():
         ####################
 
 
-
+class area():
+    def __init__(self, mapSprite, mapObject, spawnLocation):
+        self.beingList = []
+        self.objectList = []
+        self.gibList = []
+        self.animatedSpriteList = []
+        self.lightSources = []
+        self.mapSprite = mapSprite
+        self.mapObject = mapObject
+        self.spawnCoords = Coords(0, 0)
 
 # universal coordinates object 
 
@@ -666,7 +736,7 @@ class LightSource(Doodad):
             self.isOn = true            
             self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
-            for being in beingList:
+            for being in currentBeingList:
                 distanceX = abs(being.coords.x - light.coords.x)
                 distanceY = abs(being.coords.y - light.coords.y)
                 if distanceX <= bits*3 and distanceY <= range:
@@ -679,7 +749,7 @@ class LightSource(Doodad):
             animatedSpriteList.remove(self.animatedSprite.spriteList[1])
             self.sprite.removeSprite()
             self.sprite.spawnSprite()
-            for being in beingList:
+            for being in currentBeingList:
                 distanceX = abs(being.coords.x - light.coords.x)
                 distanceY = abs(being.coords.y - light.coords.y)
                 if distanceX <= bits*3 and distanceY <= range:
@@ -1021,7 +1091,7 @@ class Weapon():
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
-    # All beings are added to the beingList[]
+    # All beings are added to the currentBeingList[]
     # Parameters:
     #   name:           - Being's name as a string
     #   weapName:       - Being's starting weapon as a string - must correlate with weaponList
@@ -1060,7 +1130,7 @@ class Being():
         self.inv.append(self.weapon)
         if itemList != None:
             self.inv += itemList
-        beingList.append(self)
+        currentBeingList.append(self)
 
 
 
@@ -1347,7 +1417,7 @@ class Being():
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        beingList.remove(self)
+        currentBeingList.remove(self)
         del self
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
@@ -1364,7 +1434,7 @@ class Being():
         elif self.spritePaths == self.lightSprites and not bright:
             self.resumePixels()
             deletePath = path + "RobotSprites"
-            deleteKey = self.name + str(beingList.index(self)) + "lightSprite"
+            deleteKey = self.name + str(currentBeingList.index(self)) + "lightSprite"
             x = None
             thread.start_new_thread(self.threadDeleteLightSprites, (x,))
 
@@ -1406,7 +1476,7 @@ class Being():
                     color = getColor(p)
                     if color != makeColor(0, 0, 0):
                         setColor(p, makeColor(getRed(p)*1.5, getGreen(p)*1.5, getBlue(p)*1.5))
-            newPicPath = path + "RobotSprites/" + self.name + str(beingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.lightSprites.append(newPicPath)
             spriteNum += 1
@@ -1428,7 +1498,7 @@ class Being():
                     if getColor(p) != makeColor(0, 0, 0):
                         if random.randint(0, 100) > (self.hp*100)/self.maxHp:
                             setColor(p, makeColor(114, 87, 7))
-            newPicPath = path + "RobotSprites/" + self.name + str(beingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
+            newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.bloodySprites.append(newPicPath)
             spriteNum += 1
@@ -1444,7 +1514,7 @@ class Being():
         # For use with actions that can target more than one target (e.g., attacks)
 
     def getFrontTargetList(self):
-        bigList = beingList + objectList
+        bigList = currentBeingList + objectList
         targetList = []
         for target in bigList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
@@ -1460,7 +1530,7 @@ class Being():
         #for use with actions that can only target one target (e.g., talking)
 
     def getFrontTarget(self):
-        bigList = beingList + objectList
+        bigList = currentBeingList + objectList
         for target in bigList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
                 return target
@@ -1804,7 +1874,7 @@ class Friendly(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        beingList.remove(self)
+        currentBeingList.remove(self)
         del self
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
@@ -1841,7 +1911,7 @@ class ShopKeeper(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        beingList.remove(self)
+        currentBeingList.remove(self)
         del self
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
@@ -1856,7 +1926,7 @@ class ShopKeeper(Being):
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
-    # All beings are added to the beingList[]
+    # All beings are added to the currentBeingList[]
     # Parameters:
     #   name:           - Being's name as a string
     #   weapName:       - Being's starting weapon as a string - must correlate with weaponList
@@ -1926,7 +1996,7 @@ class Enemy(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
           os.remove(files)
-        beingList.remove(self)
+        currentBeingList.remove(self)
         del self
         dead= music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
@@ -2037,8 +2107,7 @@ class StationaryAnimatedSprite():
         self.spriteList = [Sprite(filename1, self, layer),
                            Sprite(filename2, self, layer)]
         self.sprite = self.spriteList[0]
-        animatedSpriteList.append(self.spriteList[0])
-        animatedSpriteList.append(self.spriteList[1])
+        animatedSpriteList.append(self)
         self.coords = Coords(x, y)
         self.sprite.layer = layer
 
@@ -2056,7 +2125,7 @@ class StationaryAnimatedSprite():
 
 
     def threadAnimate(self, container):
-        while self.spriteList[0] in animatedSpriteList or self.spriteList[1] in animatedSpriteList:
+        while self in animatedSpriteList:
             time.sleep(random.randint(0, 2)/10.0)
             placeHolderSprite = self.spriteList[0]
             self.removeSprite()
@@ -2082,7 +2151,7 @@ class StationaryAnimatedSprite():
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
-    # All beings are added to the beingList[]
+    # All beings are added to the currentBeingList[]
     # Parameters:
     #   name:           - Being's name as a string
     #   weapName:       - Being's starting weapon as a string - must correlate with weaponList
@@ -2228,7 +2297,7 @@ class User(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        beingList.remove(self)
+        currentBeingList.remove(self)
         self.__init__("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
@@ -2389,9 +2458,32 @@ display = gui.Display("Robot Saga", backWidth, backHeight)
 
 setUpLayers()
 
+test  = "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+test += "gggggggggggggggggggggggggggggggg"
+testBack = RawSprite(path + "newBackold.png", 0, 0, 6)
+testMap = Map(test, testBack)
+
+
 #create background (probably prerender home background later)
-bg = RawSprite(path + "newBack.png", 0, 0, 6)
-bg.spawnSprite()
+townBg = RawSprite(path + "newBack.png", 0, 0, 6)
+currentBg = townBg
+currentBg.spawnSprite()
 
 #loadIntro()  - Intro credits for production build. see loadIntro() definition for details
 
@@ -2420,7 +2512,7 @@ display.add(text)
 #display.drawImage(path + "newBack.png", 0, 0)
 bot1Spawn = Coords(13*bits, 1*bits)
 bot1 = User("bot1", "Stick", userSpritePaths, bot1Spawn.x, bot1Spawn.y)
-shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, shopKeeperX, shopKeeperY)
+shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*bits, 6*bits)
 light = LightSource(bigTorchSpritePaths, 416, 288, 1)
 light2 = LightSource(bigTorchSpritePaths, 384, 288, 1)
 shopKeeper.sprite.spawnSprite()
@@ -2433,5 +2525,6 @@ friendlyGreen.sprite.spawnSprite()
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #music.repeat(background_music1)
 #music.Stop(background_music1)
-
+testCoords = Coords(0, 0)
+fieldBeingList.append(friendlyOrange)
 
