@@ -300,9 +300,13 @@ def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spriteP
     enemy.sprite.spawnSprite()
     
 
-
-
-
+def spawnFriendly(name = "FriendlyBorn" + str(counter.turn), weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
+    while not isTraversable(x, y):
+        x = random.randint(0, 10)*32
+        y =  random.randint(0, 10)*32
+    friendly = Friendly(name, weap, spritePaths, x, y)
+    friendly.sprite.spawnSprite()
+    
 
 # Used to remove objects (labels, sprites, etc.) from the display after a delay.
 # only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
@@ -1565,7 +1569,14 @@ class Being():
               target.displayDamage()
               if target.hp <= 0:
                 self.changeXp(target.xpValue)
-
+                global friendlyGreen
+                global friendlyOrange
+                if target == friendlyGreen:
+                  del friendlyGreen
+                elif target == friendlyOrange:
+                  del friendlyOrange
+                elif target == shopKeeper:
+                  del shopKeeper
                     
             
 
@@ -1873,8 +1884,7 @@ class Friendly(Being):
           except:
             None
         currentBeingList.remove(self)
-        while self != None:
-          del self
+        del self
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
         
