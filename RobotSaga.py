@@ -2306,6 +2306,7 @@ class User(Being):
 
     def dead(self):
         self.sprite.removeSprite()
+        self.dropLoot()
         for files in self.bloodySprites:
             os.remove(files)
         self.__init__("bot1", "Stick", userSpritePaths, self.area)
