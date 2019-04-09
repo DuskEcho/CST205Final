@@ -1021,10 +1021,10 @@ class BeingSprite(Sprite):
 
       #moves sprite to location given
 
-  def moveTo(self, x, y):
+  def moveTo(self, 4, x, y):
       self.parental.coords.x = x
       self.parental.coords.y = y
-      display.add(self, x, y)
+      display.addOrder(self, x, y)
 
 
 
