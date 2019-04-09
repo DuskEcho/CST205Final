@@ -189,18 +189,18 @@ weaponStatsList = {
                   path + "WeaponSprites/Sword/swordDown3.gif",
                   path + "WeaponSprites/Sword/swordLeft3.gif",
                   path + "WeaponSprites/Sword/swordRight3.gif"], false, None, 1],
-    "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif"], false, None, 1]
+    "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp1.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown1.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft1.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight1.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherUp2.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown2.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft2.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight2.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherUp3.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown3.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1]
    }
 helmStatsList = {
     "Hair": [0, "spritePath"],
@@ -1142,11 +1142,13 @@ class Weapon():
           self.animationDown = ThreeStageAnimationCycle(self.sprites[1], self.sprites[5], self.sprites[9], 0, 0, .15)
           self.animationLeft = ThreeStageAnimationCycle(self.sprites[2], self.sprites[6], self.sprites[10], 0, 0, .15)
           self.animationRight = ThreeStageAnimationCycle(self.sprites[3], self.sprites[7], self.sprites[11], 0, 0, .15)
-          self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, .15)
-          self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, .15)
-          self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, .15)
-          self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, .15)
-          
+          try:
+            self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, .15)
+            self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, .15)
+            self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, .15)
+            self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, .15)
+          except:
+            None
 
     def burn(self):
         x = None
@@ -1748,7 +1750,7 @@ class Being():
         # more general function
 
     def threadHideWeapon(self, x):
-        time.sleep(self.weapon.currentAnimation.secondsBetween*3)
+        time.sleep(self.weapon.currentAnimation.secondsBetween*4)
         self.weapon.currentAnimation.stopAnimating()
         self.weapon.displayed = false
 
