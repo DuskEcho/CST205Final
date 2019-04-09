@@ -147,15 +147,15 @@ weaponStatsList = {
                   path + "WeaponSprites/Stick/stickFireDown.gif",
                   path + "WeaponSprites/Stick/stickFireLeft.gif",
                   path + "WeaponSprites/Stick/stickFireRight.gif"], 1],
-   "Rock": [2, [path + "WeaponSprites/Rock/rockUp.gif",
+    "Rock": [2, [path + "WeaponSprites/Rock/rockUp.gif",
                   path + "WeaponSprites/Rock/rockDown.gif",
                   path + "WeaponSprites/Rock/rockLeft.gif",
-                  path + "WeaponSprites/Rock/rockRight.gif"], false, None, 1]
-   "Sword": [5, [path + "WeaponSprites/Sword/swordUp.gif",
+                  path + "WeaponSprites/Rock/rockRight.gif"], false, None, 1],
+    "Sword": [5, [path + "WeaponSprites/Sword/swordUp.gif",
                   path + "WeaponSprites/Sword/swordDown.gif",
                   path + "WeaponSprites/Sword/swordLeft.gif",
-                  path + "WeaponSprites/Sword/swordRight.gif"], false, None, 1]
-   "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
+                  path + "WeaponSprites/Sword/swordRight.gif"], false, None, 1],
+    "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherRight.gif"], false, None, 1]
@@ -1032,10 +1032,10 @@ class BeingSprite(Sprite):
 
       #moves sprite to location given
 
-  def moveTo(self, 4, x, y):
+  def moveTo(self, x, y):
       self.parental.coords.x = x
       self.parental.coords.y = y
-      display.addOrder(self, x, y)
+      display.addOrder(self, 4, x, y)
 
 
 
@@ -1060,13 +1060,14 @@ class Weapon():
     def __init__(self, weapName):
         self.name = weapName
         if self.name != None:
+          self.power = weaponStatsList[self.name][0]
           self.originalSprites = weaponStatsList[self.name][1]
+          self.isBurnable = weaponStatsList[self.name][2]
+          self.burningSprites = weaponStatsList[self.name][3]
+          self.range = weaponStatsList[self.name][4]
           self.coords = Coords(0, 0)
           self.sprites = self.originalSprites
-          self.burningSprites = weaponStatsList[self.name][3]
           self.sprite = Sprite(self.sprites[3], self)
-          self.power = weaponStatsList[self.name][0]
-          self.isBurnable = weaponStatsList[self.name][2]
           self.onFire = false
         self.displayed = false
 
