@@ -2175,6 +2175,58 @@ class StationaryAnimatedSprite():
 
 
 
+class ThreeStageAnimationCycle():
+    def __init__(self, filename1, filename2, filename3, x, y, layer = 3):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, self, layer),
+                           Sprite(filename2, self, layer),
+                           Sprite(filename3, self, layer)]
+        self.sprite = self.spriteList[0]
+        self.coords = Coords(x, y)
+        self.sprite.layer = layer
+        self.isAnimating = false
+
+
+
+
+    def animate(self):
+        animatedSpriteList.append(self)
+        self.isAnimating = true
+        x = None
+        thread.start_new_thread(self.threadAnimate, (x,))
+    def stopAnimating(self):
+        animatedSpriteList.remove(self)
+
+    def spawnSprite(self):
+        self.sprite.spawnSprite()
+    def removeSprite(self):
+        display.remove(self.sprite)
+
+
+    def threadAnimate(self, container):
+        while self in animatedSpriteList:
+            time.sleep(.2)
+            placeHolderSprite = self.spriteList[0]
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.removeSprite()
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            elif self.sprite == self.spriteList[1]:
+                self.removeSprite()
+                self.sprite = self.spriteList[2]
+                self.spawnSprite()
+            else:
+              try:
+                self.removeSprite()
+              except:
+                None
+              self.sprite = self.spriteList[0]
+              self.spawnSprite()
+        if self not in animatedSpriteList:
+            self.removeSprite()
+            del self
+
 
 
 
@@ -2437,7 +2489,9 @@ home += "ffffffffffffffffffffffffffffffff"
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 townSpawn = Coords(13*BITS, 1*BITS)
-townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352)]
+townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352),
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 320, 0),
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 896, 384)]
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
@@ -2553,7 +2607,7 @@ friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
-test.animate()
+loadNewArea(TOWNAREA)#refresh screen, start animations
 text.grabFocus()
 #background music
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
