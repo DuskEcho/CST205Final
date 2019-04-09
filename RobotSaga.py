@@ -2209,7 +2209,7 @@ class StationaryAnimatedSprite():
 
 
 class ThreeStageAnimationCycle():
-    def __init__(self, filename1, filename2, filename3, x, y, layer = 3):
+    def __init__(self, filename1, filename2, filename3, x, y, secondsBetween, layer = 3):
         self.coords = Coords(x, y)
         self.spriteList = [Sprite(filename1, self, layer),
                            Sprite(filename2, self, layer),
@@ -2218,6 +2218,7 @@ class ThreeStageAnimationCycle():
         self.coords = Coords(x, y)
         self.sprite.layer = layer
         self.isAnimating = false
+        self.secondsBetween = secondsBetween
 
 
 
@@ -2238,7 +2239,7 @@ class ThreeStageAnimationCycle():
 
     def threadAnimate(self, container):
         while self in animatedSpriteList:
-            time.sleep(.2)
+            time.sleep(self.secondsBetween)
             placeHolderSprite = self.spriteList[0]
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -2523,8 +2524,8 @@ town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 townSpawn = Coords(13*BITS, 1*BITS)
 townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 320, 0),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 896, 384)]
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", .3, 320, 0),
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", .3, 896, 384)]
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
