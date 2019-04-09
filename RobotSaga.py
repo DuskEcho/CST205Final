@@ -49,12 +49,12 @@ BITS = 32
 WIDTHTILES = 32
 #how many tiles there are tall
 HEIGHTTILES = 18
-
+MAX_BEINGS = 6
 TOWNAREA = None
 FIELDAREA = None
 DUNGEONAREA = None
 currentArea = None
-
+currentSpawnCount = 0
 class TurnCounter():
     def __init__(self):
         self.turn = 0
@@ -96,7 +96,9 @@ userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
                path + "RobotSprites/botBlueSideLeft.gif",
                path + "RobotSprites/botBlueSideRight.gif",
                path + "RobotSprites/botBlueMovingLeft.gif",
-               path + "RobotSprites/botBlueMovingRight.gif",]
+               path + "RobotSprites/botBlueMovingRight.gif",
+               path + "RobotSprites/botBlueMovingFront.gif",
+               path + "RobotSprites/botBlueMovingBack.gif",]
 friendlyGreenSpritePaths = [path + "RobotSprites/botGreenBack.gif",
                path + "RobotSprites/botGreenFront.gif",
                path + "RobotSprites/botGreenSideLeft.gif",
@@ -297,11 +299,12 @@ def loadAreaCheck(player):
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
 def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
-    while not isTraversable(x, y):
-        x = random.randint(0, 10)*32
-        y =  random.randint(0, 10)*32
-    enemy = Enemy(name, weap, spritePaths, x, y, species, level)
-    enemy.sprite.spawnSprite()
+    if len(currentArea.beingList) < MAX_BEINGS:
+      while not isTraversable(x, y):
+          x = random.randint(0, 10)*32
+          y =  random.randint(0, 10)*32
+      enemy = Enemy(name, weap, spritePaths, x, y, species, level)
+      enemy.sprite.spawnSprite()
     
 
 def spawnFriendly(name = "FriendlyBorn" + str(counter.turn), weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
@@ -1100,7 +1103,7 @@ class Weapon():
 
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
-    # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
+    # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove, upMove, downMove]
     # All beings are added to the currentBeingList[]
     # Parameters:
     #   name:           - Being's name as a string
@@ -1668,7 +1671,7 @@ class Being():
         if self.coords.y >= 0 and currentMap.isTraversable(targetSpot):
             self.coords.y -= BITS/2
             self.sprite.removeSprite()
-            self.sprite = BeingSprite(self.spritePaths[0], self)
+            self.sprite = BeingSprite(self.spritePaths[7], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveUp, (x,))
@@ -1704,7 +1707,7 @@ class Being():
         if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
             self.coords.y += BITS/2
             self.sprite.removeSprite()
-            self.sprite = BeingSprite(self.spritePaths[1], self)
+            self.sprite = BeingSprite(self.spritePaths[6], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveDown, (x,))
