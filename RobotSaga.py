@@ -140,22 +140,62 @@ menuSpritePaths = [path + "Menu/menuDefault.png",
 # Numbers correspond to stats
 # arrays in form [attack/def, spritePaths, isBurnable (for weapons only), burningSpritePaths, weaponRange]
 weaponStatsList = {
-    "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
-                  path + "WeaponSprites/Stick/stickDown.gif",
-                  path + "WeaponSprites/Stick/stickLeft.gif",
-                  path + "WeaponSprites/Stick/stickRight.gif"], true, [path + "WeaponSprites/Stick/stickFireUp.gif",
-                  path + "WeaponSprites/Stick/stickFireDown.gif",
-                  path + "WeaponSprites/Stick/stickFireLeft.gif",
-                  path + "WeaponSprites/Stick/stickFireRight.gif"], 1],
+    "Stick": [1, [path + "WeaponSprites/Stick/stickUp1.gif",
+                  path + "WeaponSprites/Stick/stickDown1.gif",
+                  path + "WeaponSprites/Stick/stickLeft1.gif",
+                  path + "WeaponSprites/Stick/stickRight1.gif",
+                  path + "WeaponSprites/Stick/stickUp2.gif",
+                  path + "WeaponSprites/Stick/stickDown2.gif",
+                  path + "WeaponSprites/Stick/stickLeft2.gif",
+                  path + "WeaponSprites/Stick/stickRight2.gif",
+                  path + "WeaponSprites/Stick/stickUp3.gif",
+                  path + "WeaponSprites/Stick/stickDown3.gif",
+                  path + "WeaponSprites/Stick/stickLeft3.gif",
+                  path + "WeaponSprites/Stick/stickRight3.gif",], true, [path + "WeaponSprites/Stick/stickFireUp1.gif",
+                  path + "WeaponSprites/Stick/stickFireDown1.gif",
+                  path + "WeaponSprites/Stick/stickFireLeft1.gif",
+                  path + "WeaponSprites/Stick/stickFireRight1.gif",
+                  path + "WeaponSprites/Stick/stickFireUp2.gif",
+                  path + "WeaponSprites/Stick/stickFireDown2.gif",
+                  path + "WeaponSprites/Stick/stickFireLeft2.gif",
+                  path + "WeaponSprites/Stick/stickFireRight2.gif",
+                  path + "WeaponSprites/Stick/stickFireUp3.gif",
+                  path + "WeaponSprites/Stick/stickFireDown3.gif",
+                  path + "WeaponSprites/Stick/stickFireLeft3.gif",
+                  path + "WeaponSprites/Stick/stickFireRight3.gif"], 1],
     "Rock": [2, [path + "WeaponSprites/Rock/rockUp.gif",
                   path + "WeaponSprites/Rock/rockDown.gif",
                   path + "WeaponSprites/Rock/rockLeft.gif",
-                  path + "WeaponSprites/Rock/rockRight.gif"], false, None, 1],
+                  path + "WeaponSprites/Rock/rockRight.gif",
+                  path + "WeaponSprites/Rock/rockUp.gif",
+                  path + "WeaponSprites/Rock/rockDown.gif",
+                  path + "WeaponSprites/Rock/rockLeft.gif",
+                  path + "WeaponSprites/Rock/rockRight.gif",
+                  path + "WeaponSprites/Rock/rockUp.gif",
+                  path + "WeaponSprites/Rock/rockDown.gif",
+                  path + "WeaponSprites/Rock/rockLeft.gif",
+                  path + "WeaponSprites/Rock/rockRight.gif",], false, None, 1],
     "Sword": [5, [path + "WeaponSprites/Sword/swordUp.gif",
+                  path + "WeaponSprites/Sword/swordDown.gif",
+                  path + "WeaponSprites/Sword/swordLeft.gif",
+                  path + "WeaponSprites/Sword/swordRight.gif",
+                  path + "WeaponSprites/Sword/swordUp.gif",
+                  path + "WeaponSprites/Sword/swordDown.gif",
+                  path + "WeaponSprites/Sword/swordLeft.gif",
+                  path + "WeaponSprites/Sword/swordRight.gif",
+                  path + "WeaponSprites/Sword/swordUp.gif",
                   path + "WeaponSprites/Sword/swordDown.gif",
                   path + "WeaponSprites/Sword/swordLeft.gif",
                   path + "WeaponSprites/Sword/swordRight.gif"], false, None, 1],
     "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherRight.gif"], false, None, 1]
@@ -1069,12 +1109,21 @@ class Weapon():
           self.sprites = self.originalSprites
           self.sprite = Sprite(self.sprites[3], self)
           self.onFire = false
-        self.displayed = false
+          self.displayed = false
+          self.currentAnimation = None
+          self.animationUp = ThreeStageAnimationCycle(self.sprites[0], self.sprites[4], self.sprites[8], 0, 0, .15)
+          self.animationDown = ThreeStageAnimationCycle(self.sprites[1], self.sprites[5], self.sprites[9], 0, 0, .15)
+          self.animationLeft = ThreeStageAnimationCycle(self.sprites[2], self.sprites[6], self.sprites[10], 0, 0, .15)
+          self.animationRight = ThreeStageAnimationCycle(self.sprites[3], self.sprites[7], self.sprites[11], 0, 0, .15)
+          self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, .15)
+          self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, .15)
+          self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, .15)
+          self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, .15)
+          
 
     def burn(self):
         x = None
         self.onFire = true
-        self.sprites = self.burningSprites
         thread.start_new_thread(self.threadFireCountdown, (x, ))
 
     def threadFireCountdown(self, x):
@@ -1095,28 +1144,46 @@ class Weapon():
 
     def displayUp(self, x, y):
         if self.displayed == false:
-            self.sprite = Sprite(self.sprites[0], self)
-            display.add(self.sprite, x, y)
-            self.displayed = true
+          self.displayed = true
+          if self.onFire == true:
+            self.currentAnimation = self.burningAnimationUp
+          else:
+            self.currentAnimation = self.animationUp
+          self.currentAnimation.coords = Coords(x, y)
+          self.currentAnimation.animate()
+
 
     def displayDown(self, x, y):
         if self.displayed == false:
-            self.sprite = Sprite(self.sprites[1], self)
-            display.add(self.sprite, x, y)
-            self.displayed = true
+          self.displayed = true
+          if self.onFire == true:
+            self.currentAnimation = self.burningAnimationDown
+          else:
+            self.currentAnimation = self.animationDown
+          self.currentAnimation.coords = Coords(x, y)
+          self.currentAnimation.animate()
 
     def displayLeft(self, x, y):
         if self.displayed == false:
-            self.sprite = Sprite(self.sprites[2], self)
-            display.add(self.sprite, x, y)
-            self.displayed = true
+          self.displayed = true
+          if self.onFire == true:
+            self.currentAnimation = self.burningAnimationLeft
+          else:
+            self.currentAnimation = self.animationLeft
+          self.currentAnimation.coords = Coords(x, y)
+          self.currentAnimation.animate()
+          self.displayed = true
 
 
     def displayRight(self, x, y):
         if self.displayed == false:
-            self.sprite = Sprite(self.sprites[3], self)
-            display.add(self.sprite, x, y)
-            self.displayed = true
+          if self.onFire == true:
+            self.currentAnimation = self.burningAnimationRight
+          else:
+            self.currentAnimation = self.animationRight
+          self.currentAnimation.coords = Coords(x, y)
+          self.currentAnimation.animate()
+          self.displayed = true
 
 
 
@@ -1604,9 +1671,8 @@ class Being():
 
     def meleeAtk(self):
         self.displayWeapon()
-        x = 1
-        thread.start_new_thread(threadRemoveSprite, (.2, self.weapon.sprite))
-        self.weapon.displayed = false
+        x = None
+        thread.start_new_thread(self.threadHideWeapon, (None,))
         for target in self.getFrontTargetList():
             if isinstance(target, LightSource):
               if target.isBurnable and target.isOn and self.weapon.isBurnable:
@@ -1655,9 +1721,9 @@ class Being():
         # more general function
 
     def threadHideWeapon(self, x):
-            time.sleep(.2)
-            self.weapon.hide()
-
+        time.sleep(self.weapon.currentAnimation.secondsBetween*3)
+        self.weapon.currentAnimation.stopAnimating()
+        self.weapon.displayed = false
 
 
 
@@ -2223,6 +2289,7 @@ class ThreeStageAnimationCycle():
 
 
 
+
     def animate(self):
         animatedSpriteList.append(self)
         self.isAnimating = true
@@ -2239,7 +2306,6 @@ class ThreeStageAnimationCycle():
 
     def threadAnimate(self, container):
         while self in animatedSpriteList:
-            time.sleep(self.secondsBetween)
             placeHolderSprite = self.spriteList[0]
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -2257,8 +2323,10 @@ class ThreeStageAnimationCycle():
                 None
               self.sprite = self.spriteList[0]
               self.spawnSprite()
+            time.sleep(self.secondsBetween)
         if self not in animatedSpriteList:
             self.removeSprite()
+            self.sprite = self.spriteList[2]
             del self
 
 
