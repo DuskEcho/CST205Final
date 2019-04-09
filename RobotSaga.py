@@ -138,7 +138,7 @@ menuSpritePaths = [path + "Menu/menuDefault.png",
 
 # Dictionaries for items
 # Numbers correspond to stats
-# arrays in form [attack/def, spritePaths, isBurnable (for weapons only)]
+# arrays in form [attack/def, spritePaths, isBurnable (for weapons only), burningSpritePaths, weaponRange]
 weaponStatsList = {
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp.gif",
                   path + "WeaponSprites/Stick/stickDown.gif",
@@ -146,8 +146,19 @@ weaponStatsList = {
                   path + "WeaponSprites/Stick/stickRight.gif"], true, [path + "WeaponSprites/Stick/stickFireUp.gif",
                   path + "WeaponSprites/Stick/stickFireDown.gif",
                   path + "WeaponSprites/Stick/stickFireLeft.gif",
-                  path + "WeaponSprites/Stick/stickFireRight.gif"]],
-   "Rock": [2, "spritePath"]
+                  path + "WeaponSprites/Stick/stickFireRight.gif"], 1],
+   "Rock": [2, [path + "WeaponSprites/Rock/rockUp.gif",
+                  path + "WeaponSprites/Rock/rockDown.gif",
+                  path + "WeaponSprites/Rock/rockLeft.gif",
+                  path + "WeaponSprites/Rock/rockRight.gif"], false, None, 1]
+   "Sword": [5, [path + "WeaponSprites/Sword/swordUp.gif",
+                  path + "WeaponSprites/Sword/swordDown.gif",
+                  path + "WeaponSprites/Sword/swordLeft.gif",
+                  path + "WeaponSprites/Sword/swordRight.gif"], false, None, 1]
+   "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherDown.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherLeft.gif",
+                  path + "WeaponSprites/Botsmasher/botsmasherRight.gif"], false, None, 1]
    }
 helmStatsList = {
     "Hair": [0, "spritePath"],
