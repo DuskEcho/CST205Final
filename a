@@ -205,9 +205,7 @@ def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
 
 
 
-def animateSpriteSet(stationaryAnimatedSpriteSet):
-    for sprite in stationaryAnimatedSpriteSet:
-      sprite.animate()
+
 
 
 
@@ -620,15 +618,14 @@ class CustomDisplay(gui.Display):
 
 class Area():
     def __init__(self, mapSprite, mapObject, spawnLocation):
-        self.beingList = [] #beings
-        self.objectList = [] #lootbags, chests, doodads, etc.
-        self.gibList = [] # gore pieces
-        self.animatedSpriteList = [] # may be removed
-        self.lightSources = [] #lightSources class objects
-        self.mapSprite = mapSprite #sprite for maps
-        self.mapObject = mapObject #corresponding Map class object
-        self.spawnCoords = spawnLocation #desired spawn location as coords class object
-        self.persistentAnimations = [] #stationaryAnimatedSprites
+        self.beingList = []
+        self.objectList = []
+        self.gibList = []
+        self.animatedSpriteList = []
+        self.lightSources = []
+        self.mapSprite = mapSprite
+        self.mapObject = mapObject
+        self.spawnCoords = spawnLocation
 
 # universal coordinates object 
 
@@ -2143,7 +2140,7 @@ class StationaryAnimatedSprite():
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
     def stopAnimating(self):
-        animatedSpriteList.remove(self)
+        self.isAnimating = false
 
     def spawnSprite(self):
         self.sprite.spawnSprite()
@@ -2152,7 +2149,7 @@ class StationaryAnimatedSprite():
 
 
     def threadAnimate(self, container):
-        while self in animatedSpriteList:
+        while self.isAnimating:
             time.sleep(random.randint(0, 2)/10.0)
             placeHolderSprite = self.spriteList[0]
             self.removeSprite()
@@ -2162,7 +2159,7 @@ class StationaryAnimatedSprite():
             else:
                 self.sprite = self.spriteList[0]
                 self.spawnSprite()
-        if self not in animatedSpriteList:
+        if self.isAnimating == false:
             self.removeSprite()
             del self
 
@@ -2545,8 +2542,6 @@ friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
-test = StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352)
-test.animate()
 text.grabFocus()
 #background music
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
