@@ -116,7 +116,9 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotSideLeft.gif",
                path + "RobotSprites/BlueRobotSideRight.gif",
                path + "RobotSprites/BlueRobotMovingLeft.gif",
-               path + "RobotSprites/BlueRobotMovingRight.gif",]
+               path + "RobotSprites/BlueRobotMovingRight.gif",
+               path + "RobotSprites/BlueRobotMovingFront.gif",
+               path + "RobotSprites/BlueRobotMovingBack.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif"]
 lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
@@ -2512,7 +2514,14 @@ class User(Being):
         self.sprite.removeSprite()
         self.dropLoot()
         for files in self.bloodySprites:
+          try:
             os.remove(files)
+          except:
+            None
+        try:
+          self.weapon.currentAnimation.stopAnimating()
+        except:
+          None
         self.__init__("bot1", "Stick", userSpritePaths, self.area)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
@@ -2618,8 +2627,8 @@ town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 townSpawn = Coords(13*BITS, 1*BITS)
 townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", .3, 320, 0),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", .3, 896, 384)]
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 320, 0, .3),
+                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 896, 384, .3)]
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
