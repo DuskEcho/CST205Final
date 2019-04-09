@@ -622,14 +622,39 @@ def keyAction(a):
   elif a == " ":
       bot1.activateTarget()
 
-  elif a == "m": #activate menu, placeholder, not final code
-    if bot1Ready:
-     defaultMenu.sprite.spawnSprite()
-      #turnPass() no turn pass, stops movement
+     #Menu Logic
 
-  elif a == "z": #testing
+  elif a == "m": #Activates menu, switches to menu controls
     if bot1Ready:
-      equipMenu.sprite.spawnSprite()
+        defaultMenu.sprite.spawnSprite()
+        text.onKeyType(menuAction)
+
+
+def menuAction(menuInput):
+  bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
+  if menuInput == "1":
+    if bot1Ready:
+         statusMenu.sprite.spawnSprite()
+
+
+  elif menuInput == "2":
+    if bot1Ready:
+         itemMenu.sprite.spawnSprite()
+
+
+  elif menuInput == "3":
+      if bot1Ready:
+          equipMenu.sprite.spawnSprite()
+
+
+  elif menuInput == "m":
+      if bot1Ready:
+           statusMenu.sprite.removeSprite()
+           itemMenu.sprite.removeSprite()
+           equipMenu.sprite.removeSprite()
+           defaultMenu.sprite.removeSprite()
+           text.onKeyType(keyAction)
+
 
 
 """
@@ -2198,6 +2223,7 @@ class AnimatedGiblets():
         display.place(self.sprite, self.coords.x, self.coords.y, 5)
     def removeSprite(self):
         display.remove(self.sprite)
+
 
 
     def threadAnimate(self, container):
