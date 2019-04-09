@@ -256,7 +256,7 @@ def slideRight(toBeMoved, targetXBig):
 
 
 
-
+        #double calls for garbage cleanup
 def loadAreaCheck(player):
   global FIELDAREA
   global DUNGEONAREA
@@ -265,12 +265,15 @@ def loadAreaCheck(player):
   if currentArea == TOWNAREA:
     if player.coords.y <= 0:
       loadNewArea(DUNGEONAREA)
+      loadNewArea(DUNGEONAREA)
       bot1.area = DUNGEONAREA
     elif player.coords.x >= 992:
+      loadNewArea(FIELDAREA)
       loadNewArea(FIELDAREA)
       bot1.area = FIELDAREA
   elif currentArea == FIELDAREA:
     if player.coords.x <= 0:
+      loadNewArea(TOWNAREA)
       loadNewArea(TOWNAREA)
       bot1.area = TOWNAREA
     elif player.coords.y >= 544:
@@ -283,6 +286,7 @@ def loadAreaCheck(player):
       player.coords.x = 480
       player.moveUp()
     elif player.coords.y >= 544:
+      loadNewArea(TOWNAREA)
       loadNewArea(TOWNAREA)
       bot1.area = TOWNAREA
 
