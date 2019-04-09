@@ -494,6 +494,8 @@ def loadNewArea(area):
     for gib in gibList:
         display.add(gib)
     loading.removeSprite()
+    for sprite in area.persistentAnimations:
+        sprite.animate()
     text.grabFocus()
 
 def setUpLayers():
@@ -619,7 +621,7 @@ class CustomDisplay(gui.Display):
     gui.display.__del__(self)
 
 class Area():
-    def __init__(self, mapSprite, mapObject, spawnLocation):
+    def __init__(self, mapSprite, mapObject, spawnLocation, persistantAnimations = []):
         self.beingList = [] #beings
         self.objectList = [] #lootbags, chests, doodads, etc.
         self.gibList = [] # gore pieces
@@ -628,7 +630,12 @@ class Area():
         self.mapSprite = mapSprite #sprite for maps
         self.mapObject = mapObject #corresponding Map class object
         self.spawnCoords = spawnLocation #desired spawn location as coords class object
-        self.persistentAnimations = [] #stationaryAnimatedSprites
+        self.persistentAnimations = persistantAnimations #stationaryAnimatedSprites
+
+
+    def activateAnimations(self):
+        for animatedSprite in self.persistentAnimations:
+          animatedSprite.animate()
 
 # universal coordinates object 
 
@@ -2430,6 +2437,7 @@ home += "ffffffffffffffffffffffffffffffff"
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 townSpawn = Coords(13*BITS, 1*BITS)
+townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352)]
 currentMap = townMap
 
 field  = "ffffffffffffffffffffffffffffffff"
@@ -2491,7 +2499,7 @@ display = CustomDisplay("Robot Saga", backWidth, backHeight)
 setUpLayers()
 
 
-TOWNAREA = Area(None, townMap, townSpawn)
+TOWNAREA = Area(None, townMap, townSpawn, townAnimations)
 townSprite = RawSprite(path + "newBack.png", 0, 0, 6)
 TOWNAREA.mapSprite = townSprite
 FIELDAREA = Area(None, fieldMap, fieldSpawn)
@@ -2545,7 +2553,6 @@ friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
-test = StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352)
 test.animate()
 text.grabFocus()
 #background music
