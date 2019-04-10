@@ -50,9 +50,11 @@ WIDTHTILES = 32
 #how many tiles there are tall
 HEIGHTTILES = 18
 MAX_BEINGS = 6
-TOWNAREA = None
-FIELDAREA = None
-DUNGEONAREA = None
+TOWN_AREA = None
+E_FIELD_AREA = None
+NE_FIELD_AREA = None
+N_FIELD_AREA = None
+DUNGEON_AREA = None
 currentArea = None
 currentSpawnCount = 0
 class TurnCounter():
@@ -284,7 +286,7 @@ def showLabel(label):
 
 def turnPass():
     counter.turn += 1
-    if counter.turn % 20 == 0 and currentArea != TOWNAREA:
+    if counter.turn % 20 == 0 and currentArea != TOWN_AREA:
         spawnEnemy()
     for person in currentBeingList:
         if person.hostile == true:
@@ -319,40 +321,46 @@ def slideRight(toBeMoved, targetXBig):
 
 
 
-        #double calls for garbage cleanup
+        # Checks player coords to determine if a load is necessary.
+        # may call loadNewArea
+        # double calls for garbage cleanup
 def loadAreaCheck(player):
-  global FIELDAREA
-  global DUNGEONAREA
-  global TOWNAREA
-  global currentArea
-  if currentArea == TOWNAREA:
-    if player.coords.y <= 0:
-      loadNewArea(DUNGEONAREA)
-      loadNewArea(DUNGEONAREA)
-      bot1.area = DUNGEONAREA
-    elif player.coords.x >= 992:
-      loadNewArea(FIELDAREA)
-      loadNewArea(FIELDAREA)
-      bot1.area = FIELDAREA
-  elif currentArea == FIELDAREA:
-    if player.coords.x <= 0:
-      loadNewArea(TOWNAREA)
-      loadNewArea(TOWNAREA)
-      bot1.area = TOWNAREA
-    elif player.coords.y >= 544:
-      player.coods.x = -32
-      player.coords.y = 256
-      player.moveRight()
-  elif currentArea == DUNGEONAREA:
-    if player.coords.x <= 0:
-      player.coords.y = 576
-      player.coords.x = 480
-      player.moveUp()
-    elif player.coords.y >= 544:
-      loadNewArea(TOWNAREA)
-      loadNewArea(TOWNAREA)
-      bot1.area = TOWNAREA
+    global currentArea
+    maxAceptableWidth = 960
+    maxAceptableHeight = 512
 
+    if player.coords.y <= 0:
+      loadNewArea(currentArea.northArea)
+      bot1.coords.y = maxAceptableHeight
+      loadNewArea(currentArea)
+      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+    elif player.coords.y > maxAceptableHeight:
+      loadNewArea(currentArea.southArea)
+      bot1.coords.y = 0
+      loadNewArea(currentArea)
+      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+    elif player.coords.x <= 0:
+      loadNewArea(currentArea.westArea)
+      bot1.coords.x = maxAceptableWidth
+      loadNewArea(currentArea)
+      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+    elif player.coords.x > maxAceptableWidth:
+      loadNewArea(currentArea.eastArea)
+      bot1.coords.x = 0
+      loadNewArea(currentArea)
+      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+
+
+
+
+
+      #used to join two map areas
+def joinNorthSouthAreas(northArea, southArea):
+    northArea.southArea = southArea
+    southArea.northArea = northArea
+def joinEastWestAreas(eastArea, westArea):
+    eastArea.westArea = westArea
+    westArea.eastArea = eastArea
 
 
 
@@ -520,7 +528,6 @@ def loadingScreen():
 def loadNewArea(area):
     loadingScreen()
     setUpLayers()
-    bot1.coords = Coords(area.spawnCoords.x, area.spawnCoords.y)
     global currentBeingList
     global gibList
     global animatedSpriteList
@@ -532,11 +539,13 @@ def loadNewArea(area):
     global currentMap
     global currentArea
     for light in lightSources:
-      light.turnOff()
-    currentArea = area
-    bot1.area = area
+      if light.isOn:
+        light.turnOff()
+        currentArea.wasOn.append(light)
     currentMap = area.mapObject
     currentBg = area.mapSprite
+    currentArea = area
+    bot1.area = area
     currentBg.spawnSprite()
     display.add(text)
     currentBeingList.remove(bot1)
@@ -555,6 +564,8 @@ def loadNewArea(area):
     loading.removeSprite()
     for sprite in area.persistentAnimations:
         sprite.animate()
+    for light in currentArea.wasOn:
+        light.turnOn()
     text.grabFocus()
 
 def setUpLayers():
@@ -579,25 +590,21 @@ def keyAction(a):
         bot1.isMoving = true
         bot1.moveUp()
         turnPass()
-        loadAreaCheck(bot1)
   elif a == "s":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveDown()
         turnPass()
-        loadAreaCheck(bot1)
   elif a == "a":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveLeft()
         turnPass()
-        loadAreaCheck(bot1)
   elif a == "d":
     if bot1Ready:
         bot1.isMoving = true
         bot1.moveRight()
         turnPass()
-        loadAreaCheck(bot1)
   elif a == "W":
         bot1.faceUp()
   elif a == "A":
@@ -719,7 +726,7 @@ class CustomDisplay(gui.Display):
     gui.display.__del__(self)
 
 class Area():
-    def __init__(self, mapSprite, mapObject, spawnLocation, persistantAnimations = []):
+    def __init__(self, mapSprite, mapObject, persistantAnimations = []):
         self.beingList = [] #beings
         self.objectList = [] #lootbags, chests, doodads, etc.
         self.gibList = [] # gore pieces
@@ -727,8 +734,13 @@ class Area():
         self.lightSources = [] #lightSources class objects
         self.mapSprite = mapSprite #sprite for maps
         self.mapObject = mapObject #corresponding Map class object
-        self.spawnCoords = spawnLocation #desired spawn location as coords class object
+        self.spawnCoords = None #desired spawn location as coords class object
         self.persistentAnimations = persistantAnimations #stationaryAnimatedSprites
+        self.wasOn = [] #to keep track of light sources that were on when loading new area
+        self.northArea = None
+        self.southArea = None
+        self.eastArea = None
+        self.westArea = None
 
 
     def activateAnimations(self):
@@ -1832,6 +1844,8 @@ class Being():
         self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
+        if isinstance(self, User):
+          loadAreaCheck(bot1)
 
 
     def moveDown(self):
@@ -1867,6 +1881,8 @@ class Being():
         self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
+        if isinstance(self, User):
+          loadAreaCheck(bot1)
 
 
     def moveLeft(self):
@@ -1901,6 +1917,8 @@ class Being():
         self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
+        if isinstance(self, User):
+          loadAreaCheck(bot1)
 
     def moveRight(self):
         self.faceRight()
@@ -1935,6 +1953,8 @@ class Being():
         self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
+        if isinstance(self, User):
+          loadAreaCheck(bot1)
 
 
         # changes the being's sprite to one facing the corresponding
@@ -2761,24 +2781,27 @@ display = CustomDisplay("Robot Saga", backWidth, backHeight)
 setUpLayers()
 
 
-TOWNAREA = Area(None, townMap, townSpawn, townAnimations)
-townSprite = RawSprite(path + "newBack.png", 0, 0, 6)
-TOWNAREA.mapSprite = townSprite
-FIELDAREA = Area(None, fieldMap, fieldSpawn)
-fieldSprite = RawSprite(path + "fieldMap.png", 0, 0, 6)
-FIELDAREA.mapSprite = fieldSprite
-DUNGEONAREA = Area(None, dungeonMap, dungeonSpawn)
-dungeonSprite = RawSprite(path + "dungeonMap.png", 0, 0, 6)
-DUNGEONAREA.mapSprite = dungeonSprite
+TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, townAnimations)
+TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
+E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap)
+NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
+N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap)
+DUNGEON_AREA = Area(RawSprite(path + "dungeonMap.png", 0, 0, 6), dungeonMap)
 
-currentArea = TOWNAREA
-currentBg = TOWNAREA.mapSprite
+joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
+joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
+joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
+joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
+
+currentArea = TOWN_AREA
+currentBg = TOWN_AREA.mapSprite
 currentBg.spawnSprite()
-currentBeingList = TOWNAREA.beingList
-objectList = TOWNAREA.objectList
-gibList = TOWNAREA.gibList
-animatedSpriteList = TOWNAREA.animatedSpriteList
-lightSources = TOWNAREA.lightSources
+currentBeingList = TOWN_AREA.beingList
+objectList = TOWN_AREA.objectList
+gibList = TOWN_AREA.gibList
+animatedSpriteList = TOWN_AREA.animatedSpriteList
+lightSources = TOWN_AREA.lightSources
+
 #loadIntro()  - Intro credits for production build. see loadIntro() definition for details
 
 
@@ -2805,7 +2828,7 @@ display.add(text)
 
 #display.drawImage(path + "newBack.png", 0, 0)
 bot1Spawn = Coords(13*BITS, 1*BITS)
-bot1 = User("bot1", "Stick", userSpritePaths, TOWNAREA)
+bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
 bot1.area = currentArea
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
 light = LightSource(bigTorchSpritePaths, 416, 288, 1)
@@ -2815,7 +2838,7 @@ friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
 friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
-loadNewArea(TOWNAREA)#refresh screen, start animations
+loadNewArea(TOWN_AREA)#refresh screen, start animations
 text.grabFocus()
 #background music
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
