@@ -210,6 +210,7 @@ class Map():
             elif tiles[spot] == "w": self.placeTex(water, spot, around)
             elif tiles[spot] == "f": self.placeTex(fence, spot, around)
             elif tiles[spot] == "L": self.placeTex(lava, spot, around)
+            elif tiles[spot] == "H": self.placeTex(hole, spot, around)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             repaint(self.map)
@@ -246,6 +247,9 @@ def tileMapToArr(tileMap):
     #printNow(len(tileArr))
     return tileArr
 
+def makeMap(tiles, base, fileName):
+    return Map(tiles, base, fileName)
+
 
 tilesPath = path + "Tiles/LPC/tiles/"
 textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
@@ -263,9 +267,12 @@ stoneArr = tileMapToArr(stoneMap)
 stone = Tile(stoneArr, true, true, false, "stone", "s")
 #add lavaRock
 lavaRockMap = makePicture(tilesPath + "lavarock.png")
-explore(lavaRockMap)
 lavaRockArr = tileMapToArr(lavaRockMap)
 lavaRock = Tile(lavaRockArr, true, true, false, "lavaRock", "l")
+#add hole
+holeMap = makePicture(tilesPath + "hole.png")
+holeArr = tileMapToArr(holeMap)
+hole = Tile(holeArr, true, true, false, "hole", "H")
 #add Water
 waterMap = makePicture(tilesPath + "water.png")
 waterArr = tileMapToArr(waterMap)
@@ -314,27 +321,67 @@ town += "fgdddddwwwwwwwwwwwddd..o....,,,f"
 town += "fgdddddddwwwwwwwdddddddddddd,,,f"
 town += "fggddddddgggggggddddddddddddgdgf"
 town += "ffffffffffffffffffffffffffffffff"
-townMap = Map(town, grass, "townMap.png")
+#townMap = Map(town, grass, "townMap.png")
 
-field  = "ffffffffffffffffffffffffffffffff"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggwwwwwwwgggf"
-field += "fggggggggggggggggggggwwwwwwwwwgf"
-field += "fggggggggggggggggggggwwwwwwwwwgf"
-field += "fgggggggggggggggggggggggggwwwwgf"
-field += "fggggggggggggggggggggggggwwwwwgf"
-field += "ggggggggggggggggggggggggwwwwwwgf"
-field += "ggggggggggggggggggggggggwwwwwggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fffffffffffffggggfffffffffffffff"
-fieldMap = Map(field, grass, "fieldMap.png")
+nfield  = "ffffffffffffffffffffffffffffffff"
+nfield += "fggggggggggggggggggggggggggggggf"
+nfield += "fggggggggggggggggggggggggggggggf"
+nfield += "fggggggggggwwwwwwwwwgggggggggggf"
+nfield += "fgggggggwwwwwwwwwwwwwggggggggggf"
+nfield += "fggggggwwwwwwwwwwwwwwggggggggggf"
+nfield += "fggggggwwwwwwwwwwwwwdddddddddddg"
+nfield += "fgggggwwwwwwwwgt,,gddddddddddddd"
+nfield += "fgggggwwwwwwggg,,,ddddwwwwwddddd"
+nfield += "fgggggwwwwwwggg,,,dddwwwwwwwddgg"
+nfield += "fgggggwwwwwwddddddddgwwwwwwwddgf"
+nfield += "fgggggwwwwwdddddddddwwwwwwwwddgf"
+nfield += "fggggggwwdddddwwwwwwwwwwwwwwddgf"
+nfield += "fggggggggdddwwwwwwwwwwwwwwddddgf"
+nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
+nfield += "fggggggggdddddddddddddddddddgggf"
+nfield += "fggggggggddddddddddddddddddggggf"
+nfield += "fffffffffffffddddfffffffffffffff"
+#fieldMap = Map(field, grass, "Nfield.png")
+
+efield  = "fffffffffffffddddfffffffffffffff"
+efield += "fggggggggggggddddggggggggggggggf"
+efield += "fggggggggggggdddgggggwwwwwwwgggf"
+efield += "fggggggggggggdddgggggwwwwwwwwwgf"
+efield += "fggggggggggdddddggggwwwwwwwwwwgf"
+efield += "fgddddddddddddddggggwwwwwwwwwwgf"
+efield += "ddddddddddddddggggggwwwwwwwwwwgf"
+efield += "dddddddddddddggggggggggwwwwwwwgf"
+efield += "dddddwwwwgggggggggggggggwwwwwggf"
+efield += "ddddwwwwwggggggggggggggggggggggf"
+efield += "fggwwwwwwwggggggggggggggggt,,ggf"
+efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
+efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
+efield += "fgwwwwwwwwwwwwwgggggggggt,,t,,gf"
+efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
+efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
+efield += "fggggggggggggggggggggggggggggggf"
+efield += "ffffffffffffffffffffffffffffffff"
+#fieldMap = Map(field, grass, "Efield.png")
+
+nefield  = "ffffffffffffffffffffffffffffffff"
+nefield += "fggggggggggggggggggggggggggggggf"
+nefield += "fggggggggggggggggggggwwwwwwwgggf"
+nefield += "fggggggggggggggggggggwwwwwwwwwgf"
+nefield += "fggggggggggggggggggggwwwwwwwwwgf"
+nefield += "fggggggggggggggggdddHHHHHHwwwwgf"
+nefield += "ddddddddddddddddddddHHHHHHwwwwgf"
+nefield += "ddddddddddddddddddddddHHHHwwwwgf"
+nefield += "ddddddddddddddddddddddHHHHwwwggf"
+nefield += "ddddddggggggggdddddgHHHHHHgggggf"
+nefield += "fggdddddggggggddddggHHHHHHgggggf"
+nefield += "fgggdddddddgggdddggggggggggggggf"
+nefield += "fgggggdddddddddddggggggggggggggf"
+nefield += "fgggggggdddddddddggggggggggggggf"
+nefield += "fgggggggdddddddddggggggggggggggf"
+nefield += "fggggggggggggddddggggggggggggggf"
+nefield += "fggggggggggggddddggggggggggggggf"
+nefield += "fffffffffffffddddfffffffffffffff"
+#fieldMap = Map(field, grass, "NEfield.png")
 
 dungeon  = "ffffffffffffffffffffffffffffffff"
 dungeon += "fllllllllllllllllllllllllllllllf"
@@ -354,4 +401,4 @@ dungeon += "fllllllllllllllllllllllllllllllf"
 dungeon += "fllllllllllllllllllllllllllllllf"
 dungeon += "fllllllllllllllllllllllllllllllf"
 dungeon += "fffffffffffffllllfffffffffffffff"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
