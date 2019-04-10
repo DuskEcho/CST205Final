@@ -195,8 +195,12 @@ class Map():
             for d in dirs:
                 curr = spotToCoord(spot)
                 new = Coords(curr.x + d[0], curr.y + d[1])
-                if new.x >= widthTiles or new.y >= heightTiles: continue
-                if new.x < 0 or new.y < 0: continue
+                if new.x >= widthTiles or new.y >= heightTiles:
+                    around = around | d[2]
+                    continue
+                if new.x < 0 or new.y < 0:
+                    around = around | d[2]
+                    continue
                 #if tileCoordToSpot(new) >= len(tiles): continue
                 if tiles[tileCoordToSpot(new)] == tiles[spot]:
                     around = around | d[2] #bitwise or direction with around
@@ -206,7 +210,9 @@ class Map():
             elif tiles[spot] == "g": self.placeTex(grass, spot, around)
             elif tiles[spot] == "l": self.placeTex(lavaRock, spot, around)
             elif tiles[spot] == "s": self.placeTex(stone, spot, around)
+            elif tiles[spot] == "S": self.placeTex(stoneWall, spot, around)
             elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
+            elif tiles[spot] == "D": self.placeTex(dirtWall, spot, around)
             elif tiles[spot] == "w": self.placeTex(water, spot, around)
             elif tiles[spot] == "f": self.placeTex(fence, spot, around)
             elif tiles[spot] == "L": self.placeTex(lava, spot, around)
@@ -257,6 +263,7 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 dirtMap = makePicture(tilesPath + "dirt.png")
 dirtArr = tileMapToArr(dirtMap)
 dirt = Tile(dirtArr, true, true, false, "dirt", "d")
+dirtWall = Tile(dirtArr, false, false, false, "dirtWall", "D")
 #add Grass
 grassMap = makePicture(tilesPath + "grass.png")
 grassArr = tileMapToArr(grassMap)
@@ -265,6 +272,7 @@ grass = Tile(grassArr, true, true, false, "grass", "g")
 stoneMap = makePicture(tilesPath + "stone.png")
 stoneArr = tileMapToArr(stoneMap)
 stone = Tile(stoneArr, true, true, false, "stone", "s")
+stoneWall = Tile(stoneArr, false, false, false, "stoneWall", "S")
 #add lavaRock
 lavaRockMap = makePicture(tilesPath + "lavarock.png")
 lavaRockArr = tileMapToArr(lavaRockMap)
@@ -383,22 +391,22 @@ nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fffffffffffffddddfffffffffffffff"
 #fieldMap = Map(field, grass, "NEfield.png")
 
-dungeon  = "ffffffffffffffffffffffffffffffff"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllLLLLllllllllllllllllllf"
-dungeon += "fllllllllLLLLLLLLllllllllllllllf"
-dungeon += "fllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "flllllllllllLLLLLLLLlllllllllllf"
-dungeon += "flllllllllllLLLLlllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fffffffffffffllllfffffffffffffff"
+entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllLLLLllllllllllllllllllS"
+entrance += "SllllllllLLLLLLLLllllllllllllllS"
+entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
+entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
+entrance += "lllllllllLLLLLllllLLllllllllllll"
+entrance += "llllllllllllLLllllLLllllllllllll"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")

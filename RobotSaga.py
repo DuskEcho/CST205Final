@@ -2630,9 +2630,9 @@ home += "ffffffffffffffffffffffffffffffff"
 town = makePicture(path + "newBack.png")
 townMap = Map(home, town)
 townSpawn = Coords(13*BITS, 1*BITS)
-townAnimations = [StationaryAnimatedSprite(path + "\\EffectSprites\\blankWater.gif", path + "\\EffectSprites\\waterMoving.gif", 256, 352),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 320, 0, .3),
-                  ThreeStageAnimationCycle(path + "\\EffectSprites\\sakuraMoving1.gif", path + "\\EffectSprites\\sakuraMoving2.gif", path + "\\EffectSprites\\sakuraMoving3.gif", 896, 384, .3)]
+townAnimations = [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
+                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
+                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)]
 currentMap = townMap
 
 nfield  = "ffffffffffffffffffffffffffffffff"
