@@ -564,8 +564,8 @@ def loadNewArea(area):
     loading.removeSprite()
     for sprite in area.persistentAnimations:
         sprite.animate()
-    for light in currentArea.wasOn:
-        light.turnOn()
+ #   for light in currentArea.wasOn:
+ #       light.turnOn()
     text.grabFocus()
 
 def setUpLayers():
@@ -871,8 +871,8 @@ class LightSource(Doodad):
             self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
             for being in currentBeingList:
-                distanceX = abs(being.coords.x - light.coords.x)
-                distanceY = abs(being.coords.y - light.coords.y)
+                distanceX = abs(being.coords.x - self.coords.x)
+                distanceY = abs(being.coords.y - self.coords.y)
                 if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
             #self.sprite.removeSprite()
@@ -881,8 +881,8 @@ class LightSource(Doodad):
             self.isOn = false
             animatedSpriteList.remove(self.animatedSprite)
             for being in currentBeingList:
-                distanceX = abs(being.coords.x - light.coords.x)
-                distanceY = abs(being.coords.y - light.coords.y)
+                distanceX = abs(being.coords.x - self.coords.x)
+                distanceY = abs(being.coords.y - self.coords.y)
                 if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
