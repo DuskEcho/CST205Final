@@ -2783,10 +2783,16 @@ setUpLayers()
 
 TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, townAnimations)
 TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
+TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
+TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
+TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
+for i in TOWN_AREA.lightSources:
+  TOWN_AREA.objectList.append(i)
 E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap)
 NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
 N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap)
 DUNGEON_AREA = Area(RawSprite(path + "dungeonMap.png", 0, 0, 6), dungeonMap)
+
 
 joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
 joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
@@ -2794,6 +2800,7 @@ joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
 joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
 
 currentArea = TOWN_AREA
+
 currentBg = TOWN_AREA.mapSprite
 currentBg.spawnSprite()
 currentBeingList = TOWN_AREA.beingList
@@ -2831,8 +2838,6 @@ bot1Spawn = Coords(13*BITS, 1*BITS)
 bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
 bot1.area = currentArea
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
-light = LightSource(bigTorchSpritePaths, 416, 288, 1)
-light2 = LightSource(bigTorchSpritePaths, 384, 288, 1)
 shopKeeper.sprite.spawnSprite()
 friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
 friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
