@@ -2517,7 +2517,18 @@ class AnimatedGiblets():
         # Custom 2 stage animated sprite. On animate, flickers
         # semi-randomly.
         # Constructor Parameters:
+        #    filename1            - filepath for first sprite image
+        #    filename2            - filepath for second sprite image
+        #    x                    - x coords in pixels
+        #    y                    - y coords in pixels
+        #    layer                - on-screen layer
         #
+        # Members:
+        #    coords               - Coords object indicating location
+        #    spriteList           - list of current sprites
+        #    sprite               - current Sprite object
+        #    spriteLayer          - on-screen layer
+        #    isAnimating          - animation status
 
 
 class StationaryAnimatedSprite():
@@ -2564,6 +2575,27 @@ class StationaryAnimatedSprite():
 
 
 
+
+
+
+        # Custom 3-stage animated sprite that animates 3 frames in cycles (1, 2, 3, 1, 2, 3...)
+        # Constructor Parameters:
+        #    filename1            - filepath for first sprite image
+        #    filename2            - filepath for second sprite image
+        #    filename3            - filepath for third sprite image
+        #    x                    - x coord in pixels
+        #    y                    - y coord in pixels
+        #    secondsBetween       - seconds each frame is displayed for (floats supported)
+        #    layer                - on-screen layer
+        #
+        # Members:
+        #    coords               - Coords object indicating location
+        #    spriteList           - list of Sprite objects to be cycled
+        #    sprite               - current Sprite
+        #    sprite.layer         - on-screen layer
+        #    isAnimating          - boolean animation status
+        #    secondsBetween       - seconds each frame is displayed for (floats supported)
+
 class ThreeStageAnimationCycle():
     def __init__(self, filename1, filename2, filename3, x, y, secondsBetween, layer = 3):
         self.coords = Coords(x, y)
@@ -2571,14 +2603,13 @@ class ThreeStageAnimationCycle():
                            Sprite(filename2, self, layer),
                            Sprite(filename3, self, layer)]
         self.sprite = self.spriteList[0]
-        self.coords = Coords(x, y)
         self.sprite.layer = layer
         self.isAnimating = false
         self.secondsBetween = secondsBetween
 
 
 
-
+        # Initiates animation and adds to current animatedSpriteList
 
     def animate(self):
         animatedSpriteList.append(self)
@@ -2588,12 +2619,13 @@ class ThreeStageAnimationCycle():
     def stopAnimating(self):
         animatedSpriteList.remove(self)
 
+        # shortcut to object's sprite functions
     def spawnSprite(self):
         self.sprite.spawnSprite()
     def removeSprite(self):
         display.remove(self.sprite)
 
-
+        # core animation
     def threadAnimate(self, container):
         self.sprite = self.spriteList[2]
         time.sleep(self.secondsBetween)
