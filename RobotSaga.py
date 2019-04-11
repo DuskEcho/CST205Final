@@ -923,9 +923,11 @@ class Map():
         self.tileMap.update({spot: tex})
 
 
-    def placeStruct(self, struct, spot):
+    def placeStruct(self, struct, spot, desc):
         startx = (spot * BITS) % backWidth
         starty = ((spot * BITS) / backWidth) * BITS
+        if desc == "tree":
+            printNow("Tree at: " + str(startx) + " " + str(starty))
         structWidth = getWidth(struct) / BITS
         structHeight = getHeight(struct) / BITS
         for structx in range(0, structWidth):
@@ -950,8 +952,8 @@ class Map():
             elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "o": self.placeTex(door, spot)
             elif tiles[spot] == "H": self.placeTex(hole, spot)
-            elif tiles[spot] == "h": self.placeStruct(house, spot)
-            elif tiles[spot] == "t": self.placeStruct(tree1, spot)
+            elif tiles[spot] == "h": self.placeStruct(house, spot, "house")
+            elif tiles[spot] == "t": self.placeStruct(tree1, spot, "tree")
 
     def isTraversable(self, spot):
         printNow(spot)
@@ -2874,7 +2876,7 @@ backHeight = BITS * HEIGHT_TILES
 
 tilesPath = path + "Tiles/LPC/tiles/"
 #Old, probably dont need textureMap anymore
-textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
+#textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 
 #initailize textures
 #  Tile(isTraversable, isPassable, isTough, desc)
