@@ -46,21 +46,29 @@ moveAnimationSleep = .12  # any lower and coords get messed up
 #BITS is how many pixels are in each texture
 BITS = 32
 #how many tiles there are wide
-WIDTHTILES = 32
+WIDTH_TILES = 32
 #how many tiles there are tall
-HEIGHTTILES = 18
+HEIGHT_TILES = 18
 MAX_BEINGS = 6
 TOWN_AREA = None
 E_FIELD_AREA = None
 NE_FIELD_AREA = None
 N_FIELD_AREA = None
 DUNGEON_AREA = None
-currentArea = None
-currentSpawnCount = 0
+CURRENT_AREA = None
+
+
+
+
+
+# Basic class for turn counter instances.
+
 class TurnCounter():
     def __init__(self):
         self.turn = 0
 
+
+# Main turn counter for game turns
 
 counter = TurnCounter()
 
@@ -93,6 +101,10 @@ else: printNow("Welcome Back") #welcome the player back to the game
 
 
 
+
+# Sprite paths for beings. Arrays in form [back, front, left, right, 
+# moving left, moving right, moving front, moving back]
+
 userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
                path + "RobotSprites/botBlueFront.gif",
                path + "RobotSprites/botBlueSideLeft.gif",
@@ -123,6 +135,10 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotMovingBack.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif"]
+
+
+
+# Sprites for light sources.  Arrays in form [off, on, bright]
 lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
                         path + "ObjectSprites/lampOn.gif",
                         path + "ObjectSprites/lampBright.gif"]
@@ -142,7 +158,11 @@ menuSpritePaths = [path + "Menu/menuDefault.png",
 
 # Dictionaries for items
 # Numbers correspond to stats
-# arrays in form [attack/def, spritePaths, isBurnable (for weapons only), burningSpritePaths, weaponRange]
+
+
+# Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range]
+# weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame, 
+# first right frame, repeat for frames two and three]
 weaponStatsList = {
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp1.gif",
                   path + "WeaponSprites/Stick/stickDown1.gif",
@@ -204,39 +224,50 @@ weaponStatsList = {
                   path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1]
    }
+
+# Helmet dict. Array in form [def power, spritePath(currently Unused)]
 helmStatsList = {
     "Hair": [0, "spritePath"],
     "Leaf": [1, "spritePath"]
     }
+
+# Helmet dict. Array in form [def power, spritePath(currently Unused)]
 chestStatsList = {
     "BDaySuit": [0, "spritePath"],
     "Fur Coat": [1, "spritePath"]
     }
+
+# Helmet dict. Array in form [def power, spritePath(currently Unused)]
 legsStatsList = {
     "Shame": [0, "spritePath"],
     "Fur Pants": [1, "spritePath"]
     }
+
+# Helmet dict. Array in form [def power, spritePath(currently Unused)]
 feetStatsList = {
     "Toes": [0, "spritePath"],
     "Fur Boots": [1, "spritePath"]
     }
+
+# Helmet dict. Array in form [def power, spritePath(currently Unused)]
 handStatsList = {
     "Digits": [0, "spritePath"],
     "Fur Gloves": [1, "spritePath"]
     }
+
+#item array. (currently unused)
 itemsList = {}  #potions, etc.
 
-
+#loot table (currently unused)
 lootTable = {}
 
 
+# Direction dict for reference with arrays
 directionList = {
     "up": 0,
     "down": 1,
     "left": 2,
-    "right": 3,
-    "movingLeft": 4,
-    "movingRight":5
+    "right": 3
     }
 
 mapNameList = ["town", "dungeon", "path"]
@@ -266,6 +297,12 @@ def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
 
 
 
+
+
+
+# Takes an array of animatable objects and animates them all.
+# All sprites in the list must have an animate() member function to call.
+
 def animateSpriteSet(stationaryAnimatedSpriteSet):
     for sprite in stationaryAnimatedSpriteSet:
       sprite.animate()
@@ -282,11 +319,12 @@ def showLabel(label):
 
 
 
-# All actions that depend on the turn counter go here
+# All actions that depend on the turn counter go here. All actions/functions within
+# will occur with the passing of each turn (e.g., attack, player-directed movement)
 
 def turnPass():
     counter.turn += 1
-    if counter.turn % 20 == 0 and currentArea != TOWN_AREA:
+    if counter.turn % 20 == 0 and CURRENT_AREA != TOWN_AREA:
         spawnEnemy()
     for person in currentBeingList:
         if person.hostile == true:
@@ -296,8 +334,6 @@ def turnPass():
         bot1.coords.y = 0
         bot1.sprite.spawnSprite()
     clearBadSprites()
-    #if coords offscreen, load next screen, clear gore, delete old beings? leave their logic? but then they will move around/spawn.
-    #maybe split being list into active and passive?
 
     #total action counter to affect shop/store stock
 
@@ -305,10 +341,10 @@ def turnPass():
 
 
 
-    # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
-    # parameters:
-    # object        - object to be moved (must have a sprite)
-    # targetXBig    - x coord target (must be greater than object.coords.x)
+# slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
+# parameters:
+# object        - object to be moved (must have a sprite)
+# targetXBig    - x coord target (must be greater than object.coords.x)
 
 def slideRight(toBeMoved, targetXBig):
     time.sleep(.005)
@@ -321,40 +357,44 @@ def slideRight(toBeMoved, targetXBig):
 
 
 
-        # Checks player coords to determine if a load is necessary.
-        # may call loadNewArea
-        # double calls for garbage cleanup
+# Checks player coords to determine if a load is necessary.
+# may call loadNewArea
+# double calls for garbage sprite cleanup
+
 def loadAreaCheck(player):
-    global currentArea
+    global CURRENT_AREA
     maxAceptableWidth = 960
     maxAceptableHeight = 512
 
     if player.coords.y <= 0:
-      loadNewArea(currentArea.northArea)
+      loadNewArea(CURRENT_AREA.northArea)
       bot1.coords.y = maxAceptableHeight
-      loadNewArea(currentArea)
-      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+      loadNewArea(CURRENT_AREA)
+      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.y > maxAceptableHeight:
-      loadNewArea(currentArea.southArea)
+      loadNewArea(CURRENT_AREA.southArea)
       bot1.coords.y = 0
-      loadNewArea(currentArea)
-      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+      loadNewArea(CURRENT_AREA)
+      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
-      loadNewArea(currentArea.westArea)
+      loadNewArea(CURRENT_AREA.westArea)
       bot1.coords.x = maxAceptableWidth
-      loadNewArea(currentArea)
-      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+      loadNewArea(CURRENT_AREA)
+      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
-      loadNewArea(currentArea.eastArea)
+      loadNewArea(CURRENT_AREA.eastArea)
       bot1.coords.x = 0
-      loadNewArea(currentArea)
-      currentArea.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+      loadNewArea(CURRENT_AREA)
+      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
 
 
 
 
 
-      #used to join two map areas
+# Joins area objects by placing both in the opposite area's opposite
+# area attribute.  Used when loading new areas. Arguments should be passed
+# as parameters are described (e.g., northArea should be the area to the north).
+
 def joinNorthSouthAreas(northArea, southArea):
     northArea.southArea = southArea
     southArea.northArea = northArea
@@ -368,13 +408,15 @@ def joinEastWestAreas(eastArea, westArea):
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
 def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
-    if len(currentArea.beingList) < MAX_BEINGS:
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
       while not isTraversable(x, y):
           x = random.randint(0, 10)*32
           y =  random.randint(0, 10)*32
       enemy = Enemy(name, weap, spritePaths, x, y, species, level)
       enemy.sprite.spawnSprite()
 
+      
+# Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
 
 def spawnFriendly(name = "FriendlyBorn" + str(counter.turn), weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
     while not isTraversable(x, y):
@@ -452,13 +494,13 @@ def spotToCoord(spot):
     #if low set to 0d
     if spot < 0: spot = 0
     #if high set to max (should probably just throw error
-    if spot > WIDTHTILES * HEIGHTTILES: spot = WIDTHTILES * HEIGHTTILES - 1
-    return Coords(spot % WIDTHTILES, spot / WIDTHTILES)
+    if spot > WIDTH_TILES * HEIGHT_TILES: spot = WIDTH_TILES * HEIGHT_TILES - 1
+    return Coords(spot % WIDTH_TILES, spot / WIDTH_TILES)
 
 
 #given tile Coords give tile Spot in 1d array
 def tileCoordToSpot(coord):
-    return coord.x + coord.y * WIDTHTILES
+    return coord.x + coord.y * WIDTH_TILES
 
 
 #Goes from pixel coords to tile Coords
@@ -468,7 +510,7 @@ def coordToTileCoord(coord):
 
 #probably bad?
 def coordToTile(coord):
-    return coord.x/BITS + (coord.y/BITS) * WIDTHTILES
+    return coord.x/BITS + (coord.y/BITS) * WIDTH_TILES
 
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
@@ -487,7 +529,7 @@ def placeTex(tex, spot, back):
 
 
 
-
+# Converts pixel coordinates to "spot" coordinates
 def textCoordToSpot(x, y):
   col = texWidth/32
   row = texHeight/32
@@ -518,12 +560,23 @@ def loadIntro():
 
 
 
+# Clears the display, sets up layers for use, and displays
+# the SAGA logo
 
 def loadingScreen():
     display.removeAll()
     setUpLayers()
     loading.spawnSprite()
 
+
+
+
+
+# Compacts and stores information about the current area and
+# loads the next. The player will be spawned on the opposite side
+# of the screen they exited from.
+# Parameters: 
+#     Area      - The area to be loaded
 
 def loadNewArea(area):
     loadingScreen()
@@ -537,14 +590,14 @@ def loadNewArea(area):
     global display
     global currentBg
     global currentMap
-    global currentArea
+    global CURRENT_AREA
     for light in lightSources:
       if light.isOn:
         light.turnOff()
-        currentArea.wasOn.append(light)
+        CURRENT_AREA.wasOn.append(light)
     currentMap = area.mapObject
     currentBg = area.mapSprite
-    currentArea = area
+    CURRENT_AREA = area
     bot1.area = area
     currentBg.spawnSprite()
     display.add(text)
@@ -564,13 +617,16 @@ def loadNewArea(area):
     loading.removeSprite()
     for sprite in area.persistentAnimations:
         sprite.animate()
- #   for light in currentArea.wasOn:
- #       light.turnOn()
+    for light in CURRENT_AREA.wasOn:
+        light.turnOn()
     text.grabFocus()
 
+
+
+ # Adds 7 sprites as placeholders to create layers
+ # for use with future sprites
+
 def setUpLayers():
-    # DO NOT REMOVE LAYERS, needed for layer positioning of sprites
-    # Layer 0 for menus, 1-3 for sprites, 4 for backgrounds
     layer0.spawnSprite()
     layer1.spawnSprite()
     layer2.spawnSprite()
@@ -579,9 +635,13 @@ def setUpLayers():
     layer5.spawnSprite()
     layer6.spawnSprite()
 
-# any function passed to onKeyType() must have one and exactly one
-# parameter.  This parameter is how the function knows which key is pressed
 
+
+
+
+
+
+# Default keybindings/controls
 
 def keyAction(a):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
@@ -675,8 +735,8 @@ statusMenu.sprite.spawnSprite()
 
 
 
-    # To pass to getKeyTyped in order to block inputs
-    # (e.g., during animations or delays)
+# To pass to getKeyTyped in order to block inputs
+# (e.g., during animations or delays)
 
 def blockKeys(a):
     None
@@ -686,7 +746,7 @@ def blockKeys(a):
 
 
 
-# Currently only sets up the lootTable
+# Currently not in use
 
 def initialSetup():
     for item in weaponStatsList:
@@ -718,12 +778,47 @@ def initialSetup():
         ####################
 
 
+    # A custom class created to override gui.Display's default destructor.
+
 class CustomDisplay(gui.Display):
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
     #insert stop music logic here
     gui.display.__del__(self)
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # The following class holds area-specific information for use in tracking
+    # and loading.
+    # Constructor Parameters:
+    #    mapSprite            - Sprite object containing the map image
+    #    mapObject            - Map object containing the collision/grid info
+    #    persistantAnimations - Any persistant animated objects for the map
+    #
+    # Members:
+    #    beingList            - List of all beings within the area
+    #    objectList           - List of all objects within the area
+    #    gibList              - List of all giblets within the area
+    #    animatedSpriteList   - List of all animated sprites within the area
+    #    lightSources         - List of all lightSources in the area
+    #    mapSprite            - Sprite object containing the map image
+    #    mapObject            - Map object containing the collision/grid info
+    #    spawnCoords          - Coords object containing the areas player-spawn area
+    #    persistantAnimations - Any persistant animated objects for the map 
+    #    wasOn                - List of lightSources that are on (turn on these when loading area)
+    #    northArea            - Area connected to the north of the area
+    #    sourth/east/westArea - See above
 
 class Area():
     def __init__(self, mapSprite, mapObject, persistantAnimations = []):
@@ -737,7 +832,7 @@ class Area():
         self.spawnCoords = None #desired spawn location as coords class object
         self.persistentAnimations = persistantAnimations #stationaryAnimatedSprites
         self.wasOn = [] #to keep track of light sources that were on when loading new area
-        self.northArea = None
+        self.northArea = None #connected area to the north
         self.southArea = None
         self.eastArea = None
         self.westArea = None
@@ -747,13 +842,36 @@ class Area():
         for animatedSprite in self.persistentAnimations:
           animatedSprite.animate()
 
-# universal coordinates object
+
+
+
+
+
+
+
+
+
+
+
+# universal coordinates object. Coords in pixels.
 
 class Coords():
   def __init__(self, x, y):
     self.x = x
     self.y = y
 
+
+
+
+
+
+
+
+
+
+
+
+    # Object that holds collision/terrain information   
 
 class Tile():
   def __init__(self, isTraversable, isPassable, isTough, desc):
@@ -776,6 +894,19 @@ class Tile():
   def getDesc(self):
     return self.desc
 
+
+
+
+
+
+
+
+
+
+
+
+  
+    # Object that holds collision/terrain information
 
 class Map():
     def __init__(self, tileMap, back):
@@ -832,19 +963,32 @@ class Map():
 
 
 
-# class for placeable objects (torches, trees, blocks, tc.)
+    # class for placeable objects (torches, trees, blocks, tc.)
+    # Constructor Parameters:
+    #    filepaths            - List of image filepaths in form [stationary, animate1, animate2]
+    #    x                    - x coords in pixels
+    #    y                    - y coords in pixels
+    #    layer                - layer in relation to other objects (layer 0 is closest to the screen/front
+    #
+    # Members:
+    #    destructible         - bool indicating whether or not the object can be destroyed
+    #    coords               - Coords object holding location
+    #    layer                - layer in relation to other objects (layer 0 is closest to the screen/front
+    #    spriteList           - List of image filepaths in form [stationary, animate1, animate2]
+    #    sprite               - Sprite object holding the default sprite
+    #    animatedSprite       - StationaryAnimatedSprite object holding the animation for the doodad
+    #    isAnimating          - bool indicating animation activity
 
 class Doodad():
     def __init__(self, filepaths, x, y, layer = 3):
         self.destructible = false
-        self.sprites = filepaths
         self.coords = Coords(x, y)
         self.layer = layer
         self.spriteList = filepaths
         self.sprite = Sprite(filepaths[0], self, layer)
-        self.sprite.spawnSprite()
         self.isAnimating = false
         self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
+        self.sprite.spawnSprite()
         objectList.append(self)
 
 
@@ -908,6 +1052,23 @@ class ItemForSale():
         del self
 
 
+
+
+
+
+
+
+
+
+
+    # Container object for obtainable items. Often dropped by enemies.
+    # Animates in a new thread
+    # Constructor Parameters:
+    #    itemList             - list of items held by the Lootbag
+    #    coords               - coords object holding location
+    #    spriteList           - images used for animation
+    #    sprite               - current spryte
+    #    type                 - used for certain logic checks
 
 class Lootbag():
     def __init__(self, itemList, coords):
@@ -2402,15 +2563,15 @@ class ThreeStageAnimationCycle():
     #   level:          - Being's starting level
 
 class User(Being):
-    def __init__(self, name, weapName, spritePaths, currentArea):
-        Being.__init__(self, name, weapName, spritePaths, currentArea.spawnCoords.x, currentArea.spawnCoords.y)
+    def __init__(self, name, weapName, spritePaths, CURRENT_AREA):
+        Being.__init__(self, name, weapName, spritePaths, CURRENT_AREA.spawnCoords.x, CURRENT_AREA.spawnCoords.y)
         self.name = name
         self.helm = "Hair"
         self.chest = "BDaySuit"
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
-        self.area = currentArea
+        self.area = CURRENT_AREA
 
         self.sprite.spawnSprite()
 
@@ -2589,8 +2750,8 @@ class music:
 
 
 #initailize background image
-backWidth = BITS * WIDTHTILES
-backHeight = BITS * HEIGHTTILES
+backWidth = BITS * WIDTH_TILES
+backHeight = BITS * HEIGHT_TILES
 
 tilesPath = path + "Tiles/LPC/tiles/"
 #Old, probably dont need textureMap anymore
@@ -2799,7 +2960,7 @@ joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
 joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
 joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
 
-currentArea = TOWN_AREA
+CURRENT_AREA = TOWN_AREA
 
 currentBg = TOWN_AREA.mapSprite
 currentBg.spawnSprite()
@@ -2836,7 +2997,7 @@ display.add(text)
 #display.drawImage(path + "newBack.png", 0, 0)
 bot1Spawn = Coords(13*BITS, 1*BITS)
 bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-bot1.area = currentArea
+bot1.area = CURRENT_AREA
 shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
 shopKeeper.sprite.spawnSprite()
 friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
