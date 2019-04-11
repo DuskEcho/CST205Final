@@ -938,21 +938,26 @@ class Map():
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
             if   tiles[spot] == "g": self.placeTex(grass, spot)
-            elif tiles[spot] == "s": self.placeTex(stone, spot)
             elif tiles[spot] == "l": self.placeTex(lavaRock, spot)
+            elif tiles[spot] == "s": self.placeTex(stone, spot)
+            elif tiles[spot] == "S": self.placeTex(stoneWall, spot)
             elif tiles[spot] == "d": self.placeTex(dirt, spot)
+            elif tiles[spot] == "D": self.placeTex(dirtWall, spot)
             elif tiles[spot] == "w": self.placeTex(water, spot)
-            elif tiles[spot] == "L": self.placeTex(lava, spot)
             elif tiles[spot] == "f": self.placeTex(fence, spot)
+            elif tiles[spot] == "L": self.placeTex(lava, spot)
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "o": self.placeTex(door, spot)
+            elif tiles[spot] == "H": self.placeTex(hole, spot)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
 
     def isTraversable(self, spot):
         printNow(spot)
-        if spot < 0 or spot > len(self.tileMap) - 1: return false
+        if spot < 0 or spot > len(self.tileMap) - 1:
+            return false
+        printNow("Not off map")
         printNow(self.tileMap[spot].getTraversable())
         printNow(self.tileMap[spot].getDesc())
         return self.tileMap[spot].getTraversable()
@@ -2084,7 +2089,10 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
+        printNow(currentMap.isTraversable(targetSpot))
+        printNow("PreCheck")
         if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
+            printNow("movingDown")
             self.coords.y += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[6], self)
@@ -2872,10 +2880,16 @@ textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
 #  Tile(isTraversable, isPassable, isTough, desc)
 #add Dirt
 dirt = Tile(true, true, false, "dirt")
+#add DirtWall
+dirtWall = Tile(false, true, false, "dirtWall")
 #add Grass
 grass = Tile(true, true, false, "grass")
-#add Stone
+#add stone
 stone = Tile(true, true, false, "stone")
+#add stoneWall
+stoneWall = Tile(false, true, false, "stoneWall")
+#add hole
+hole = Tile(true, true, false, "hole")
 #add lavaRock
 lavaRock = Tile(true, true, false, "lavaRock")
 #add Water
@@ -3016,26 +3030,26 @@ fieldImg = makePicture(path + "fieldMap.png")
 fieldSpawn = Coords(1*BITS, 7*BITS)
 fieldMap = Map(field, fieldImg)
 
-dungeon  = "ffffffffffffffffffffffffffffffff"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllLLLLllllllllllllllllllf"
-dungeon += "fllllllllLLLLLLLLllllllllllllllf"
-dungeon += "fllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "lllllllllLLLLLLLLLLLlllllllllllf"
-dungeon += "flllllllllllLLLLLLLLlllllllllllf"
-dungeon += "flllllllllllLLLLlllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fllllllllllllllllllllllllllllllf"
-dungeon += "fffffffffffffllllfffffffffffffff"
+entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllLLLLllllllllllllllllllS"
+entrance += "SllllllllLLLLLLLLllllllllllllllS"
+entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
+entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
+entrance += "lllllllllLLLLLllllLLllllllllllll"
+entrance += "llllllllllllLLllllLLllllllllllll"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 dungeonImg = makePicture(path + "dungeonMap.png")
-dungeonMap = Map(dungeon, dungeonImg)
+dungeonMap = Map(entrance, dungeonImg)
 dungeonSpawn = Coords(15*BITS, 16*BITS)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
