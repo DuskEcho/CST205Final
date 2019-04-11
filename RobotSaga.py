@@ -1112,7 +1112,13 @@ class Lootbag():
 
 
 
-# Class used when an ownerless sprite is needed
+
+
+
+
+
+
+    # Class used when an ownerless sprite is needed
 
 class RawSprite():
     def __init__(self, filename, x, y, layer = 4):
@@ -1127,12 +1133,24 @@ class RawSprite():
     def removeSprite(self):
         self.sprite.removeSprite()
 
-# general class for sprites.
-# to display on the main screen.
-# parameters:
-#   filename    - filename in string format
-#   parental      - object that owns this instance. must have it's own coords
-#   layer       - screen layer of sprite, 0 closest to front
+
+
+
+
+
+
+
+
+
+
+
+    # general class for sprites.
+    # to display on the main screen.
+    # parameters:
+    #   filename    - filename in string format
+    #   parental      - object that owns this instance. must have it's own coords
+    #   layer       - screen layer of sprite, 0 closest to front
+    # Members inherited from gui.icon
 
 class Sprite(gui.Icon):
 
@@ -1199,8 +1217,9 @@ class Sprite(gui.Icon):
 
 
 
-  # inherits from Sprite. Separated to give   See sprite for function exacts.
+  # inherits from Sprite. Separated to give 
   # ownership to sub-sprites (e.g., weapon)
+  #   See sprite for function exacts.
 
 class BeingSprite(Sprite):
   def __init__(self, filename, parental, layer = 4):
@@ -1290,8 +1309,23 @@ class BeingSprite(Sprite):
 
     # Class for weapon objects. weapName must correspond to a weapon
     # in the weaponList. Contains stats and sprites.
+    # Constructor Parameters:
+    #    weapName             - string corresponding to a weapon in the weapon dict
     #
-    #
+    # Members:
+    #    name                 - string corresponding to a weapon in the weapon dict
+    #    power                - attack power
+    #    originalSprites      - default weapon sprites (used with burnable weapons)
+    #    isBurnable           - bool that determines whether or not a weapon can burn
+    #    range                - weapon range in tiles
+    #    coords               - location object. mostly unused
+    #    sprites              - current sprite list
+    #    sprite               - current sprite
+    #    onFire               - bool holding the onFire weapon status
+    #    displayed            - bool signifying whether or not the weapon is in use
+    #    currentAnimation     - current animation to be used upon attacking
+    #    animationUp/Down/etc.- ThreeStageAnimationCycle object holding the corresponding animation
+    #    burningAnimationUp...- ThreeStageAnimationCycle object holding the corresponding animation when burning
     #
     #spritePaths should be array of order [up, down, left, right]
 
@@ -1322,6 +1356,11 @@ class Weapon():
             self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, .15)
           except:
             None
+
+
+
+
+      # sets the weapon on fire. Starts a new thread for a count down to put out fire
 
     def burn(self):
         x = None
@@ -1414,12 +1453,39 @@ class Weapon():
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove, upMove, downMove]
     # All beings are added to the currentBeingList[]
-    # Parameters:
-    #   name:           - Being's name as a string
-    #   weapName:       - Being's starting weapon as a string - must correlate with weaponList
-    #   spritePaths:    - list containing the filePaths of the Being's sprites
-    #   xSpawn:         - initial x location
-    #   ySpawn:         - initial y location
+    # Constructor Parameters:
+    #    name                 - Being's name as a string
+    #    weapName             - Being's starting weapon as a string - must correlate with weaponList
+    #    spritePaths          - list containing the filePaths of the Being's sprites
+    #    xSpawn               - initial x location
+    #    ySpawn               - initial y location
+    #    itemList             - default inventory items
+    #
+    # Members:
+    #    name                 - name as a string
+    #    level                - combat level
+    #    hp                   - current hp
+    #    maxHp                - maximum hp
+    #    xp                   - current xp for levelling
+    #    atk                  - innate attack power
+    #    df                   - innate defense
+    #    lootValue            - calculated value to determine value of loot dropped
+    #    xpValue              - calculated value to determine xp awarded upon defeat
+    #    hostile              - bool indicating whether the being is under hostile cpu control
+    #    inv                  - inventory items
+    #    coords               - Coords object indicating location
+    #    forwardCoords        - Coords object indicating forward-1-tile location
+    #    unchangedSpritePaths - Original sprites before modification with gore/lighting
+    #    spritePaths          - current sprite paths
+    #    sprite               - BeingSprite object holding the Being's sprite
+    #    weapon               - Weapon object for the currently equipped weapon
+    #    wallet               - in value indicating wealth in currency
+    #    facing               - current direction the Being is facing
+    #    isMoving             - bool indicating movement status
+    #    talkingLines         - default talking lines when spoken to
+    #    bloodySprites        - altered BeingSprites used when injured
+    #    lightSprites         - altered BeingSprites when within range of LightSource that is on
+    #    darkSprites          - placeholder for darkened BeingSprites
 
 class Being():
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
@@ -1463,6 +1529,9 @@ class Being():
         self.coords.x = x
         self.coords.y = y
 
+
+        # activates an activatable object directly in front
+
     def activateTarget(self):
       self.getFrontTarget().activate()
 
@@ -1479,12 +1548,10 @@ class Being():
 
 
 
-        # Adds item to inventory list
+        # Adds/removes item to/from inventory list
 
     def inventoryAdd(self, item):
         self.inv.append(item)
-
-
     def inventoryRemove(self, item):
         self.inv.Remove(item)
 
@@ -1639,8 +1706,8 @@ class Being():
 
 
 
-# Basic enemy AI. Enemy moves in a random direction and attacks if
-# the player is directly in front.
+        # Basic enemy AI. Enemy moves in a random direction and attacks if
+        # the player is directly in front.
 
     def simpleHostileAI(self):
         distanceX = self.coords.x - bot1.coords.x
@@ -1687,7 +1754,7 @@ class Being():
                 self.moveUp()
 
 
-# Moves a being in a random direction
+        # Moves a being in a random direction
 
     def moveRandom(self):
         randNum = random.randint(0, 3)
@@ -1774,19 +1841,20 @@ class Being():
                 return true
         return false
 
-
+        # Deletes lightened sprites when no longer in use
     def threadDeleteLightSprites(self, x):
         for sprite in self.lightSprites:
             os.remove(sprite)
         self.lightSprites = []
 
+        # Returns being's BeingSprites to normal-nonlightened sprites
     def resumePixels(self):
         self.spritePaths = self.darkSprites
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[self.facing], self)
         self.sprite.spawnSprite()
 
-
+        # Lightens the BeingSprites
     def lightenPixels(self):
         self.darkSprites = self.spritePaths
         spriteNum = 0
@@ -1807,7 +1875,8 @@ class Being():
         self.sprite = BeingSprite(self.lightSprites[self.facing], self)
         self.sprite.spawnSprite()
 
-
+        # Adds an oil effect to the BeingSprites at varied intensity depending
+        # on being.hp (higher effect at lower hp)
     def bloodify(self):
         spriteNum = 0
 
@@ -1864,7 +1933,7 @@ class Being():
         #needs to be reworked for better decomp
         #
         # activates the melee attack action.
-        # displays the weapon at the being's forward coord
+        # displays the weapon animation at the being's forward coord
         # and activates a damage calculation if any being is there
         # Friendly fire is enabled. Attacking a friendly turns them hostile
         # if the target is killed, exp is calculated.  If the player is killed,
@@ -1945,6 +2014,7 @@ class Being():
             self.weapon.displayRight(self.forwardCoords.x, self.forwardCoords.y)
 
 
+        # picks up any LootBag objects at the coords given
 
     def pickUpLoot(self, coords):
         for item in objectList:
@@ -2176,6 +2246,12 @@ class Being():
 
 
 
+
+
+
+
+
+        # Custom being instance for friendlies. Slightly different giblets/giblet logic
 class Friendly(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
@@ -2219,7 +2295,19 @@ class Friendly(Being):
         dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(dead)
 
+        
 
+
+
+
+
+
+
+
+
+
+
+        # Custom being instance for friendlies. Slightly different giblets/giblet logic
 class ShopKeeper(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
@@ -2232,7 +2320,7 @@ class ShopKeeper(Being):
 
 
 
-
+        # Displays gore effects
 
     def giblets(self):
         x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
@@ -2263,18 +2351,7 @@ class ShopKeeper(Being):
 
 
 
-    # Class for living entities (people, enemies, bosses, etc.)
-    # handles stats, movement, experience, inventory
-    # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
-    # All beings are added to the currentBeingList[]
-    # Parameters:
-    #   name:           - Being's name as a string
-    #   weapName:       - Being's starting weapon as a string - must correlate with weaponList
-    #   spritePaths:    - list containing the filePaths of the Being's sprites
-    #   xSpawn:         - initial x location
-    #   ySpawn:         - initial y location
-    #   species:        - Being's species as a string
-    #   level:          - Being's starting level
+    # Custom being for enemies. Slightly different logic
 
 class Enemy(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, species, level):
@@ -2296,7 +2373,7 @@ class Enemy(Being):
 
 
 
-        # in progress loot-dropping function
+        # Drops a Lootbag instance with a random inv item
 
     def dropLoot(self):
         items = []
@@ -2306,13 +2383,13 @@ class Enemy(Being):
 
 
 
-
+        # adds a sprite to the gibList and display at the pixel coords given
 
     def gibSpawn(self, gibSprite, x, y):
         gibList.append(gibSprite)
         display.add(gibSprite, x, y)
 
-
+        # Gore effect for enemies
 
     def giblets(self):
         gibIndex = 0
@@ -2326,7 +2403,7 @@ class Enemy(Being):
 
 
 
-        # in progress hp == 0 action
+        # Calls functions related to hp==0 logic
 
     def dead(self):
         #play animation
@@ -2437,8 +2514,10 @@ class AnimatedGiblets():
 
 
 
-# used for sprite animation, flickering between two sprites at random
-# used for twitching/sparking/flames
+        # Custom 2 stage animated sprite. On animate, flickers
+        # semi-randomly.
+        # Constructor Parameters:
+        #
 
 
 class StationaryAnimatedSprite():
