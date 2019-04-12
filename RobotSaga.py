@@ -1605,6 +1605,10 @@ class Being():
         self.changeAtk(random.randint(0, 4))
         self.changeDf(random.randint(0, 4))
         self.hp = self.maxHp
+        try:
+          self.hpBar.updateBar()
+        except:
+          None
 
 
 
