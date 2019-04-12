@@ -1078,6 +1078,14 @@ class ItemForSale():
 
 
 
+        # An object used for transporting currency
+
+class Wallet():
+    def __init__(self, amount):
+      self.value = amount
+
+
+
 
 
 
@@ -1527,7 +1535,7 @@ class Being():
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.weapon = Weapon(weapName)
-        self.wallet = 0
+        self.wallet = Wallet(lootValue)
         self.facing = directionList["down"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
@@ -1560,7 +1568,7 @@ class Being():
         # Updates wallet by amount
 
     def changeWallet(self, amount):
-        self.wallet += amount
+        self.wallet.value += amount
         if self.wallet <= 0:
             self.wallet == 0
 
@@ -1815,6 +1823,7 @@ class Being():
         # drops all contents of the inv list in a lootbag object
 
     def dropLoot(self):
+        self.inv.append(self.wallet)
         loot = Lootbag(self.inv, self.coords)
         objectList.append(loot)
 
@@ -2048,6 +2057,10 @@ class Being():
                 item.removeSprite()
                 objectList.remove(item)
                 del item
+                for item in self.inv:
+                  if isinstance(item, Wallet):
+                    self.wallet.value+= item.value
+                    self.inv.remove(item)
 
 
 
@@ -2406,6 +2419,7 @@ class Enemy(Being):
     def dropLoot(self):
         items = []
         items.append(self.randomInvItem())
+        items.append(self.wallet)
         loot = Lootbag(items, self.coords)
         objectList.append(loot)
 
@@ -2748,7 +2762,7 @@ class User(Being):
         self.gloves = "Digits"
         self.area = CURRENT_AREA
         self.hpBar = HpBar(self)
-
+        self.wallet = Wallet(0)
         self.sprite.spawnSprite()
 
 
