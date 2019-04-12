@@ -472,9 +472,12 @@ def clearBadSprites():
     goodSprites = []
     for being in currentBeingList:
         goodSprites.append(being.sprite)
+    stop = time.time() + 2
     for sprite in display.items:
-        if sprite not in goodSprites and type(sprite) == BeingSprite:
-            display.remove(sprite)
+      if sprite not in goodSprites and type(sprite) == BeingSprite :
+          display.remove(sprite)
+      if time.time() >= stop:
+          break
 
 
 
@@ -2035,6 +2038,7 @@ class Being():
                 self.changeXp(target.xpValue)
                 global friendlyGreen
                 global friendlyOrange
+                global shopKeeper
                 if target == friendlyGreen:
                   del friendlyGreen
                 elif target == friendlyOrange:
@@ -2929,6 +2933,8 @@ class User(Being):
     def dead(self):
         self.sprite.removeSprite()
         self.dropLoot()
+        global currentBeingList
+        currentBeingList.remove(self)
         for files in self.bloodySprites:
           try:
             os.remove(files)
