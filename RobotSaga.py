@@ -1061,7 +1061,7 @@ class LightSource(Doodad):
 
 
 
-# Class for merchant items and "buy/sell" transaction
+        # Class for merchant items and "buy/sell" transaction
 
 class ItemForSale():
     def __init__(self, price, item):
@@ -1081,18 +1081,37 @@ class ItemForSale():
 
 
 
-        # An object used for transporting currency
+        # An object used for holding/transporting/tracking currency for beings.
+        # Constructor Parameters:
+        #   parental              - Owner object
+        #   amount                - Initial currency within
+        # 
+        # Members:                
+        #   value                 - Current currency value
+        #   parental              - Owner
 
 class Wallet():
     def __init__(self, parental, amount):
       self.value = amount
+      self.parental = parental
+
+
+
+      # User-exclusive wallet class.
+      # Expansions:
+      #   coords                - coords for the HUD icon (User only)
+      #   sprite                - sprite for the HUD icon (User only)
+      #   label                 - currency amount display for HUD (User only)
+
+class UserWallet(Wallet):
+    def __init__(self, parental, amount):
+      Wallet.__init__(self, parental, amount)
       self.coords = Coords(960, 16)
       self.sprite = Sprite(path + r"EffectSprites/walletSprite.gif", self, 1)
       self.label = gui.Label(str(self.value), gui.RIGHT)
-      self.parental = parental
-      if isinstance(self.parental, User):
-        self.sprite.spawnSprite()
-        display.add(self.label, 1000, 24)
+      self.sprite.spawnSprite()
+      display.add(self.label, 1000, 24)
+      
 
     def updateWalletDisplay(self):
       self.sprite.spawnSprite()
@@ -1102,8 +1121,6 @@ class Wallet():
         None
       self.label = gui.Label(str(self.value), gui.RIGHT)
       display.add(self.label, 1000, 24)
-
-
 
 
 
@@ -1589,8 +1606,6 @@ class Being():
         self.wallet.value += amount
         if self.wallet <= 0:
             self.wallet == 0
-        if isinstance(self, User):
-          self.wallet.updateWalletDisplay()
 
 
 
@@ -2786,11 +2801,13 @@ class User(Being):
         self.gloves = "Digits"
         self.area = CURRENT_AREA
         self.hpBar = HpBar(self)
-        self.wallet = Wallet(self, 0)
+        self.wallet = UserWallet(self, 0)
         self.sprite.spawnSprite()
 
 
-
+    def changeWallet(self, amount):
+      Being.changeWallet(self, amount)
+      self.wallet.updateWalletDisplay()
 
 
     def giblets():
