@@ -1535,7 +1535,7 @@ class Being():
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.weapon = Weapon(weapName)
-        self.wallet = Wallet(lootValue)
+        self.wallet = Wallet(self.lootValue)
         self.facing = directionList["down"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
