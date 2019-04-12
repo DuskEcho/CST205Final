@@ -2932,9 +2932,7 @@ home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
 home += "fgdddddddwwwwwwwdddddddddddd,,,f"
 home += "fggddddddgggggggddddddddddddgdgf"
 home += "ffffffffffffffffffffffffffffffff"
-#town = makePicture(path + "newBack.png")
 townMap = Map(home)
-#townSpawn = Coords(13*BITS, 1*BITS)
 townAnimations = [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
                   ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
                   ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)]
@@ -2958,8 +2956,6 @@ nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
 nfield += "fggggggggdddddddddddddddddddgggf"
 nfield += "fggggggggddddddddddddddddddggggf"
 nfield += "fffffffffffffddddfffffffffffffff"
-#nfieldImg = makePicture(path + "Nfield.png")
-nfieldSpawn = Coords(14*BITS, 17*BITS)
 nfieldMap = Map(nfield)
 
 efield  = "fffffffffffffddddfffffffffffffff"
@@ -2980,8 +2976,6 @@ efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
 efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
 efield += "fggggggggggggggggggggggggggggggf"
 efield += "ffffffffffffffffffffffffffffffff"
-#efieldImg = makePicture(path + "Efield.png")
-efieldSpawn = Coords(1*BITS, 8*BITS)
 efieldMap = Map(efield)
 
 nefield  = "ffffffffffffffffffffffffffffffff"
@@ -3002,8 +2996,6 @@ nefield += "fgggggggdddddddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fffffffffffffddddfffffffffffffff"
-#nefieldImg = makePicture(path + "NEfield.png")
-nefieldSpawn = Coords(14*BITS, 17*BITS)
 nefieldMap = Map(nefield)
 
 #old field no longer in use
@@ -3025,8 +3017,6 @@ field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fffffffffffffggggfffffffffffffff"
-#fieldImg = makePicture(path + "fieldMap.png")
-fieldSpawn = Coords(1*BITS, 7*BITS)
 fieldMap = Map(field)
 
 entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
@@ -3047,9 +3037,127 @@ entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-#dungeonImg = makePicture(path + "dungeonMap.png")
 entranceMap = Map(entrance)
-dungeonSpawn = Coords(15*BITS, 16*BITS)
+
+westRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "Slllllllllllllllllllllllllllllll"
+westRoom += "Slllllllllllllllllllllllllllllll"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SllllllllllllllllllllllllllllllS"
+westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+westRoomMap = Map(westRoom)
+
+eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
+eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
+eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "lllllllllllllllllllllllllllllllS"
+eastRoom += "lllllllllllLLLLllllllllllllLLllS"
+eastRoom += "SlllLLllllLLLLLlllllllllLLLLLllS"
+eastRoom += "SlllLLLlllLLLLLllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLLLLLllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLLLLLlllllLLLLLLLLlllS"
+eastRoom += "SlllLLLLLLLlllllllllLLLLLLLllllS"
+eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+eastRoomMap = Map(eastRoom)
+
+keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLlllc.lllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+keyRoomMap = Map(keyRoom)
+
+miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+miniBossMap = Map(miniBoss)
+
+bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLlllllllllllllllllLLLLLLS"
+bossKey += "SLLLLLLlllllllllllllllllllLLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLllllllllllllllllllllllLLLLS"
+bossKey += "SLLLLllllllllllc.llllllllllLLLLS"
+bossKey += "SLLLLLllllllllllllllllllllLLLLLS"
+bossKey += "SLLLLLLllllllllllllllllllLLLLLLS"
+bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+bossKeyMap = Map(bossKey)
+
+bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLlllLLLllllllLLLlllLLLLLLS"
+bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+bossRoom += "SLLLLLllllllllllllllllllllLLLLLS"
+bossRoom += "SLLLLLLllllllllllllllllllLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+bossRoomMap = Map(bossRoom)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
 layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
@@ -3065,7 +3173,7 @@ display = CustomDisplay("Robot Saga", backWidth, backHeight)
 
 setUpLayers()
 
-
+dungeonPath = path + "dungeon/"
 TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, townAnimations)
 TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
 TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
@@ -3077,12 +3185,26 @@ E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap)
 NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
 N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap)
 DUNGEON_AREA = Area(RawSprite(path + "dungeonMap.png", 0, 0, 6), dungeonMap)
+DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
+DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
+DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
+DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), keyRoomMap)
+DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), miniBossMap)
+DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), bossKeyMap)
+DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), bossRoomMap)
 
-
+#OverWorld connections
 joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
 joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
 joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
 joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
+#Dungeon Connections
+joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
+joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
+joinNorthSouthAreas(DUNGEON_KEYROOM_AREA, DUNGEON_WESTROOM_AREA)
+joinNorthSouthAreas(DUNGEON_BOSSROOM_AREA, DUNGEON_ENTRANCE_AREA)
+joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
+joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
 
 CURRENT_AREA = TOWN_AREA
 
