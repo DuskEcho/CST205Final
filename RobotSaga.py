@@ -292,6 +292,7 @@ mapNameList = ["town", "dungeon", "path"]
 
 def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
     label = gui.Label(rawText)
+    label.position = (coordsX, coordsY)
     display.add(rawText, coordsX, coordsY)
 
 
@@ -314,7 +315,8 @@ def animateSpriteSet(stationaryAnimatedSpriteSet):
 
 def showLabel(label):
     display.add(label, 1280*(2/5), 0)
-
+def removeLabel(label):
+    display.remove(label)
 
 
 
@@ -640,7 +642,8 @@ def loadNewArea(area):
     for light in CURRENT_AREA.wasOn:
         light.turnOn()
     text.grabFocus()
-    bot1.hpBar.sprite.spawnSprite()
+    bot1.hpBar.updateBar()
+    bot1.wallet.updateWalletDisplay()
 
 
 
@@ -1081,9 +1084,24 @@ class ItemForSale():
         # An object used for transporting currency
 
 class Wallet():
-    def __init__(self, amount):
+    def __init__(self, parental, amount):
       self.value = amount
+      self.coords = Coords(960, 16)
+      self.sprite = Sprite(path + r"EffectSprites/walletSprite.gif", self, 1)
+      self.label = gui.Label(str(self.value), gui.RIGHT)
+      self.parental = parental
+      if isinstance(self.parental, User):
+        self.sprite.spawnSprite()
+        display.add(self.label, 1000, 24)
 
+    def updateWalletDisplay(self):
+      self.sprite.spawnSprite()
+      try:
+        removeLabel(self.label)
+      except:
+        None
+      self.label = gui.Label(str(self.value), gui.RIGHT)
+      display.add(self.label, 1000, 24)
 
 
 
@@ -1535,7 +1553,7 @@ class Being():
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.weapon = Weapon(weapName)
-        self.wallet = Wallet(self.lootValue)
+        self.wallet = Wallet(self, self.lootValue)
         self.facing = directionList["down"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
@@ -1571,6 +1589,8 @@ class Being():
         self.wallet.value += amount
         if self.wallet <= 0:
             self.wallet == 0
+        if isinstance(self, User):
+          self.wallet.updateWalletDisplay()
 
 
 
@@ -2063,7 +2083,7 @@ class Being():
                 del item
                 for item in self.inv:
                   if isinstance(item, Wallet):
-                    self.wallet.value+= item.value
+                    self.changeWallet(item.value)
                     self.inv.remove(item)
 
 
@@ -2766,7 +2786,7 @@ class User(Being):
         self.gloves = "Digits"
         self.area = CURRENT_AREA
         self.hpBar = HpBar(self)
-        self.wallet = Wallet(0)
+        self.wallet = Wallet(self, 0)
         self.sprite.spawnSprite()
 
 
