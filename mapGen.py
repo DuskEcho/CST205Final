@@ -188,6 +188,13 @@ class Map():
                         setColor(getPixel(self.map, startx + x + structx * bits, starty + y + structy * bits), getColor(getPixel(struct, x + structx * bits, y + structy * bits)))
 
     def updateBackground(self, tiles, back):
+        tempPaths = paths
+        printNow(self.baseTile.desc)
+        if self.baseTile.desc == "lava":
+            printNow("Lava Detected")
+            tempPaths.append("S")
+            tempPaths.append("l")
+        printNow(tempPaths)
         for spot in range(0, len(tiles)):
             around = 0
             #dirs = [[1,0,right],[-1,0,left],[0,-1,up],[0,1,down]]
@@ -204,7 +211,7 @@ class Map():
                 #if tileCoordToSpot(new) >= len(tiles): continue
                 if tiles[tileCoordToSpot(new)] == tiles[spot]:
                     around = around | d[2] #bitwise or direction with around
-                elif tiles[spot] in paths and tiles[tileCoordToSpot(new)] in paths:
+                elif tiles[spot] in tempPaths and tiles[tileCoordToSpot(new)] in tempPaths:
                     around = around | d[2] #bitwise or direction with around
             if   tiles[spot] == self.baseTile.char: continue
             elif tiles[spot] == "g": self.placeTex(grass, spot, around)
@@ -218,6 +225,7 @@ class Map():
             elif tiles[spot] == "L": self.placeTex(lava, spot, around)
             elif tiles[spot] == "H": self.placeTex(hole, spot, around)
             elif tiles[spot] == "h": self.placeStruct(house, spot)
+            elif tiles[spot] == "c": self.placeStruct(chest, spot)
             elif tiles[spot] == "t": self.placeStruct(tree1, spot)
             repaint(self.map)
             #not in files yet
@@ -297,6 +305,7 @@ fence = Tile(fenceArr, false, true, false, "fence", "f")
 #structures
 structPath = path + "Tiles/LPC/structures/"
 house = makePicture(structPath + "house.png")
+chest = makePicture(structPath + "chest.png")
 tree1 = makePicture(structPath + "tree1.png")
 
 #initailize background image
@@ -309,7 +318,7 @@ texHeight = getHeight(textureMap)
 #initailize textures
 #  Tile(imgArr, isTraversable, isPassable, isTough, desc)
 
-paths = ["d", "s", "h", ".", "o"]
+paths = ["d", "s", "h", ".", "o", "c"]
 #create emply grass field will clean up later
 town  = "fffffffffffffddddfffffffffffffff"
 town += "fh......ggt,,ddddgh......ggggggf"
@@ -394,10 +403,10 @@ nefield += "fffffffffffffddddfffffffffffffff"
 entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllLLLLllllllllllllllllllS"
-entrance += "SllllllllLLLLLLLLllllllllllllllS"
-entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
+entrance += "SlllllllllllllLLLllllllllllllllS"
+entrance += "SllllllllLLLLlLLLllllLLLlllllllS"
+entrance += "SllllllllLLLLLLLLLllLLLLlllllllS"
+entrance += "SllllllllLLLLLLLLLLLLLLLlllllllS"
 entrance += "SllllllllLLLLLLLLLLLLLlllllllllS"
 entrance += "lllllllLLLLLLLllllLLLLllllllllll"
 entrance += "lllllllLLLLLLLllllLLLLllllllllll"
@@ -434,100 +443,100 @@ westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
+eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "lllllllllllllllllllllllllllllllS"
-eastRoom += "lllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
+eastRoom += "lllllllllllLLLLllllllllllllLLllS"
+eastRoom += "SlllLLllllLLLLLlllllllllLLLLLllS"
+eastRoom += "SlllLLLlllLLLLLllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLLLLLllllllLLLLLLLLllS"
+eastRoom += "SlllLLLLLLLLLLLlllllLLLLLLLLlllS"
+eastRoom += "SlllLLLLLLLlllllllllLLLLLLLllllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
 
 keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
-keyRoom += "SllllllllllllllllllllllllllllllS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLlllc.lllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
 
 miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
-miniBoss += "SllllllllllllllllllllllllllllllS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
 
 bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
-bossKey += "SllllllllllllllllllllllllllllllS"
+bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+bossKey += "SLLLLLLLlllllllllllllllllLLLLLLS"
+bossKey += "SLLLLLLlllllllllllllllllllLLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+bossKey += "SLLLLllllllllllllllllllllllLLLLS"
+bossKey += "SLLLLllllllllllc.llllllllllLLLLS"
+bossKey += "SLLLLLllllllllllllllllllllLLLLLS"
+bossKey += "SLLLLLLllllllllllllllllllLLLLLLS"
+bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
 bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
 
 bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
 bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossRoom += "SLLLllllLLLLLllllllLLLLLllllLLLS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
-bossRoom += "SllllllllllllllllllllllllllllllS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLlllLLLllllllLLLlllLLLLLLS"
+bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+bossRoom += "SLLLLLllllllllllllllllllllLLLLLS"
+bossRoom += "SLLLLLLllllllllllllllllllLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 #dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
 def makeDungeon():
@@ -542,7 +551,7 @@ def makeDungeon():
     entrance = Map(entrance,lavaRock, dungeonPath + "entrance.png")
     eastRoom = Map(eastRoom,lavaRock, dungeonPath + "eastRoom.png")
     westRoom = Map(westRoom,lavaRock, dungeonPath + "westRoom.png")
-    keyRoom = Map(keyRoom,lavaRock, dungeonPath + "keyRoom.png")
-    miniBoss = Map(miniBoss,lavaRock, dungeonPath + "miniBoss.png")
-    bossKey = Map(bossKey,lavaRock, dungeonPath + "bossKey.png")
-    bossRoom = Map(bossRoom,lavaRock, dungeonPath + "bossRoom.png")
+    keyRoom = Map(keyRoom,lava, dungeonPath + "keyRoom.png")
+    miniBoss = Map(miniBoss,lava, dungeonPath + "miniBoss.png")
+    bossKey = Map(bossKey,lava, dungeonPath + "bossKey.png")
+    bossRoom = Map(bossRoom,lava, dungeonPath + "bossRoom.png")
