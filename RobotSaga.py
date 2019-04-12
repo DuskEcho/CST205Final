@@ -367,25 +367,34 @@ def loadAreaCheck(player):
     maxAceptableHeight = 512
 
     if player.coords.y <= 0:
-      loadNewArea(CURRENT_AREA.northArea)
-      bot1.coords.y = maxAceptableHeight
-      loadNewArea(CURRENT_AREA)
-      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.northArea)
+        bot1.coords.y = maxAceptableHeight
+        loadNewArea(CURRENT_AREA)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.y > maxAceptableHeight:
-      loadNewArea(CURRENT_AREA.southArea)
-      bot1.coords.y = 0
-      loadNewArea(CURRENT_AREA)
-      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.southArea)
+        bot1.coords.y = 0
+        loadNewArea(CURRENT_AREA)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
-      loadNewArea(CURRENT_AREA.westArea)
-      bot1.coords.x = maxAceptableWidth
-      loadNewArea(CURRENT_AREA)
-      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.westArea)
+        bot1.coords.x = maxAceptableWidth
+        loadNewArea(CURRENT_AREA)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
-      loadNewArea(CURRENT_AREA.eastArea)
-      bot1.coords.x = 0
-      loadNewArea(CURRENT_AREA)
-      CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.eastArea)
+        bot1.coords.x = 0
+        loadNewArea(CURRENT_AREA)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+    printNow("loadAreaCheck")
+    if CURRENT_AREA.otherAreas:
+        printNow("In other areas")
+        currSpot = tileCoordToSpot(bot1.coords)
+        if currentMap.getTileDesc(currSpot) == "hole":
+            printNow(CURRENT_AREA.otherAreas[0])
+            loadNewArea(CURRENT_AREA.otherAreas[0])
+            loadNewArea(CURRENT_AREA)
+        printNow("Checking areas")
 
 
 
@@ -401,6 +410,8 @@ def joinNorthSouthAreas(northArea, southArea):
 def joinEastWestAreas(eastArea, westArea):
     eastArea.westArea = westArea
     westArea.eastArea = eastArea
+def joinOtherAreas(target, area):
+    target.otherAreas.append(area)
 
 
 
@@ -535,6 +546,7 @@ def textCoordToSpot(x, y):
   row = texHeight/32
   return x + y*col
 
+#LEGACY can delete 
 def getTexture(spot):
     texture = makeEmptyPicture(BITS,BITS)
     #spot to coord conversion
@@ -836,6 +848,7 @@ class Area():
         self.southArea = None
         self.eastArea = None
         self.westArea = None
+        self.otherAreas = []
 
 
     def activateAnimations(self):
@@ -923,13 +936,6 @@ class Map():
         starty = ((spot * BITS) / backWidth) * BITS
         if desc == "tree":
             printNow("Tree at: " + str(startx) + " " + str(starty))
-        structWidth = getWidth(struct) / BITS
-        structHeight = getHeight(struct) / BITS
-        for structx in range(0, structWidth):
-            for structy in range(0, structHeight):
-                curr = spotToCoord(spot)
-                newSpot = tileCoordToSpot(Coords(curr.x + structx, curr.y + structy))
-                self.tileMap.update({newSpot: blank}) #replace water with a blank tile
 
 
     def updateMap(self, tiles):
@@ -2080,7 +2086,7 @@ class Being():
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
-          loadAreaCheck(bot1)
+            loadAreaCheck(bot1)
 
 
     def moveDown(self):
@@ -2897,6 +2903,8 @@ water = Tile(false, true, false, "water")
 lava = Tile(false, true, false, "lava")
 #add Fence
 fence = Tile(false, true, false, "fence")
+#add Chest
+chest = Tile(false, true, false, "chest")
 #add Door tile
 door = Tile(true, false, false, "door")
 #add Blank
@@ -2908,8 +2916,8 @@ house = makePicture(structPath + "house.png")
 tree1 = makePicture(structPath + "tree1.png")
 
 #get width and height
-texWidth = getWidth(textureMap)
-texHeight = getHeight(textureMap)
+#texWidth = getWidth(textureMap)
+#texHeight = getHeight(textureMap)
 
 
 paths = ["d", "s", "h", ".", "o"]
@@ -3184,7 +3192,6 @@ for i in TOWN_AREA.lightSources:
 E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap)
 NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
 N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap)
-DUNGEON_AREA = Area(RawSprite(path + "dungeonMap.png", 0, 0, 6), dungeonMap)
 DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
 DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
 DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
@@ -3198,6 +3205,7 @@ joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
 joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
 joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
 joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
+joinOtherAreas(NE_FIELD_AREA, DUNGEON_ENTRANCE_AREA)
 #Dungeon Connections
 joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
 joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
@@ -3207,6 +3215,7 @@ joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
 joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
 
 CURRENT_AREA = TOWN_AREA
+#CURRENT_AREA = DUNGEON_ENTRANCE_AREA
 
 currentBg = TOWN_AREA.mapSprite
 currentBg.spawnSprite()
