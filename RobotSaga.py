@@ -640,6 +640,7 @@ def loadNewArea(area):
     for light in CURRENT_AREA.wasOn:
         light.turnOn()
     text.grabFocus()
+    bot1.hpBar.sprite.spawnSprite()
 
 
 
@@ -1720,6 +1721,10 @@ class Being():
             self.dead()
         else:
             self.bloodify()
+        try:
+          self.hpBar.updateBar()
+        except:
+          None
 
 
 
@@ -2532,6 +2537,42 @@ class AnimatedGiblets():
 
 
 
+        # Singleton class for player's HP Bar
+
+class HpBar():
+    def __init__(self, parental):
+      self.sprites = [Sprite(path + "\\EffectSprites\\hpBarSpriteEmpty.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteCritical.gif", self, 1),
+                      Sprite(path + "\\EffectSprites\\hpBarSpriteLow.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteHalf.gif", self, 1),
+                      Sprite(path + "\\EffectSprites\\hpBarSpriteHigh.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteMost.gif", self, 1),
+                      Sprite(path + "\\EffectSprites\\hpBarSpriteFull.gif", self, 1)]
+      self.sprite = self.sprites[6]
+      self.parental = parental
+      self.coords = Coords(0, 0)
+      self.sprite.spawnSprite()
+
+    def updateBar(self):
+      hpPercentage = ((self.parental.hp*1.0)/self.parental.maxHp)*100
+      self.sprite.removeSprite()
+      if hpPercentage >= 100:
+        self.sprite = self.sprites[6]
+      elif hpPercentage >= 90:
+        self.sprite = self.sprites[5]
+      elif hpPercentage >= 75:
+        self.sprite = self.sprites[4]
+      elif hpPercentage >= 50.0:
+        self.sprite = self.sprites[3]
+      elif hpPercentage >= 25:
+        self.sprite = self.sprites[2]
+      elif hp.percentage >= 10:
+        self.sprite = self.sprites[1]
+      else:
+        self.sprite = self.sprites[0]
+      self.sprite.spawnSprite()
+
+
+
+
+
 
 
 
@@ -2706,6 +2747,7 @@ class User(Being):
         self.boots = "Toes"
         self.gloves = "Digits"
         self.area = CURRENT_AREA
+        self.hpBar = HpBar(self)
 
         self.sprite.spawnSprite()
 
