@@ -905,19 +905,14 @@ class Tile():
 
 
 
-  
     # Object that holds collision/terrain information
 
 class Map():
-    def __init__(self, tileMap, back):
-        self.map = back
+    def __init__(self, tileMap):
+        #self.map = back
         self.tileMap = {} #change to make map
-        #beings will probably be a dictionary with coords as the key and value is the being at the spot
         self.beings = {} #master holder for all of the beings
-        #self.Map = makeEmptyPicture(backWidth, backHeight) #704 is chosen because its divisible by 32
         self.updateMap(tileMap)
-        #for key, value in self.tileMap.iteritems():
-            #printNow(key)
 
     def placeTex(self, tex, spot):
         self.tileMap.update({spot: tex})
@@ -939,7 +934,7 @@ class Map():
 
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
-            if   tiles[spot] == "g": self.placeTex(grass, spot)
+            if tiles[spot] == "g": self.placeTex(grass, spot)
             elif tiles[spot] == "l": self.placeTex(lavaRock, spot)
             elif tiles[spot] == "s": self.placeTex(stone, spot)
             elif tiles[spot] == "S": self.placeTex(stoneWall, spot)
@@ -948,12 +943,14 @@ class Map():
             elif tiles[spot] == "w": self.placeTex(water, spot)
             elif tiles[spot] == "f": self.placeTex(fence, spot)
             elif tiles[spot] == "L": self.placeTex(lava, spot)
+            elif tiles[spot] == "H": self.placeTex(hole, spot)
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "o": self.placeTex(door, spot)
-            elif tiles[spot] == "H": self.placeTex(hole, spot)
             elif tiles[spot] == "h": self.placeStruct(house, spot, "house")
             elif tiles[spot] == "t": self.placeStruct(tree1, spot, "tree")
+            elif tiles[spot] == "c": self.placeStruct(chest, spot, "chest")
+
 
     def isTraversable(self, spot):
         printNow(spot)
@@ -2935,9 +2932,9 @@ home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
 home += "fgdddddddwwwwwwwdddddddddddd,,,f"
 home += "fggddddddgggggggddddddddddddgdgf"
 home += "ffffffffffffffffffffffffffffffff"
-town = makePicture(path + "newBack.png")
-townMap = Map(home, town)
-townSpawn = Coords(13*BITS, 1*BITS)
+#town = makePicture(path + "newBack.png")
+townMap = Map(home)
+#townSpawn = Coords(13*BITS, 1*BITS)
 townAnimations = [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
                   ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
                   ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)]
@@ -2961,9 +2958,9 @@ nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
 nfield += "fggggggggdddddddddddddddddddgggf"
 nfield += "fggggggggddddddddddddddddddggggf"
 nfield += "fffffffffffffddddfffffffffffffff"
-nfieldImg = makePicture(path + "Nfield.png")
+#nfieldImg = makePicture(path + "Nfield.png")
 nfieldSpawn = Coords(14*BITS, 17*BITS)
-nfieldMap = Map(nfield, nfieldImg)
+nfieldMap = Map(nfield)
 
 efield  = "fffffffffffffddddfffffffffffffff"
 efield += "fggggggggggggddddggggggggggggggf"
@@ -2983,9 +2980,9 @@ efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
 efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
 efield += "fggggggggggggggggggggggggggggggf"
 efield += "ffffffffffffffffffffffffffffffff"
-efieldImg = makePicture(path + "Efield.png")
+#efieldImg = makePicture(path + "Efield.png")
 efieldSpawn = Coords(1*BITS, 8*BITS)
-efieldMap = Map(efield, efieldImg)
+efieldMap = Map(efield)
 
 nefield  = "ffffffffffffffffffffffffffffffff"
 nefield += "fggggggggggggggggggggggggggggggf"
@@ -3005,9 +3002,9 @@ nefield += "fgggggggdddddddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fffffffffffffddddfffffffffffffff"
-nefieldImg = makePicture(path + "NEfield.png")
+#nefieldImg = makePicture(path + "NEfield.png")
 nefieldSpawn = Coords(14*BITS, 17*BITS)
-nefieldMap = Map(nefield, nefieldImg)
+nefieldMap = Map(nefield)
 
 #old field no longer in use
 field  = "ffffffffffffffffffffffffffffffff"
@@ -3028,30 +3025,30 @@ field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fggggggggggggggggggggggggggggggf"
 field += "fffffffffffffggggfffffffffffffff"
-fieldImg = makePicture(path + "fieldMap.png")
+#fieldImg = makePicture(path + "fieldMap.png")
 fieldSpawn = Coords(1*BITS, 7*BITS)
-fieldMap = Map(field, fieldImg)
+fieldMap = Map(field)
 
 entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllLLLLllllllllllllllllllS"
-entrance += "SllllllllLLLLLLLLllllllllllllllS"
-entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
-entrance += "SllllllllLLLLLLLLLLLlllllllllllS"
-entrance += "lllllllllLLLLLllllLLllllllllllll"
-entrance += "llllllllllllLLllllLLllllllllllll"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
+entrance += "SlllllllllllllLLLllllllllllllllS"
+entrance += "SllllllllLLLLlLLLllllLLLlllllllS"
+entrance += "SllllllllLLLLLLLLLllLLLLlllllllS"
+entrance += "SllllllllLLLLLLLLLLLLLLLlllllllS"
+entrance += "SllllllllLLLLLLLLLLLLLlllllllllS"
+entrance += "lllllllLLLLLLLllllLLLLllllllllll"
+entrance += "lllllllLLLLLLLllllLLLLllllllllll"
+entrance += "SllllllLLLLLllllllLLLLlllllllllS"
+entrance += "SlllllllLLLLllllllLLLllllllllllS"
+entrance += "SlllllllllLLlllllllLLllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-dungeonImg = makePicture(path + "dungeonMap.png")
-dungeonMap = Map(entrance, dungeonImg)
+#dungeonImg = makePicture(path + "dungeonMap.png")
+entranceMap = Map(entrance)
 dungeonSpawn = Coords(15*BITS, 16*BITS)
 
 layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
