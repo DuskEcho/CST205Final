@@ -369,17 +369,28 @@ def loadAreaCheck(player):
         currCoord = coordToTileCoord(bot1.coords)
         currSpot = tileCoordToSpot(currCoord)
         if currentMap.getTileDesc(currSpot) == "hole":
-            printNow(CURRENT_AREA.otherAreas[0])
+            #enter the dungeon!
+            coordY = (HEIGHT_TILES/2) * BITS
+            coordX = (WIDTH_TILES/2) * BITS
             loadNewArea(CURRENT_AREA.otherAreas[0])
+            bot1.coords.y = coordY
+            bot1.coords.x = coordX
             loadNewArea(CURRENT_AREA)
-    elif player.coords.y <= 0:
+        elif currentMap.getTileDesc(currSpot) == "door":
+            coordY = (HEIGHT_TILES/2) * BITS
+            coordX = (WIDTH_TILES/2) * BITS
+            loadNewArea(CURRENT_AREA.otherAreas[0])
+            bot1.coords.y = coordY
+            bot1.coords.x = coordX
+            loadNewArea(CURRENT_AREA)
+    if player.coords.y <= 0:
         loadNewArea(CURRENT_AREA.northArea)
         bot1.coords.y = maxAceptableHeight
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.y > maxAceptableHeight:
         loadNewArea(CURRENT_AREA.southArea)
-        bot1.coords.y = 0
+        bot1.coords.y = BITS #place user one in from the edge
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
@@ -389,7 +400,7 @@ def loadAreaCheck(player):
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
         loadNewArea(CURRENT_AREA.eastArea)
-        bot1.coords.x = 0
+        bot1.coords.x = BITS #place user one in from the edge
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
 
@@ -3034,7 +3045,7 @@ entrance += "SllllllllLLLLlLLLllllLLLlllllllS"
 entrance += "SllllllllLLLLLLLLLllLLLLlllllllS"
 entrance += "SllllllllLLLLLLLLLLLLLLLlllllllS"
 entrance += "SllllllllLLLLLLLLLLLLLlllllllllS"
-entrance += "lllllllLLLLLLLllllLLLLllllllllll"
+entrance += "lllllllLLLLLLLooooLLLLllllllllll"
 entrance += "lllllllLLLLLLLllllLLLLllllllllll"
 entrance += "SllllllLLLLLllllllLLLLlllllllllS"
 entrance += "SlllllllLLLLllllllLLLllllllllllS"
@@ -3206,6 +3217,7 @@ joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
 joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
 joinOtherAreas(NE_FIELD_AREA, DUNGEON_ENTRANCE_AREA)
 #Dungeon Connections
+joinOtherAreas(DUNGEON_ENTRANCE_AREA, NE_FIELD_AREA)
 joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
 joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
 joinNorthSouthAreas(DUNGEON_KEYROOM_AREA, DUNGEON_WESTROOM_AREA)
