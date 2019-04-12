@@ -366,33 +366,28 @@ def loadAreaCheck(player):
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if CURRENT_AREA.otherAreas:
-        printNow("In other areas")
-        currSpot = tileCoordToSpot(bot1.coords)
+        currCoord = coordToTileCoord(bot1.coords)
+        currSpot = tileCoordToSpot(currCoord)
         if currentMap.getTileDesc(currSpot) == "hole":
             printNow(CURRENT_AREA.otherAreas[0])
             loadNewArea(CURRENT_AREA.otherAreas[0])
             loadNewArea(CURRENT_AREA)
-        printNow("Checking areas")
     elif player.coords.y <= 0:
-        printNow("Move Up")
         loadNewArea(CURRENT_AREA.northArea)
         bot1.coords.y = maxAceptableHeight
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.y > maxAceptableHeight:
-        printNow("Move Up")
         loadNewArea(CURRENT_AREA.southArea)
         bot1.coords.y = 0
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
-        printNow("Move Up")
         loadNewArea(CURRENT_AREA.westArea)
         bot1.coords.x = maxAceptableWidth
         loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
-        printNow("Move Up")
         loadNewArea(CURRENT_AREA.eastArea)
         bot1.coords.x = 0
         loadNewArea(CURRENT_AREA)
