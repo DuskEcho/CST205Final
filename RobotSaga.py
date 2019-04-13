@@ -657,6 +657,7 @@ def loadNewArea(area):
     text.grabFocus()
     bot1.hpBar.updateBar()
     bot1.wallet.updateWalletDisplay()
+    turnPass()
 
 
 
@@ -2631,7 +2632,7 @@ class HpBar():
         self.sprite = self.sprites[3]
       elif hpPercentage >= 25:
         self.sprite = self.sprites[2]
-      elif hppercentage >= 10:
+      elif hpPercentage >= 10:
         self.sprite = self.sprites[1]
       else:
         self.sprite = self.sprites[0]
