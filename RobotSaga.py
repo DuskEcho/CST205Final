@@ -369,6 +369,7 @@ def slideRight(toBeMoved, targetXBig):
 
 # Checks player coords to determine if a load is necessary.
 # may call loadNewArea
+# double calls for garbage sprite cleanup
 
 def loadAreaCheck(player):
     global CURRENT_AREA
@@ -381,31 +382,31 @@ def loadAreaCheck(player):
             #enter the dungeon!
             coordY = (HEIGHT_TILES/2) * BITS
             coordX = (WIDTH_TILES/2) * BITS
-            loadNewArea(CURRENT_AREA.otherAreas[0])
             bot1.coords.y = coordY
             bot1.coords.x = coordX
+            loadNewArea(CURRENT_AREA.otherAreas[0])
         elif currentMap.getTileDesc(currSpot) == "door":
             coordY = (HEIGHT_TILES/2) * BITS
             coordX = (WIDTH_TILES/2) * BITS
-            loadNewArea(CURRENT_AREA.otherAreas[0])
             bot1.coords.y = coordY
             bot1.coords.x = coordX
+            loadNewArea(CURRENT_AREA.otherAreas[0])
     if player.coords.y <= 0:
-        loadNewArea(CURRENT_AREA.northArea)
         bot1.coords.y = maxAceptableHeight
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.northArea)
     elif player.coords.y > maxAceptableHeight:
-        loadNewArea(CURRENT_AREA.southArea)
         bot1.coords.y = BITS #place user one in from the edge
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.southArea)
     elif player.coords.x <= 0:
-        loadNewArea(CURRENT_AREA.westArea)
         bot1.coords.x = maxAceptableWidth
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.westArea)
     elif player.coords.x > maxAceptableWidth:
-        loadNewArea(CURRENT_AREA.eastArea)
         bot1.coords.x = BITS #place user one in from the edge
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+        loadNewArea(CURRENT_AREA.eastArea)
 
 
 
