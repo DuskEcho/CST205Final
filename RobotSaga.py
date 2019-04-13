@@ -2629,7 +2629,7 @@ class HpBar():
         self.sprite = self.sprites[3]
       elif hpPercentage >= 25:
         self.sprite = self.sprites[2]
-      elif hp.percentage >= 10:
+      elif hppercentage >= 10:
         self.sprite = self.sprites[1]
       else:
         self.sprite = self.sprites[0]
