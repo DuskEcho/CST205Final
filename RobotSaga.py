@@ -118,13 +118,15 @@ friendlyGreenSpritePaths = [path + "RobotSprites/botGreenBack.gif",
                path + "RobotSprites/botGreenSideLeft.gif",
                path + "RobotSprites/botGreenSideRight.gif",
                path + "RobotSprites/botGreenMovingLeft.gif",
-               path + "RobotSprites/botGreenMovingRight.gif",]
+               path + "RobotSprites/botGreenMovingRight.gif",
+               path + "RobotSprites/botGreenFront.gif",
+               path + "RobotSprites/botGreenBack.gif",]
 friendlyOrangeSpritePaths = [path + "RobotSprites/botOrangeBack.gif",
                path + "RobotSprites/botOrangeFront.gif",
                path + "RobotSprites/botOrangeSideLeft.gif",
                path + "RobotSprites/botOrangeSideRight.gif",
-               path + "RobotSprites/botOrangeMovingLeft.gif",
-               path + "RobotSprites/botOrangeMovingRight.gif",]
+               path + "RobotSprites/botOrangeFront.gif",
+               path + "RobotSprites/botOrangeBack.gif",]
 blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/blueRobotFront.gif",
                path + "RobotSprites/BlueRobotSideLeft.gif",
@@ -134,7 +136,13 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotMovingFront.gif",
                path + "RobotSprites/BlueRobotMovingBack.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif"]
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",
+                         path + "RobotSprites/ShopkeeperbotFront.gif",]
 
 
 
@@ -792,7 +800,22 @@ def initialSetup():
 
 
 
-
+def damageCalculation(target, damage):
+  if target != bot1:
+    target.hostile = true
+  target.changeHp(damage*(-1))
+  target.displayDamage()
+  if target.hp <= 0:
+    self.changeXp(target.xpValue)
+    global friendlyGreen
+    global friendlyOrange
+    global shopKeeper
+    if target == friendlyGreen:
+      del friendlyGreen
+    elif target == friendlyOrange:
+      del friendlyOrange
+    elif target == shopKeeper:
+      del shopKeeper
 
 
 
@@ -2028,23 +2051,9 @@ class Being():
                 target.turnOn()
             elif isinstance(target, Being) or isinstance(target, Enemy):
               damage = self.atk
-              if target != bot1:
-                target.hostile = true
               if damage <= 0:
                 damage = 1
-              target.changeHp(damage*(-1))
-              target.displayDamage()
-              if target.hp <= 0:
-                self.changeXp(target.xpValue)
-                global friendlyGreen
-                global friendlyOrange
-                global shopKeeper
-                if target == friendlyGreen:
-                  del friendlyGreen
-                elif target == friendlyOrange:
-                  del friendlyOrange
-                elif target == shopKeeper:
-                  del shopKeeper
+              damageCalculation(target, damage)
 
 
 
