@@ -369,7 +369,6 @@ def slideRight(toBeMoved, targetXBig):
 
 # Checks player coords to determine if a load is necessary.
 # may call loadNewArea
-# double calls for garbage sprite cleanup
 
 def loadAreaCheck(player):
     global CURRENT_AREA
@@ -385,33 +384,27 @@ def loadAreaCheck(player):
             loadNewArea(CURRENT_AREA.otherAreas[0])
             bot1.coords.y = coordY
             bot1.coords.x = coordX
-            loadNewArea(CURRENT_AREA)
         elif currentMap.getTileDesc(currSpot) == "door":
             coordY = (HEIGHT_TILES/2) * BITS
             coordX = (WIDTH_TILES/2) * BITS
             loadNewArea(CURRENT_AREA.otherAreas[0])
             bot1.coords.y = coordY
             bot1.coords.x = coordX
-            loadNewArea(CURRENT_AREA)
     if player.coords.y <= 0:
         loadNewArea(CURRENT_AREA.northArea)
         bot1.coords.y = maxAceptableHeight
-        loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.y > maxAceptableHeight:
         loadNewArea(CURRENT_AREA.southArea)
         bot1.coords.y = BITS #place user one in from the edge
-        loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
         loadNewArea(CURRENT_AREA.westArea)
         bot1.coords.x = maxAceptableWidth
-        loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
         loadNewArea(CURRENT_AREA.eastArea)
         bot1.coords.x = BITS #place user one in from the edge
-        loadNewArea(CURRENT_AREA)
         CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
 
 
@@ -654,10 +647,11 @@ def loadNewArea(area):
     for gib in gibList:
         display.add(gib)
     loading.removeSprite()
-    for sprite in area.persistentAnimations:
-        sprite.animate()
+
     for light in CURRENT_AREA.wasOn:
         light.turnOn()
+    for sprite in CURRENT_AREA.persistentAnimations:
+        sprite.animate()
     text.grabFocus()
     bot1.hpBar.updateBar()
     bot1.wallet.updateWalletDisplay()
