@@ -3401,7 +3401,7 @@ text = gui.TextField("", 1)
 text.onKeyType(keyAction)
 
 
-display.add(text)
+display.add(text, -32, -32)
 
 #display.drawImage(path + "newBack.png", 0, 0)
 bot1Spawn = Coords(13*BITS, 1*BITS)
