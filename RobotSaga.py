@@ -481,7 +481,7 @@ def clearBadSprites():
     goodSprites = []
     for being in currentBeingList:
         goodSprites.append(being.sprite)
-    stop = time.time() + 2
+    stop = time.time() + .5
     for sprite in display.items:
       if sprite not in goodSprites and type(sprite) == BeingSprite :
           display.remove(sprite)
@@ -820,7 +820,23 @@ def damageCalculation(target, damage):
     elif target == shopKeeper:
       del shopKeeper
 
-
+def threadDamageCalculation(target, damage, delay):
+  time.sleep(delay)
+  if target != bot1:
+    target.hostile = true
+  target.changeHp(damage*(-1))
+  target.displayDamage()
+  if target.hp <= 0:
+    self.changeXp(target.xpValue)
+    global friendlyGreen
+    global friendlyOrange
+    global shopKeeper
+    if target == friendlyGreen:
+      del friendlyGreen
+    elif target == friendlyOrange:
+      del friendlyOrange
+    elif target == shopKeeper:
+      del shopKeeper
 
 
 
@@ -1125,7 +1141,6 @@ class Wallet():
       self.parental = parental
 
 
-
       # User-exclusive wallet class.
       # Expansions:
       #   coords                - coords for the HUD icon (User only)
@@ -1140,6 +1155,7 @@ class UserWallet(Wallet):
       self.label = gui.Label(str(self.value), gui.RIGHT)
       self.sprite.spawnSprite()
       display.add(self.label, 1000, 24)
+
       
 
     def updateWalletDisplay(self):
@@ -1438,15 +1454,16 @@ class Weapon():
           self.onFire = false
           self.displayed = false
           self.currentAnimation = None
-          self.animationUp = ThreeStageAnimationCycle(self.sprites[0], self.sprites[4], self.sprites[8], 0, 0, .15)
-          self.animationDown = ThreeStageAnimationCycle(self.sprites[1], self.sprites[5], self.sprites[9], 0, 0, .15)
-          self.animationLeft = ThreeStageAnimationCycle(self.sprites[2], self.sprites[6], self.sprites[10], 0, 0, .15)
-          self.animationRight = ThreeStageAnimationCycle(self.sprites[3], self.sprites[7], self.sprites[11], 0, 0, .15)
+          self.animationDelay = .15
+          self.animationUp = ThreeStageAnimationCycle(self.sprites[0], self.sprites[4], self.sprites[8], 0, 0, self.animationDelay)
+          self.animationDown = ThreeStageAnimationCycle(self.sprites[1], self.sprites[5], self.sprites[9], 0, 0, self.animationDelay)
+          self.animationLeft = ThreeStageAnimationCycle(self.sprites[2], self.sprites[6], self.sprites[10], 0, 0, self.animationDelay)
+          self.animationRight = ThreeStageAnimationCycle(self.sprites[3], self.sprites[7], self.sprites[11], 0, 0, self.animationDelay)
           try:
-            self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, .15)
-            self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, .15)
-            self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, .15)
-            self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, .15)
+            self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, animationDelay)
+            self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, animationDelay)
+            self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, animationDelay)
+            self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, animationDelay)
           except:
             None
 
@@ -1635,6 +1652,7 @@ class Being():
         self.wallet.value += amount
         if self.wallet <= 0:
             self.wallet == 0
+        self.wallet.updateWalletDisplay()
 
 
 
@@ -2041,6 +2059,9 @@ class Being():
         # if the target is killed, exp is calculated.  If the player is killed,
         # the player loses all levels/items and respawns as a new instance of the
         # User class.
+        #
+        # Damage logic is delayed with a thread to occur around the time the third weapon
+        # display animation activates
 
     def meleeAtk(self):
         self.displayWeapon()
@@ -2056,7 +2077,7 @@ class Being():
               damage = self.atk
               if damage <= 0:
                 damage = 1
-              damageCalculation(target, damage)
+              thread.start_new_thread(threadDamageCalculation, (target, damage, self.weapon.animationDelay*2))
 
 
 
@@ -2149,15 +2170,15 @@ class Being():
             if self.facing == directionList["up"]:
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
-              move = music(path+"Audio/footstep.wav")
-              music.volume(move, .08)
-              music.Play(move)
+        #      move = music(path+"Audio/footstep.wav")
+         #     music.volume(move, .08)
+          #    music.Play(move)
 
 
         else:
             self.isMoving = false
-            move = music(path+"Audio/footstep.wav")
-            music.Stop(move)
+      #      move = music(path+"Audio/footstep.wav")
+       #     music.Stop(move)
 
     def threadMoveUp(self, x):
         time.sleep(.15)
@@ -2191,13 +2212,13 @@ class Being():
             if self.facing == directionList["down"]:
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
-              move = music(path+"Audio/footstep.wav")
-              music.volume(move, .08)
-              music.Play(move)
+   #           move = music(path+"Audio/footstep.wav")
+    #          music.volume(move, .08)
+     #         music.Play(move)
         else:
             self.isMoving = false
-            move = music(path+"Audio/footstep.wav")
-            music.Stop(move)
+     #       move = music(path+"Audio/footstep.wav")
+      #      music.Stop(move)
 
     def threadMoveDown(self, x):
         time.sleep(.15)
@@ -2227,13 +2248,13 @@ class Being():
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
-              move = music(path+"Audio/footstep.wav")
-              music.volume(move, .08)
-              music.Play(move)
+     #         move = music(path+"Audio/footstep.wav")
+      #        music.volume(move, .08)
+       #       music.Play(move)
         else:
             self.isMoving = false
-            move = music(path+"Audio/footstep.wav")
-            music.Stop(move)
+     #       move = music(path+"Audio/footstep.wav")
+      #      music.Stop(move)
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2262,13 +2283,13 @@ class Being():
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-              move = music(path+"Audio/footstep.wav")
-              music.volume(move, .08)
-              music.Play(move)
+  #            move = music(path+"Audio/footstep.wav")
+   #           music.volume(move, .08)
+    #          music.Play(move)
         else:
             self.isMoving = false
-            move = music(path+"Audio/footstep.wav")
-            music.Stop(move)
+   #         move = music(path+"Audio/footstep.wav")
+    #        music.Stop(move)
 
 
     def threadMoveRight(self, x):
@@ -2956,6 +2977,9 @@ class User(Being):
           self.weapon.currentAnimation.stopAnimating()
         except:
           None
+        self.wallet.value = 0
+        self.wallet.sprite.removeSprite()
+        removeLabel(self.wallet.label)
         self.__init__("bot1", "Stick", userSpritePaths, self.area)
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
