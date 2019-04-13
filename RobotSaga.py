@@ -393,20 +393,21 @@ def loadAreaCheck(player):
             loadNewArea(CURRENT_AREA.otherAreas[0])
     if player.coords.y <= 0:
         bot1.coords.y = maxAceptableHeight
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         loadNewArea(CURRENT_AREA.northArea)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+
     elif player.coords.y > maxAceptableHeight:
         bot1.coords.y = BITS #place user one in from the edge
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         loadNewArea(CURRENT_AREA.southArea)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x <= 0:
         bot1.coords.x = maxAceptableWidth
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         loadNewArea(CURRENT_AREA.westArea)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     elif player.coords.x > maxAceptableWidth:
         bot1.coords.x = BITS #place user one in from the edge
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         loadNewArea(CURRENT_AREA.eastArea)
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
 
 
 
