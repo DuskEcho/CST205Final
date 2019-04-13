@@ -436,7 +436,10 @@ def joinOtherAreas(target, area):
 
 # Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
 
-def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+def spawnEnemy(name = None, weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
+    if name == None:
+      global counter
+      name = ("EnemyBorn" + str(counter.turn))
     if len(CURRENT_AREA.beingList) < MAX_BEINGS:
       while not isTraversable(x, y):
           x = random.randint(0, 10)*32
@@ -447,7 +450,10 @@ def spawnEnemy(name = ("EnemyBorn" + str(counter.turn)), weap = "Stick", spriteP
       
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
 
-def spawnFriendly(name = "FriendlyBorn" + str(counter.turn), weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
+def spawnFriendly(name = None, weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
+    if name == None:
+      global counter
+      name = ("FriendlyBorn" + str(counter.turn))
     while not isTraversable(x, y):
         x = random.randint(0, 10)*32
         y =  random.randint(0, 10)*32
@@ -3087,6 +3093,7 @@ nfield += "fggggggggdddddddddddddddddddgggf"
 nfield += "fggggggggddddddddddddddddddggggf"
 nfield += "fffffffffffffddddfffffffffffffff"
 nfieldMap = Map(nfield)
+nFieldAnimations = [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 480, 192, .3)]
 
 efield  = "fffffffffffffddddfffffffffffffff"
 efield += "fggggggggggggddddggggggggggggggf"
@@ -3107,6 +3114,9 @@ efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
 efield += "fggggggggggggggggggggggggggggggf"
 efield += "ffffffffffffffffffffffffffffffff"
 efieldMap = Map(efield)
+eFieldAnimations = [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
+                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 864, 384, .2),
+                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 832, 288, .2)]
 
 nefield  = "ffffffffffffffffffffffffffffffff"
 nefield += "fggggggggggggggggggggggggggggggf"
@@ -3311,9 +3321,9 @@ TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
 TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
 for i in TOWN_AREA.lightSources:
   TOWN_AREA.objectList.append(i)
-E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap)
+E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, eFieldAnimations)
 NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
-N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap)
+N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap, nFieldAnimations)
 DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
 DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
 DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
