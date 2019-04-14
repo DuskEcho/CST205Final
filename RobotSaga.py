@@ -119,8 +119,8 @@ friendlyGreenSpritePaths = [path + "RobotSprites/botGreenBack.gif",
                path + "RobotSprites/botGreenSideRight.gif",
                path + "RobotSprites/botGreenMovingLeft.gif",
                path + "RobotSprites/botGreenMovingRight.gif",
-               path + "RobotSprites/botGreenFront.gif",
-               path + "RobotSprites/botGreenBack.gif",]
+               path + "RobotSprites/botGreenMovingFront.gif",
+               path + "RobotSprites/botGreenMovingBack.gif",]
 friendlyOrangeSpritePaths = [path + "RobotSprites/botOrangeBack.gif",
                path + "RobotSprites/botOrangeFront.gif",
                path + "RobotSprites/botOrangeSideLeft.gif",
