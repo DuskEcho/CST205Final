@@ -1139,7 +1139,6 @@ class ItemForSale():
 class Wallet():
     def __init__(self, parental, amount):
       self.value = amount
-      self.parental = parental
 
 
       # User-exclusive wallet class.
@@ -1910,7 +1909,8 @@ class Being():
         # drops all contents of the inv list in a lootbag object
 
     def dropLoot(self):
-        self.inv.append(self.wallet)
+        newWallet = Wallet(None, self.wallet.value)
+        self.inv.append(newWallet)
         loot = Lootbag(self.inv, self.coords)
         objectList.append(loot)
 
@@ -2009,7 +2009,9 @@ class Being():
                     p = getPixel(pic, x, y)
                     if getColor(p) != makeColor(0, 0, 0):
                         if random.randint(0, 100) > (self.hp*100)/self.maxHp:
-                            setColor(p, makeColor(114, 87, 7))
+                          setRed(p, (getRed(p)+228)/3)
+                          setGreen(p, (getGreen(p)+174)/3)
+                          setBlue(p, (getBlue(p)+14)/3)
             newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.bloodySprites.append(newPicPath)
@@ -2192,6 +2194,8 @@ class Being():
         self.lightenDarken()
         if isinstance(self, User):
             loadAreaCheck(bot1)
+        if self.coords.y%32 != 0:
+          self.coords.y = (self.coords.y/32)*32
 
 
     def moveDown(self):
@@ -2232,6 +2236,8 @@ class Being():
         self.lightenDarken()
         if isinstance(self, User):
           loadAreaCheck(bot1)
+        if self.coords.y%32 != 0:
+          self.coords.y = (self.coords.y/32)*32
 
 
     def moveLeft(self):
@@ -2268,6 +2274,8 @@ class Being():
         self.lightenDarken()
         if isinstance(self, User):
           loadAreaCheck(bot1)
+        if self.coords.x%32 != 0:
+          self.coords.x = (self.coords.x/32)*32
 
     def moveRight(self):
         self.faceRight()
@@ -2304,6 +2312,8 @@ class Being():
         self.lightenDarken()
         if isinstance(self, User):
           loadAreaCheck(bot1)
+        if self.coords.x%32 != 0:
+          self.coords.x = (self.coords.x/32)*32
 
 
         # changes the being's sprite to one facing the corresponding
