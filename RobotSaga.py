@@ -135,14 +135,15 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotMovingRight.gif",
                path + "RobotSprites/BlueRobotMovingFront.gif",
                path + "RobotSprites/BlueRobotMovingBack.gif",]
-shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotCloseup.gif",
+shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",]
+                         path + "RobotSprites/ShopkeeperbotLeft.gif",
+                         path + "RobotSprites/ShopkeeperbotRight.gif",
+                         path + "RobotSprites/ShopkeeperbotMovingLeft.gif",
+                         path + "RobotSprites/ShopkeeperbotMovingRight.gif",
+                         path + "RobotSprites/ShopkeeperbotMovingFront.gif",
+                         path + "RobotSprites/ShopkeeperbotMovingBack.gif",
+                         path + "RobotSprites/ShopkeeperbotCloseup.gif",]
 
 
 
@@ -2959,6 +2960,14 @@ class User(Being):
 
     def talk(self):
         target = self.getFrontTarget()
+        if target.coords.x < self.coords.x:
+          target.faceRight()
+        elif target.coords.x > self.coords.x:
+          target.faceLeft()
+        elif target.coords.y < self.coords.y:
+          target.faceDown()
+        elif target.coords.y > self.coords.y:
+          target.faceUp()
         speech = gui.Label(target.talkingLines[random.randint(0, len(target.talkingLines)-1)])
         showLabel(speech)
         delayRemoveObject(speech, 2)
