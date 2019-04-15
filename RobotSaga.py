@@ -2791,10 +2791,10 @@ class AnimatedGiblets():
 
 class HpBar():
     def __init__(self, parental):
-      self.sprites = [Sprite(path + "\\EffectSprites\\hpBarSpriteEmpty.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteCritical.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteLow.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteHalf.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteHigh.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteMost.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteFull.gif", self, 1)]
+      self.sprites = [Sprite(path + "/EffectSprites/hpBarSpriteEmpty.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteCritical.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteLow.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteHalf.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteHigh.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteMost.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteFull.gif", self, 1)]
       self.sprite = self.sprites[6]
       self.parental = parental
       self.coords = Coords(0, 0)
