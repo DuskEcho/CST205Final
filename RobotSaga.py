@@ -851,10 +851,19 @@ def threadDamageCalculation(target, damage, delay):
     # A custom class created to override gui.Display's default destructor.
 
 class CustomDisplay(gui.Display):
+  
+    
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
     #insert stop music logic here
+    music.Stop(move)
+    music.Stop(dead_sound)
+    music.Stop(quieter_music)
+    music.Stop(background_music1)
+    music.Stop(dungeon_sound)
+
+
     gui.display.__del__(self)
 
 
@@ -1928,9 +1937,8 @@ class Being():
         for files in self.bloodySprites:
             os.remove(files)
         currentBeingList.remove(self)
-        del self
-        dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-        music.Play(dead)
+        del self        
+        music.Play(dead_sound)
 
         # Handles lighting of sprites. If a valid light object is within the range
         # currently set to BITS * 3, a new set of sprites will be created and applied
@@ -2173,14 +2181,13 @@ class Being():
             if self.facing == directionList["up"]:
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
-        #      move = music(path+"Audio/footstep.wav")
-         #     music.volume(move, .08)
-          #    music.Play(move)
+            
+         #     music.Play(move)
 
 
         else:
             self.isMoving = false
-      #      move = music(path+"Audio/footstep.wav")
+      #    
        #     music.Stop(move)
 
     def threadMoveUp(self, x):
@@ -2217,12 +2224,11 @@ class Being():
             if self.facing == directionList["down"]:
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
-   #           move = music(path+"Audio/footstep.wav")
-    #          music.volume(move, .08)
-     #         music.Play(move)
+              
+    #          #music.Play(move)
         else:
             self.isMoving = false
-     #       move = music(path+"Audio/footstep.wav")
+     #       
       #      music.Stop(move)
 
     def threadMoveDown(self, x):
@@ -2255,13 +2261,12 @@ class Being():
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
-     #         move = music(path+"Audio/footstep.wav")
-      #        music.volume(move, .08)
+              
+     #          #        
        #       music.Play(move)
         else:
             self.isMoving = false
-     #       move = music(path+"Audio/footstep.wav")
-      #      music.Stop(move)
+     #       #      music.Stop(move)
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2292,12 +2297,12 @@ class Being():
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-  #            move = music(path+"Audio/footstep.wav")
-   #           music.volume(move, .08)
+         
+  #               #           
     #          music.Play(move)
         else:
             self.isMoving = false
-   #         move = music(path+"Audio/footstep.wav")
+   #         
     #        music.Stop(move)
 
 
@@ -2420,8 +2425,8 @@ class Friendly(Being):
             None
         currentBeingList.remove(self)
         del self
-        dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-        music.Play(dead)
+        music.Play(dead_sound)
+      
 
         
 
@@ -2469,9 +2474,8 @@ class ShopKeeper(Being):
             os.remove(files)
         currentBeingList.remove(self)
         del self
-        dead = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-        music.Play(dead)
-        music.Stop(dead)
+        music.Play(dead_sound)
+        
 
 
 
@@ -2544,10 +2548,8 @@ class Enemy(Being):
           os.remove(files)
         currentBeingList.remove(self)
         del self
-        dead= music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-        music.Play(dead)
-        music.Stop(dead)
-
+        music.Play(dead_sound)
+       
 
 
 
@@ -3000,6 +3002,7 @@ class User(Being):
         self.wallet.sprite.removeSprite()
         removeLabel(self.wallet.label)
         self.__init__("bot1", "Stick", userSpritePaths, self.area)
+        global weapon_sound
         weapon_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
         music.Play(weapon_sound)
 
@@ -3434,10 +3437,31 @@ friendlyOrange.sprite.spawnSprite()
 friendlyGreen.sprite.spawnSprite()
 loadNewArea(TOWN_AREA)#refresh screen, start animations
 text.grabFocus()
+
+
+global move
+#move = music(path+"Audio/footstep.wav")
+#music.volume(move, .08)
+
+global dead_sound
+#dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+
 #background music
+global background_music1
 #background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #music.repeat(background_music1)
-#music.Stop(background_music1)
+
+#background music
+global quieter_music
+#quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
+#music.volume(quieter_music, .08)
+#music.repeat(quieter_music)
+
+
+global dungeon_sound
+#dungeon_sound = music(path+"Audio/Night-Stalker.wav")
+#music.repeat(dungeon_sound)
+
 
 #Menu Sprites
 defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
