@@ -825,7 +825,7 @@ def damageCalculation(target, damage):
     elif target == shopKeeper:
       del shopKeeper
 
-def threadDamageCalculation(target, damage, delay):
+def threadDamageCalculation(self, target, damage, delay):
   time.sleep(delay)
   if target != bot1:
     target.hostile = true
@@ -2122,7 +2122,7 @@ class Being():
               damage = self.atk
               if damage <= 0:
                 damage = 1
-              thread.start_new_thread(threadDamageCalculation, (target, damage, self.weapon.animationDelay*2))
+              thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
 
 
 
