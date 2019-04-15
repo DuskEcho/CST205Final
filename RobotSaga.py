@@ -626,6 +626,7 @@ def loadNewArea(area):
     global currentBg
     global currentMap
     global CURRENT_AREA
+    global 
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -2182,13 +2183,13 @@ class Being():
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
             
-         #     music.Play(move)
+              music.Play(move)
 
 
         else:
             self.isMoving = false
-      #    
-       #     music.Stop(move)
+          
+            music.Stop(move)
 
     def threadMoveUp(self, x):
         time.sleep(.15)
@@ -2225,11 +2226,11 @@ class Being():
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
               
-    #          #music.Play(move)
+              music.Play(move)
         else:
             self.isMoving = false
-     #       
-      #      music.Stop(move)
+            
+            music.Stop(move)
 
     def threadMoveDown(self, x):
         time.sleep(.15)
@@ -2262,11 +2263,11 @@ class Being():
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
               
-     #          #        
-       #       music.Play(move)
+                      
+              music.Play(move)
         else:
             self.isMoving = false
-     #       #      music.Stop(move)
+            music.Stop(move)
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2296,14 +2297,11 @@ class Being():
             thread.start_new_thread(self.threadMoveRight, (x,))
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-         
-  #               #           
-    #          music.Play(move)
+              self.forwardCoords.x = self.coords.x + BITS+ BITS/2           
+              music.Play(move)
         else:
             self.isMoving = false
-   #         
-    #        music.Stop(move)
+            music.Stop(move)
 
 
     def threadMoveRight(self, x):
@@ -3439,28 +3437,24 @@ loadNewArea(TOWN_AREA)#refresh screen, start animations
 text.grabFocus()
 
 
-global move
-#move = music(path+"Audio/footstep.wav")
-#music.volume(move, .08)
+move = music(path+"Audio/footstep.wav")
+music.volume(move, .08)
 
-global dead_sound
-#dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
-#background music
-global background_music1
-#background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
-#music.repeat(background_music1)
+dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
 #background music
-global quieter_music
-#quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
-#music.volume(quieter_music, .08)
-#music.repeat(quieter_music)
+background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
+#thread.start_new_thread(music.repeat, (background_music1,))
+
+#background music
+quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
+music.volume(quieter_music, .08)
+#thread.start_new_thread(music.repeat, (quieter_music,))
 
 
-global dungeon_sound
-#dungeon_sound = music(path+"Audio/Night-Stalker.wav")
-#music.repeat(dungeon_sound)
+dungeon_sound = music(path+"Audio/Night-Stalker.wav")
+#thread.start_new_thread(music.repeat, (dungeon_sound,))
 
 
 #Menu Sprites
