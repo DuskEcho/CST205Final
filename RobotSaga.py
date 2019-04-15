@@ -158,6 +158,10 @@ torchSpritePaths = [path + "ObjectSprites/metalTorchOff.gif",
 bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
                         path + "ObjectSprites/metalBigTorchOn1.gif",
                         path + "ObjectSprites/metalBigTorchOn2.gif"]
+healingStationSpritePaths = [path + "ObjectSprites/rechargeStation1.gif",
+                        path + "ObjectSprites/rechargeStation2.gif",
+                        path + "ObjectSprites/rechargeStation3.gif",
+                        path + "ObjectSprites/rechargeStation4.gif"]
 
 #Not sure if needed, might delete
 menuSpritePaths = [path + "Menu/menuDefault.png",
@@ -626,7 +630,6 @@ def loadNewArea(area):
     global currentBg
     global currentMap
     global CURRENT_AREA
-    global 
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -1069,8 +1072,35 @@ class Doodad():
         self.isAnimating = false
         self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
         self.sprite.spawnSprite()
+        self.type = "doodad"
         objectList.append(self)
 
+
+class Activatable(Doodad):
+    def __init__(self, filepaths, x, y, onActivateFunction, layer = 3):
+      Doodad.__init(self, filepaths, x, y, layer)
+
+    def activate(self):
+      onActivateFunction()
+
+
+class HealingStation(Doodad):
+    def __init__(self, filepaths, x, y, layer = 2):
+      Doodad.__init__(self, filepaths, x, y, layer)
+      self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
+      self.type = "healingStation"
+    def activate(self, activator):
+      activator.hp = activator.maxHp
+      activator.hpBar.updateBar()
+      for files in activator.bloodySprites:
+          try:
+            os.remove(files)
+          except:
+            None
+      activator.booodySprites = []
+      activator.spritePaths = activator.unchangedSpritePaths
+      self.animatedSprite.animateOnce()
+      
 
 # special animated doodad that emits light within 3 tiles. if is burnable, attacking
 # with an onFire weapon will turnOn the light source
@@ -1653,8 +1683,11 @@ class Being():
         # activates an activatable object directly in front
 
     def activateTarget(self):
-      self.getFrontTarget().activate()
-
+      target = self.getFrontTarget()
+      try:
+        target.activate(self)
+      except:
+        target.activate()
 
         # Updates wallet by amount
 
@@ -2777,11 +2810,13 @@ class ThreeStageAnimationCycle():
         # Initiates animation and adds to current animatedSpriteList
 
     def animate(self):
+        global animatedSpriteList
         animatedSpriteList.append(self)
         self.isAnimating = true
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
     def stopAnimating(self):
+        global animatedSpriteList
         animatedSpriteList.remove(self)
 
         # shortcut to object's sprite functions
@@ -2791,7 +2826,8 @@ class ThreeStageAnimationCycle():
         display.remove(self.sprite)
 
         # core animation
-    def threadAnimate(self, container):
+    def threadAnimate(self, x):
+        global animatedSpriteList
         self.sprite = self.spriteList[2]
         time.sleep(self.secondsBetween)
         while self in animatedSpriteList:
@@ -2818,9 +2854,26 @@ class ThreeStageAnimationCycle():
             self.sprite = self.spriteList[2]
             del self
 
+    def animateOnce(self):
+        global animatedSpriteList
+        animatedSpriteList.append(self)
+        self.isAnimating = true
+        x = None
+        thread.start_new_thread(self.threadAnimateOnce, (x,))
 
-
-
+    def threadAnimateOnce(self, x):
+        global animatedSpriteList
+        try:
+          self.removeSprite()
+        except:
+          None
+        for i in range (0, 3):
+          self.sprite = self.spriteList[i]
+          self.spawnSprite()
+          time.sleep(self.secondsBetween)
+          self.removeSprite()
+        self.isAnimating = false
+        animatedSpriteList.remove(self)
 
 
 
@@ -3360,6 +3413,7 @@ TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
 TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
 TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
 TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
+TOWN_AREA.objectList.append(HealingStation(healingStationSpritePaths, 896, 64))
 for i in TOWN_AREA.lightSources:
   TOWN_AREA.objectList.append(i)
 E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, eFieldAnimations)
