@@ -388,9 +388,22 @@ def removeLabel(label):
 # will occur with the passing of each turn (e.g., attack, player-directed movement)
 
 def turnPass():
+    global counter
+    global currentBeingList
     counter.turn += 1
-    if counter.turn % 20 == 0 and CURRENT_AREA != TOWN_AREA:
+    if  CURRENT_AREA != TOWN_AREA and len(currentBeingList)< MAX_BEINGS:
+      if counter.turn % 100 == 0 and bot1.level > 40:
+        spawnThreat5()
+      elif counter.turn % 80 == 0 and bot1.level >= 28:
+        spawnThreat4()
+      elif counter.turn % 40 == 0 and bot1.level >= 19:
+        if bot1.level >= 19:
+          spawnThreat3()
+        elif bot1.level >= 10:
+          spawnThreat2()
+      elif counter.turn % 20 == 0:
         spawnEnemy()
+        
     for person in currentBeingList:
         if person.hostile == true:
             person.simpleHostileAI()
@@ -484,18 +497,57 @@ def joinOtherAreas(target, area):
 
 
 
-# Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
+# Spawns the passed enemy object. If none is passed, the default spawned enemy is a blue enemy, lv 1,
+# with a stick as a weapon
 
-def spawnEnemy(name = None, weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
-    if name == None:
+def spawnEnemy(toSpawn = None):
+    if toSpawn == None:
+      toSpawn = Enemy(None, "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, 1)
+    if toSpawn.name == None:
       global counter
-      name = ("EnemyBorn" + str(counter.turn))
+      toSpawn.name = ("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)))
     if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(x, y):
-          x = random.randint(0, 10)*32
-          y =  random.randint(0, 10)*32
-      enemy = Enemy(name, weap, spritePaths, x, y, species, level)
-      enemy.sprite.spawnSprite()
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+
+
+      # Quick spawn commands for higher level enemies
+def spawnThreat2():
+    global counter
+    toSpawn = Threat2Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat3():
+    global counter
+    toSpawn = Threat3Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat4():
+    global counter
+    toSpawn = Threat4Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat5():
+    global counter
+    toSpawn = Threat5Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+
+
 
       
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
@@ -2567,10 +2619,9 @@ class ShopKeeper(Being):
     # Custom being for enemies. Slightly different logic
 
 class Enemy(Being):
-    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, species, level):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, level):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn)
-        self.species = species
-        for val in range(0, level):
+        for num in range(0, level):
             self.levelUp()
         self.gibSpriteList = [Sprite(path + r"RobotSprites/enemyArmGib.gif", self),
                               Sprite(path + r"RobotSprites/enemyLegGib.gif", self),
@@ -2649,6 +2700,21 @@ class Enemy(Being):
 
 
 
+class Threat2Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Rock", greenEnemySpritePaths, xSpawn, ySpawn, 10)
+      
+class Threat3Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Rock", yellowEnemySpritePaths, xSpawn, ySpawn, 20)
+
+class Threat4Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Sword", purpleEnemySpritePaths, xSpawn, ySpawn, 30)
+
+class Threat5Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
 
@@ -2938,7 +3004,6 @@ class ThreeStageAnimationCycle():
     #   spritePaths:    - list containing the filePaths of the Being's sprites
     #   xSpawn:         - initial x location
     #   ySpawn:         - initial y location
-    #   species:        - Being's species as a string
     #   level:          - Being's starting level
 
 class User(Being):
