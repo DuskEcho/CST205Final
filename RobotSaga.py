@@ -849,6 +849,7 @@ def menuAction(menuInput):
   if menuInput == "1":
     if bot1Ready:
          statusMenu.sprite.spawnSprite()
+         statBox.sprite.spawnSprite()
 
 
   elif menuInput == "2":
@@ -867,6 +868,7 @@ def menuAction(menuInput):
            itemMenu.sprite.removeSprite()
            equipMenu.sprite.removeSprite()
            defaultMenu.sprite.removeSprite()
+           statBox.sprite.removeSprite()
            text.onKeyType(keyAction)
 
 
@@ -2785,16 +2787,24 @@ class AnimatedGiblets():
 
 
 
+class Potion():
+    def __init__(self):
+      self.parental = None
+      self.restoreValue = 10
+
+    def use(self):
+      self.parental.changeHp(self.restoreValue)
+
 
 
         # Singleton class for player's HP Bar
 
 class HpBar():
     def __init__(self, parental):
-      self.sprites = [Sprite(path + "\\EffectSprites\\hpBarSpriteEmpty.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteCritical.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteLow.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteHalf.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteHigh.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteMost.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteFull.gif", self, 1)]
+      self.sprites = [Sprite(path + "/EffectSprites/hpBarSpriteEmpty.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteCritical.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteLow.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteHalf.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteHigh.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteMost.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteFull.gif", self, 1)]
       self.sprite = self.sprites[6]
       self.parental = parental
       self.coords = Coords(0, 0)
@@ -3606,28 +3616,80 @@ loadNewArea(TOWN_AREA)#refresh screen, start animations
 text.grabFocus()
 
 
-move = music(path+"Audio/footstep.wav")
-music.volume(move, .08)
+#move = music(path+"Audio/footstep.wav")
+#music.volume(move, .08)
 
 
-dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+#dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
 #background music
-background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
+#background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #thread.start_new_thread(music.repeat, (background_music1,))
 
 #background music
-quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
-music.volume(quieter_music, .08)
+#quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
+#music.volume(quieter_music, .08)
 #thread.start_new_thread(music.repeat, (quieter_music,))
 
 
-dungeon_sound = music(path+"Audio/Night-Stalker.wav")
+#dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 #thread.start_new_thread(music.repeat, (dungeon_sound,))
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
-equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 0)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
+equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
+statBox = RawSprite(path +  "Menu/blankTest.png",480, 163, 0)
+potion = Potion()
+potion.parental = bot1
+bot1.inv.append(potion)
+
+
+
+#display.add(str(bot1.maxHp), 12, 12)
+#display.add(bot1.xp, 12, 24)
+#df
+#atk
+#xp
+#level
+#
+#
+#itemMenu = menu([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+#itemMenu = menu(bot1.inv)
+#
+#class menu():
+#  def __init__(self, listOfThings):
+#    self.lineText = listOfThings
+#    self.lineDifference = 12
+#    for item in lineText:
+#      self.addItem(item)
+#
+#  def addItem(self, item):
+#    itemNameX = 250
+#    startingY = 42
+#    y = startingY
+#    itemNo = 1
+#    itemNoX = 240
+#    for items in self.lineText:
+#      display.addOrder(Label(itemNo), x, y, 0)
+#      display.addOrder(Label(items.text), x, y, 0)
+#      y += 12
+#      itemNo +=1
+#
+#
+#  def useItem
+#
+#if a == "1":
+#  bot1.inv[0].use()
+#if a == "2":
+#  bot1.inv[2].use()
+#
+#
+#
+#
+#    
+#me
+
+
