@@ -442,8 +442,13 @@ def spawnEnemy(name = None, weap = "Stick", spritePaths = blueEnemySpritePaths, 
           y =  random.randint(0, 10)*32
       enemy = Enemy(name, weap, spritePaths, x, y, species, level)
       enemy.sprite.spawnSprite()
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> parent of 9d9f5e1... Update RobotSaga.py
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
 
 def spawnFriendly(name = None, weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
@@ -746,6 +751,7 @@ def menuAction(menuInput):
     if bot1Ready:
 
          statusMenu.sprite.spawnSprite()
+         blankTest.sprite.spawnSprite()
 
 
   elif menuInput == "2":
@@ -765,7 +771,11 @@ def menuAction(menuInput):
            itemMenu.sprite.removeSprite()
            equipMenu.sprite.removeSprite()
            defaultMenu.sprite.removeSprite()
+<<<<<<< HEAD
            textBox.sprite.removeSprite()
+=======
+           blankTest.sprite.removeSprite()
+>>>>>>> parent of 9d9f5e1... Update RobotSaga.py
            text.onKeyType(keyAction)
 
 
@@ -3462,6 +3472,7 @@ dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 
 
 #Menu Sprites
+<<<<<<< HEAD
 defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
 itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
 equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
@@ -3498,3 +3509,11 @@ itemMenu.additem()
 #Roughly 30 pixels between each item
 #Starting position for text = 495,186
 """
+=======
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
+equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 0)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+blankTest = RawSprite(path + "Menu/blankTest.png",480, 163, 0)
+>>>>>>> parent of 9d9f5e1... Update RobotSaga.py
