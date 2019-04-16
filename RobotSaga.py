@@ -850,19 +850,30 @@ def menuAction(menuInput):
     if bot1Ready:
          #textBox.sprite.spawnSprite()
          statusMenu.sprite.spawnSprite()
+         status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+         x=625
+         y=171
+  
+         for item in status :
+             textBox =  gui.Label(str(item))
+             display.add(textBox,x,y)
+             y += 100
+
+
+
 
 
   elif menuInput == "i":
     if bot1Ready:
         # textBox.sprite.spawnSprite()
-         itemMenu.sprite.spawnSprite()
+        itemMenu.sprite.spawnSprite()
 
 #Not in use, only for testing
   elif menuInput == "b":
       if bot1Ready:
       # textBox.sprite.spawnSprite()
         shopMenu.sprite.spawnSprite()
-        
+
 #Not in use, placeholder
   elif menuInput == "q":
     if bot1Ready:
@@ -3635,8 +3646,13 @@ dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
-shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 1)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
 #textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
+
+
+
+#Base stats
+baseStats =([str(bot1.hp), str(bot1.xp), str(bot1.level)])
