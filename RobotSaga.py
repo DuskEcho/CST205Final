@@ -846,14 +846,13 @@ def keyAction(a):
 
 def menuAction(menuInput):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
-  if menuInput == "u":
+  if menuInput == "1":
     if bot1Ready:
-         #textBox.sprite.spawnSprite()
          statusMenu.sprite.spawnSprite()
          status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
          x=625
          y=171
-  
+
          for item in status :
              textBox =  gui.Label(str(item))
              display.add(textBox,x,y)
@@ -861,15 +860,18 @@ def menuAction(menuInput):
 
 
 
+====
+
+===
 
 
-  elif menuInput == "i":
+  elif menuInput == "2":
     if bot1Ready:
         # textBox.sprite.spawnSprite()
         itemMenu.sprite.spawnSprite()
 
-#Not in use, only for testing
-  elif menuInput == "b":
+
+  elif menuInput == "3":
       if bot1Ready:
       # textBox.sprite.spawnSprite()
         shopMenu.sprite.spawnSprite()
@@ -883,9 +885,9 @@ def menuAction(menuInput):
       if bot1Ready:
            statusMenu.sprite.removeSprite()
            itemMenu.sprite.removeSprite()
+           equipMenu.sprite.removeSprite()
            defaultMenu.sprite.removeSprite()
-           shopMenu.sprite.removeSprite()
-         #  textBox.sprite.removeSprite()
+           statBox.sprite.removeSprite()
            text.onKeyType(keyAction)
 
 
@@ -2804,6 +2806,14 @@ class AnimatedGiblets():
 
 
 
+class Potion():
+    def __init__(self):
+      self.parental = None
+      self.restoreValue = 10
+
+    def use(self):
+      self.parental.changeHp(self.restoreValue)
+
 
 
         # Singleton class for player's HP Bar
@@ -3625,34 +3635,78 @@ loadNewArea(TOWN_AREA)#refresh screen, start animations
 text.grabFocus()
 
 
-move = music(path+"Audio/footstep.wav")
-music.volume(move, .08)
+#move = music(path+"Audio/footstep.wav")
+#music.volume(move, .08)
 
 
-dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+#dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
 #background music
-background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
+#background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #thread.start_new_thread(music.repeat, (background_music1,))
 
 #background music
-quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
-music.volume(quieter_music, .08)
+#quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
+#music.volume(quieter_music, .08)
 #thread.start_new_thread(music.repeat, (quieter_music,))
 
 
-dungeon_sound = music(path+"Audio/Night-Stalker.wav")
+#dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 #thread.start_new_thread(music.repeat, (dungeon_sound,))
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
-shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
-#textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
+equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
+statBox = RawSprite(path +  "Menu/blankTest.png",480, 163, 0)
+potion = Potion()
+potion.parental = bot1
+bot1.inv.append(potion)
 
 
 
-#Base stats
-baseStats =([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+#display.add(str(bot1.maxHp), 12, 12)
+#display.add(bot1.xp, 12, 24)
+#df
+#atk
+#xp
+#level
+#
+#
+#itemMenu = menu([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+#itemMenu = menu(bot1.inv)
+#
+#class menu():
+#  def __init__(self, listOfThings):
+#    self.lineText = listOfThings
+#    self.lineDifference = 12
+#    for item in lineText:
+#      self.addItem(item)
+#
+#  def addItem(self, item):
+#    itemNameX = 250
+#    startingY = 42
+#    y = startingY
+#    itemNo = 1
+#    itemNoX = 240
+#    for items in self.lineText:
+#      display.addOrder(Label(itemNo), x, y, 0)
+#      display.addOrder(Label(items.text), x, y, 0)
+#      y += 12
+#      itemNo +=1
+#
+#
+#  def useItem
+#
+#if a == "1":
+#  bot1.inv[0].use()
+#if a == "2":
+#  bot1.inv[2].use()
+#
+#
+#
+#
+#
+#me
