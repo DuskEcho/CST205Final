@@ -103,7 +103,7 @@ else: printNow("Welcome Back") #welcome the player back to the game
 
 
 
-# Sprite paths for beings. Arrays in form [back, front, left, right, 
+# Sprite paths for beings. Arrays in form [back, front, left, right,
 # moving left, moving right, moving front, moving back]
 
 userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
@@ -225,7 +225,7 @@ menuSpritePaths = [path + "Menu/menuDefault.png",
 
 
 # Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range]
-# weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame, 
+# weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
 # first right frame, repeat for frames two and three]
 weaponStatsList = {
     "Stick": [1, [path + "WeaponSprites/Stick/stickUp1.gif",
@@ -404,7 +404,7 @@ def turnPass():
           spawnThreat2()
       elif counter.turn % 20 == 0:
         spawnEnemy()
-        
+
     for person in currentBeingList:
         if person.hostile == true:
             person.simpleHostileAI()
@@ -553,7 +553,7 @@ def spawnThreat5():
 
 
 
-      
+
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
 
 def spawnFriendly(name = None, weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
@@ -679,7 +679,7 @@ def textCoordToSpot(x, y):
   row = texHeight/32
   return x + y*col
 
-#LEGACY can delete 
+#LEGACY can delete
 def getTexture(spot):
     texture = makeEmptyPicture(BITS,BITS)
     #spot to coord conversion
@@ -720,7 +720,7 @@ def loadingScreen():
 # Compacts and stores information about the current area and
 # loads the next. The player will be spawned on the opposite side
 # of the screen they exited from.
-# Parameters: 
+# Parameters:
 #     Area      - The area to be loaded
 
 def loadNewArea(area):
@@ -853,18 +853,37 @@ def menuAction(menuInput):
   if menuInput == "1":
     if bot1Ready:
          statusMenu.sprite.spawnSprite()
-         statBox.sprite.spawnSprite()
+         status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+         x=625
+         y=171
+
+         for item in status :
+             textBox =  gui.Label(str(item))
+             display.add(textBox,x,y)
+             y += 100
+
+
+
+====
+
+===
 
 
   elif menuInput == "2":
     if bot1Ready:
-         itemMenu.sprite.spawnSprite()
+        # textBox.sprite.spawnSprite()
+        itemMenu.sprite.spawnSprite()
 
 
   elif menuInput == "3":
       if bot1Ready:
-          equipMenu.sprite.spawnSprite()
+      # textBox.sprite.spawnSprite()
+        shopMenu.sprite.spawnSprite()
 
+#Not in use, placeholder
+  elif menuInput == "q":
+    if bot1Ready:
+      print "When this works, it will quit game."
 
   elif menuInput == "m":
       if bot1Ready:
@@ -963,8 +982,8 @@ def threadDamageCalculation(self, target, damage, delay):
     # A custom class created to override gui.Display's default destructor.
 
 class CustomDisplay(gui.Display):
-  
-    
+
+
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
@@ -1006,7 +1025,7 @@ class CustomDisplay(gui.Display):
     #    mapSprite            - Sprite object containing the map image
     #    mapObject            - Map object containing the collision/grid info
     #    spawnCoords          - Coords object containing the areas player-spawn area
-    #    persistantAnimations - Any persistant animated objects for the map 
+    #    persistantAnimations - Any persistant animated objects for the map
     #    wasOn                - List of lightSources that are on (turn on these when loading area)
     #    northArea            - Area connected to the north of the area
     #    sourth/east/westArea - See above
@@ -1063,7 +1082,7 @@ class Coords():
 
 
 
-    # Object that holds collision/terrain information   
+    # Object that holds collision/terrain information
 
 class Tile():
   def __init__(self, isTraversable, isPassable, isTough, desc):
@@ -1208,7 +1227,7 @@ class HealingStation(Doodad):
       activator.booodySprites = []
       activator.spritePaths = activator.unchangedSpritePaths
       self.animatedSprite.animateOnce()
-      
+
 
 # special animated doodad that emits light within 3 tiles. if is burnable, attacking
 # with an onFire weapon will turnOn the light source
@@ -1279,8 +1298,8 @@ class ItemForSale():
         # Constructor Parameters:
         #   parental              - Owner object
         #   amount                - Initial currency within
-        # 
-        # Members:                
+        #
+        # Members:
         #   value                 - Current currency value
         #   parental              - Owner
 
@@ -1304,7 +1323,7 @@ class UserWallet(Wallet):
       self.sprite.spawnSprite()
       display.add(self.label, 1000, 24)
 
-      
+
 
     def updateWalletDisplay(self):
       self.sprite.spawnSprite()
@@ -1474,7 +1493,7 @@ class Sprite(gui.Icon):
 
 
 
-  # inherits from Sprite. Separated to give 
+  # inherits from Sprite. Separated to give
   # ownership to sub-sprites (e.g., weapon)
   #   See sprite for function exacts.
 
@@ -2079,7 +2098,7 @@ class Being():
         for files in self.bloodySprites:
             os.remove(files)
         currentBeingList.remove(self)
-        del self        
+        del self
         music.Play(dead_sound)
 
         # Handles lighting of sprites. If a valid light object is within the range
@@ -2326,13 +2345,13 @@ class Being():
             if self.facing == directionList["up"]:
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
-            
+
               music.Play(move)
 
 
         else:
             self.isMoving = false
-          
+
             music.Stop(move)
 
     def threadMoveUp(self, x):
@@ -2369,11 +2388,11 @@ class Being():
             if self.facing == directionList["down"]:
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
-              
+
               music.Play(move)
         else:
             self.isMoving = false
-            
+
             music.Stop(move)
 
     def threadMoveDown(self, x):
@@ -2406,8 +2425,8 @@ class Being():
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
-              
-                      
+
+
               music.Play(move)
         else:
             self.isMoving = false
@@ -2441,7 +2460,7 @@ class Being():
             thread.start_new_thread(self.threadMoveRight, (x,))
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x + BITS+ BITS/2           
+              self.forwardCoords.x = self.coords.x + BITS+ BITS/2
               music.Play(move)
         else:
             self.isMoving = false
@@ -2568,9 +2587,9 @@ class Friendly(Being):
         currentBeingList.remove(self)
         del self
         music.Play(dead_sound)
-      
 
-        
+
+
 
 
 
@@ -2617,7 +2636,7 @@ class ShopKeeper(Being):
         currentBeingList.remove(self)
         del self
         music.Play(dead_sound)
-        
+
 
 
 
@@ -2690,7 +2709,7 @@ class Enemy(Being):
         currentBeingList.remove(self)
         del self
         music.Play(dead_sound)
-       
+
 
 
 
@@ -2712,7 +2731,7 @@ class Enemy(Being):
 class Threat2Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
       Enemy.__init__(self, name, "Rock", greenEnemySpritePaths, xSpawn, ySpawn, 10)
-      
+
 class Threat3Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
       Enemy.__init__(self, name, "Rock", yellowEnemySpritePaths, xSpawn, ySpawn, 20)
@@ -3646,11 +3665,11 @@ text.grabFocus()
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
-equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
-statBox = RawSprite(path +  "Menu/blankTest.png",480, 163, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
+#textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
 potion = Potion()
 potion.parental = bot1
 bot1.inv.append(potion)
@@ -3698,7 +3717,5 @@ bot1.inv.append(potion)
 #
 #
 #
-#    
+#
 #me
-
-
