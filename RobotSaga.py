@@ -3656,11 +3656,11 @@ text.grabFocus()
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
-equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
-statBox = RawSprite(path +  "Menu/blankTest.png",480, 163, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
+#textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
 potion = Potion()
 potion.parental = bot1
 bot1.inv.append(potion)
