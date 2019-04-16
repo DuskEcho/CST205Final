@@ -57,8 +57,8 @@ NE_FIELD_AREA = None
 N_FIELD_AREA = None
 DUNGEON_AREA = None
 CURRENT_AREA = None
-
-
+CURRENT_BG = None
+bot1 = None
 
 
 
@@ -436,6 +436,13 @@ def slideRight(toBeMoved, targetXBig):
     if toBeMoved.coords.x < targetXBig:
         thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
 
+def slideSpriteDown(toBeMoved, targetYBig):
+    time.sleep(.005)
+    toBeMoved.coords.y += 1
+    display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.y < targetYBig:
+        thread.start_new_thread(slideSpriteDown, (toBeMoved, targetYBig))
+
 
 
 
@@ -698,10 +705,19 @@ def getTexture(spot):
 # intro credits, adjust to add fade, etc.
 
 def loadIntro():
-    display.drawImage(path + "Fullscreens/LogoOmega.png", 0, 0)
+    global loading
+    global title
+    global startScreen
+    global text
+    loading.spawnSprite()
     time.sleep(1.5)
-    display.drawImage(path + "Fullscreens/dummyStartScreen.png", 0, 0)
+    startScreen.spawnSprite()
+    loading.removeSprite()
+    title.spawnSprite()
+    slideSpriteDown(title, 104)
     time.sleep(1.5)
+    text.onKeyType(mainMenuAction)
+    text.grabFocus()
 
 
 
@@ -733,7 +749,7 @@ def loadNewArea(area):
     global objectList
     global text
     global display
-    global currentBg
+    global CURRENT_BG
     global currentMap
     global CURRENT_AREA
     for light in lightSources:
@@ -741,10 +757,10 @@ def loadNewArea(area):
         light.turnOff()
         CURRENT_AREA.wasOn.append(light)
     currentMap = area.mapObject
-    currentBg = area.mapSprite
+    CURRENT_BG = area.mapSprite
     CURRENT_AREA = area
     bot1.area = area
-    currentBg.spawnSprite()
+    CURRENT_BG.spawnSprite()
     display.add(text)
     currentBeingList.remove(bot1)
     currentBeingList = area.beingList
@@ -864,46 +880,14 @@ def menuAction(menuInput):
 
 
 
-====
-
-===
-
-
-  elif menuInput == "2":
-    if bot1Ready:
-        # textBox.sprite.spawnSprite()
-        itemMenu.sprite.spawnSprite()
-
-
-  elif menuInput == "3":
-      if bot1Ready:
-      # textBox.sprite.spawnSprite()
-        shopMenu.sprite.spawnSprite()
-
-#Not in use, placeholder
-  elif menuInput == "q":
-    if bot1Ready:
-      print "When this works, it will quit game."
-
-  elif menuInput == "m":
-      if bot1Ready:
-           statusMenu.sprite.removeSprite()
-           itemMenu.sprite.removeSprite()
-           equipMenu.sprite.removeSprite()
-           defaultMenu.sprite.removeSprite()
-           statBox.sprite.removeSprite()
-           text.onKeyType(keyAction)
-
-
-
-"""
-defaultMenu.sprite.spawnSprite()
-itemMenu.sprite.spawnSprite()
-equipMenu.sprite.spawnSprite()
-statusMenu.sprite.spawnSprite()
-"""
-
-
+def mainMenuAction(input):
+  text.onKeyType(blockKeys)
+  global title
+  global startScreen
+  global text
+  title.removeSprite()
+  startScreen.removeSprite()
+  startGame()
 
 # To pass to getKeyTyped in order to block inputs
 # (e.g., during animations or delays)
@@ -970,7 +954,38 @@ def threadDamageCalculation(self, target, damage, delay):
     elif target == shopKeeper:
       del shopKeeper
 
-
+def startGame():
+  loading.spawnSprite()
+  global CURRENT_AREA
+  global TOWN_AREA
+  global CURRENT_BG
+  global currentBeingList
+  global objectList
+  global gibList
+  global animatedSpriteList
+  global lightSources
+  global bot1
+  CURRENT_AREA = TOWN_AREA
+  CURRENT_BG = TOWN_AREA.mapSprite
+  CURRENT_BG.spawnSprite()
+  currentBeingList = TOWN_AREA.beingList
+  objectList = TOWN_AREA.objectList
+  gibList = TOWN_AREA.gibList
+  animatedSpriteList = TOWN_AREA.animatedSpriteList
+  lightSources = TOWN_AREA.lightSources
+  bot1Spawn = Coords(13*BITS, 1*BITS)
+  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
+  bot1.area = CURRENT_AREA
+  shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
+  shopKeeper.sprite.spawnSprite()
+  friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
+  friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
+  friendlyOrange.sprite.spawnSprite()
+  friendlyGreen.sprite.spawnSprite()
+  loadNewArea(TOWN_AREA)#refresh screen, start animations
+  loading.removeSprite()
+  text.grabFocus()
+  text.onKeyType(keyAction)
 
         ####################
         #                  #
@@ -2346,13 +2361,13 @@ class Being():
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
 
-              music.Play(move)
+             # music.Play(move)
 
 
         else:
             self.isMoving = false
 
-            music.Stop(move)
+            #music.Stop(move)
 
     def threadMoveUp(self, x):
         time.sleep(.15)
@@ -2389,11 +2404,11 @@ class Being():
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
 
-              music.Play(move)
+              #music.Play(move)
         else:
             self.isMoving = false
 
-            music.Stop(move)
+            #music.Stop(move)
 
     def threadMoveDown(self, x):
         time.sleep(.15)
@@ -2427,10 +2442,10 @@ class Being():
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
 
 
-              music.Play(move)
+              #music.Play(move)
         else:
             self.isMoving = false
-            music.Stop(move)
+            #music.Stop(move)
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2461,10 +2476,10 @@ class Being():
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-              music.Play(move)
+              #music.Play(move)
         else:
             self.isMoving = false
-            music.Stop(move)
+            #music.Stop(move)
 
 
     def threadMoveRight(self, x):
@@ -3245,12 +3260,32 @@ class music:
             #    PSEUDO-MAIN     #
             #                    #
             ######################
+def startUp():
+  None
+
+def startPlay():
+  None
 
 
 
-#initailize background image
+  
 backWidth = BITS * WIDTH_TILES
 backHeight = BITS * HEIGHT_TILES
+display = CustomDisplay("Robot Saga", backWidth, backHeight)
+layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
+layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
+layer2 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 2)
+layer3 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 3)
+layer4 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 4)
+layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
+layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
+setUpLayers()
+loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
+startScreen = RawSprite(path + "Fullscreens/startScreen.png", 0, 0, 2)
+title = RawSprite(path + "EffectSprites/Title.gif", 286, -64, 1)
+loading.spawnSprite()
+title.spawnSprite()
+#initailize background image
 
 tilesPath = path + "Tiles/LPC/tiles/"
 #Old, probably dont need textureMap anymore
@@ -3546,19 +3581,8 @@ bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 bossRoomMap = Map(bossRoom)
 
-layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
-layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
-layer2 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 2)
-layer3 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 3)
-layer4 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 4)
-layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
-layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
-loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
-
-display = CustomDisplay("Robot Saga", backWidth, backHeight)
 
 
-setUpLayers()
 
 dungeonPath = path + "dungeon/"
 TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, townAnimations)
@@ -3595,19 +3619,6 @@ joinNorthSouthAreas(DUNGEON_BOSSROOM_AREA, DUNGEON_ENTRANCE_AREA)
 joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
 joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
 
-CURRENT_AREA = TOWN_AREA
-#CURRENT_AREA = DUNGEON_ENTRANCE_AREA
-
-currentBg = TOWN_AREA.mapSprite
-currentBg.spawnSprite()
-currentBeingList = TOWN_AREA.beingList
-objectList = TOWN_AREA.objectList
-gibList = TOWN_AREA.gibList
-animatedSpriteList = TOWN_AREA.animatedSpriteList
-lightSources = TOWN_AREA.lightSources
-
-#loadIntro()  - Intro credits for production build. see loadIntro() definition for details
-
 
 
 # Currently acts as the "controller" to read inputs
@@ -3625,23 +3636,21 @@ text = gui.TextField("", 1)
 # text.onKeyType(randomFunction)
 #
 # would activate doSomething if "h" was pressed.
-text.onKeyType(keyAction)
-
-
 display.add(text, -32, -32)
 
+
+
+#CURRENT_AREA = DUNGEON_ENTRANCE_AREA
+
+
+#loadIntro()  - Intro credits for production build. see loadIntro() definition for details
+
+
+
+
+
 #display.drawImage(path + "newBack.png", 0, 0)
-bot1Spawn = Coords(13*BITS, 1*BITS)
-bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-bot1.area = CURRENT_AREA
-shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
-shopKeeper.sprite.spawnSprite()
-friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
-friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
-friendlyOrange.sprite.spawnSprite()
-friendlyGreen.sprite.spawnSprite()
-loadNewArea(TOWN_AREA)#refresh screen, start animations
-text.grabFocus()
+
 
 
 #move = music(path+"Audio/footstep.wav")
@@ -3670,9 +3679,9 @@ itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
 statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
 shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
 #textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
-potion = Potion()
-potion.parental = bot1
-bot1.inv.append(potion)
+#potion = Potion()
+#potion.parental = bot1
+#bot1.inv.append(potion)
 
 
 
@@ -3719,3 +3728,6 @@ bot1.inv.append(potion)
 #
 #
 #me
+
+
+loadIntro()

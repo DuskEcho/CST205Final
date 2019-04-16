@@ -1,0 +1,10 @@
+Name:"name"
+Weapon:"Stick"
+Level:1
+Hp:12
+MaxHp:12
+Xp:3
+Atk:9
+Def:9
+Inv:"Stone","Potion"
+Wallet:123
