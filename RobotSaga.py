@@ -3631,15 +3631,3 @@ defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
 itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
 equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 0)
 statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
-© 2019 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
