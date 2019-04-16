@@ -50,6 +50,7 @@ WIDTH_TILES = 32
 #how many tiles there are tall
 HEIGHT_TILES = 18
 MAX_BEINGS = 6
+MAX_INVENTORY = 10
 TOWN_AREA = None
 E_FIELD_AREA = None
 NE_FIELD_AREA = None
@@ -416,7 +417,10 @@ def turnPass():
     #total action counter to affect shop/store stock
 
 
-
+def inventoryFull():
+    label = gui.Label("Not enough inventory space!")
+    showLabel(label) 
+    delayRemoveObject(label, 2)
 
 
 # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
@@ -2278,14 +2282,17 @@ class Being():
     def pickUpLoot(self, coords):
         for item in objectList:
             if item.type == "lootbag" and item.coords.x == coords.x and item.coords.y == coords.y:
-                self.inv += item.contents
-                item.removeSprite()
-                objectList.remove(item)
-                del item
-                for item in self.inv:
-                  if isinstance(item, Wallet):
-                    self.changeWallet(item.value)
-                    self.inv.remove(item)
+                if len(self.inv) + len(item.contents) < MAX_INVENTORY:
+                  self.inv += item.contents
+                  item.removeSprite()
+                  objectList.remove(item)
+                  del item
+                  for item in self.inv:
+                    if isinstance(item, Wallet):
+                      self.changeWallet(item.value)
+                      self.inv.remove(item)
+                else:
+                  inventoryFull()
 
 
 
@@ -3132,6 +3139,7 @@ class User(Being):
             # Being.  If the attempt fails, the Being turns hostile
 
     def steal(self, target):
+      if len(self.inv) < MAX_INVENTORY:
         possibilities = len(target.inv)
         if possibilities>0:
             if random.randint(0, 10)%10 == 0:
@@ -3144,7 +3152,8 @@ class User(Being):
                 label = gui.Label("You messed up now!")
                 showLabel(label)
                 target.hostile = true
-            delayRemoveObject(label, 2)
+        else:
+            inventoryFull()
 
     def talk(self):
         target = self.getFrontTarget()
