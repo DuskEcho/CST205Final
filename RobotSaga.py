@@ -846,27 +846,35 @@ def keyAction(a):
 
 def menuAction(menuInput):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
-  if menuInput == "1":
+  if menuInput == "u":
     if bot1Ready:
+         #textBox.sprite.spawnSprite()
          statusMenu.sprite.spawnSprite()
 
 
-  elif menuInput == "2":
+  elif menuInput == "i":
     if bot1Ready:
+        # textBox.sprite.spawnSprite()
          itemMenu.sprite.spawnSprite()
 
-
-  elif menuInput == "3":
+#Not in use, only for testing
+  elif menuInput == "b":
       if bot1Ready:
-          equipMenu.sprite.spawnSprite()
-
+      # textBox.sprite.spawnSprite()
+        shopMenu.sprite.spawnSprite()
+        
+#Not in use, placeholder
+  elif menuInput == "q":
+    if bot1Ready:
+      print "When this works, it will quit game."
 
   elif menuInput == "m":
       if bot1Ready:
            statusMenu.sprite.removeSprite()
            itemMenu.sprite.removeSprite()
-           equipMenu.sprite.removeSprite()
            defaultMenu.sprite.removeSprite()
+           shopMenu.sprite.removeSprite()
+         #  textBox.sprite.removeSprite()
            text.onKeyType(keyAction)
 
 
@@ -3627,7 +3635,8 @@ dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
-equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 0)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
+shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 1)
+#textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
