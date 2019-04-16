@@ -753,6 +753,7 @@ def menuAction(menuInput):
          itemMenu.sprite.spawnSprite()
 
 
+
   elif menuInput == "3":
       if bot1Ready:
           equipMenu.sprite.spawnSprite()
@@ -3466,3 +3467,34 @@ itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
 equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
 statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
 textBox = RawSprite(path + "Menu/textBox.png",480, 163, 0)
+
+
+"""
+class menu():
+  def __init__(self, listOfThings):
+    self.lineText = listOfThings
+    self.lineDifference = 12
+    for item in lineText:  #ran into issue with lineText not being global
+      self.addItem(item)
+
+  def addItem(self, item):
+    itemNameX = 250
+    startingY = 42
+    y = startingY
+    itemNo = 1
+    itemNoX = 240
+    for items in self.lineText:
+      display.add(Label(itemNo, x, y))     #ran into issue of Label not being global
+      display.add(Label(items.text, x, y))
+      y += 12
+      itemNo +=1
+
+
+#itemMenu = menu([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+itemMenu = menu(bot1.inv)
+itemMenu.additem()
+
+
+#Roughly 30 pixels between each item
+#Starting position for text = 495,186
+"""
