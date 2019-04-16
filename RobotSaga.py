@@ -125,8 +125,26 @@ friendlyOrangeSpritePaths = [path + "RobotSprites/botOrangeBack.gif",
                path + "RobotSprites/botOrangeFront.gif",
                path + "RobotSprites/botOrangeSideLeft.gif",
                path + "RobotSprites/botOrangeSideRight.gif",
+               path + "RobotSprites/botOrangeMovingLeft.gif",
+               path + "RobotSprites/botOrangeMovingRight.gif",
                path + "RobotSprites/botOrangeFront.gif",
                path + "RobotSprites/botOrangeBack.gif",]
+friendlyPinkSpritePaths = [path + "RobotSprites/botPinkBack.gif",
+               path + "RobotSprites/botPinkFront.gif",
+               path + "RobotSprites/botPinkSideLeft.gif",
+               path + "RobotSprites/botPinkSideRight.gif",
+               path + "RobotSprites/botPinkMovingLeft.gif",
+               path + "RobotSprites/botPinkMovingRight.gif",
+               path + "RobotSprites/botPinkFront.gif",
+               path + "RobotSprites/botPinkBack.gif",]
+friendlyYellowSpritePaths = [path + "RobotSprites/botYellowBack.gif",
+               path + "RobotSprites/botYellowFront.gif",
+               path + "RobotSprites/botYellowSideLeft.gif",
+               path + "RobotSprites/botYellowSideRight.gif",
+               path + "RobotSprites/botYellowMovingLeft.gif",
+               path + "RobotSprites/botYellowMovingRight.gif",
+               path + "RobotSprites/botYellowFront.gif",
+               path + "RobotSprites/botYellowBack.gif",]
 blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/blueRobotFront.gif",
                path + "RobotSprites/BlueRobotSideLeft.gif",
@@ -135,6 +153,38 @@ blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
                path + "RobotSprites/BlueRobotMovingRight.gif",
                path + "RobotSprites/BlueRobotMovingFront.gif",
                path + "RobotSprites/BlueRobotMovingBack.gif",]
+greenEnemySpritePaths = [path + "RobotSprites/GreenRobotBack.gif",
+               path + "RobotSprites/GreenRobotFront.gif",
+               path + "RobotSprites/GreenRobotSideLeft.gif",
+               path + "RobotSprites/GreenRobotSideRight.gif",
+               path + "RobotSprites/GreenRobotMovingLeft.gif",
+               path + "RobotSprites/GreenRobotMovingRight.gif",
+               path + "RobotSprites/GreenRobotFront.gif",
+               path + "RobotSprites/GreenRobotBack.gif",]
+redEnemySpritePaths = [path + "RobotSprites/RedRobotBack.gif",
+               path + "RobotSprites/RedRobotFront.gif",
+               path + "RobotSprites/RedRobotSideLeft.gif",
+               path + "RobotSprites/RedRobotSideRight.gif",
+               path + "RobotSprites/RedRobotMovingLeft.gif",
+               path + "RobotSprites/RedRobotMovingRight.gif",
+               path + "RobotSprites/RedRobotFront.gif",
+               path + "RobotSprites/RedRobotBack.gif",]
+purpleEnemySpritePaths = [path + "RobotSprites/PurpleRobotBack.gif",
+               path + "RobotSprites/PurpleRobotFront.gif",
+               path + "RobotSprites/PurpleRobotSideLeft.gif",
+               path + "RobotSprites/PurpleRobotSideRight.gif",
+               path + "RobotSprites/PurpleRobotMovingLeft.gif",
+               path + "RobotSprites/PurpleRobotMovingRight.gif",
+               path + "RobotSprites/PurpleRobotFront.gif",
+               path + "RobotSprites/PurpleRobotBack.gif",]
+yellowEnemySpritePaths = [path + "RobotSprites/YellowRobotBack.gif",
+               path + "RobotSprites/YellowRobotFront.gif",
+               path + "RobotSprites/YellowRobotSideLeft.gif",
+               path + "RobotSprites/YellowRobotSideRight.gif",
+               path + "RobotSprites/YellowRobotMovingLeft.gif",
+               path + "RobotSprites/YellowRobotMovingRight.gif",
+               path + "RobotSprites/YellowRobotFront.gif",
+               path + "RobotSprites/YellowRobotBack.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                          path + "RobotSprites/ShopkeeperbotFront.gif",
                          path + "RobotSprites/ShopkeeperbotLeft.gif",
@@ -158,6 +208,10 @@ torchSpritePaths = [path + "ObjectSprites/metalTorchOff.gif",
 bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
                         path + "ObjectSprites/metalBigTorchOn1.gif",
                         path + "ObjectSprites/metalBigTorchOn2.gif"]
+healingStationSpritePaths = [path + "ObjectSprites/rechargeStation1.gif",
+                        path + "ObjectSprites/rechargeStation2.gif",
+                        path + "ObjectSprites/rechargeStation3.gif",
+                        path + "ObjectSprites/rechargeStation4.gif"]
 
 #Not sure if needed, might delete
 menuSpritePaths = [path + "Menu/menuDefault.png",
@@ -334,9 +388,22 @@ def removeLabel(label):
 # will occur with the passing of each turn (e.g., attack, player-directed movement)
 
 def turnPass():
+    global counter
+    global currentBeingList
     counter.turn += 1
-    if counter.turn % 20 == 0 and CURRENT_AREA != TOWN_AREA:
+    if  CURRENT_AREA != TOWN_AREA and len(currentBeingList)< MAX_BEINGS:
+      if counter.turn % 100 == 0 and bot1.level > 40:
+        spawnThreat5()
+      elif counter.turn % 80 == 0 and bot1.level >= 28:
+        spawnThreat4()
+      elif counter.turn % 40 == 0 and bot1.level >= 19:
+        if bot1.level >= 19:
+          spawnThreat3()
+        elif bot1.level >= 10:
+          spawnThreat2()
+      elif counter.turn % 20 == 0:
         spawnEnemy()
+
     for person in currentBeingList:
         if person.hostile == true:
             person.simpleHostileAI()
@@ -430,25 +497,59 @@ def joinOtherAreas(target, area):
 
 
 
-# Spawns an enemy with the given parameters.  Default is blue enemy lv 1 with stick at random location.
+# Spawns the passed enemy object. If none is passed, the default spawned enemy is a blue enemy, lv 1,
+# with a stick as a weapon
 
-def spawnEnemy(name = None, weap = "Stick", spritePaths = blueEnemySpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32, species = "orc", level = 1):
-    if name == None:
+def spawnEnemy(toSpawn = None):
+    if toSpawn == None:
+      toSpawn = Enemy(None, "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, 1)
+    if toSpawn.name == None:
       global counter
-      name = ("EnemyBorn" + str(counter.turn))
+      toSpawn.name = ("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)))
     if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(x, y):
-          x = random.randint(0, 10)*32
-          y =  random.randint(0, 10)*32
-      enemy = Enemy(name, weap, spritePaths, x, y, species, level)
-      enemy.sprite.spawnSprite()
-<<<<<<< HEAD
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
 
 
-=======
+      # Quick spawn commands for higher level enemies
+def spawnThreat2():
+    global counter
+    toSpawn = Threat2Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat3():
+    global counter
+    toSpawn = Threat3Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat4():
+    global counter
+    toSpawn = Threat4Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat5():
+    global counter
+    toSpawn = Threat5Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
 
 
->>>>>>> parent of 9d9f5e1... Update RobotSaga.py
+
+
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
 
 def spawnFriendly(name = None, weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
@@ -631,7 +732,6 @@ def loadNewArea(area):
     global currentBg
     global currentMap
     global CURRENT_AREA
-    #global
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -741,7 +841,6 @@ def keyAction(a):
   elif a == "m": #Activates menu, switches to menu controls
     if bot1Ready:
         defaultMenu.sprite.spawnSprite()
-        textBox.sprite.spawnSprite()
         text.onKeyType(menuAction)
 
 
@@ -749,15 +848,12 @@ def menuAction(menuInput):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if menuInput == "1":
     if bot1Ready:
-
          statusMenu.sprite.spawnSprite()
-         blankTest.sprite.spawnSprite()
 
 
   elif menuInput == "2":
     if bot1Ready:
          itemMenu.sprite.spawnSprite()
-
 
 
   elif menuInput == "3":
@@ -771,11 +867,6 @@ def menuAction(menuInput):
            itemMenu.sprite.removeSprite()
            equipMenu.sprite.removeSprite()
            defaultMenu.sprite.removeSprite()
-<<<<<<< HEAD
-           textBox.sprite.removeSprite()
-=======
-           blankTest.sprite.removeSprite()
->>>>>>> parent of 9d9f5e1... Update RobotSaga.py
            text.onKeyType(keyAction)
 
 
@@ -836,7 +927,7 @@ def damageCalculation(target, damage):
     elif target == shopKeeper:
       del shopKeeper
 
-def threadDamageCalculation(target, damage, delay):
+def threadDamageCalculation(self, target, damage, delay):
   time.sleep(delay)
   if target != bot1:
     target.hostile = true
@@ -1083,7 +1174,34 @@ class Doodad():
         self.isAnimating = false
         self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
         self.sprite.spawnSprite()
+        self.type = "doodad"
         objectList.append(self)
+
+
+class Activatable(Doodad):
+    def __init__(self, filepaths, x, y, onActivateFunction, layer = 3):
+      Doodad.__init(self, filepaths, x, y, layer)
+
+    def activate(self):
+      onActivateFunction()
+
+
+class HealingStation(Doodad):
+    def __init__(self, filepaths, x, y, layer = 2):
+      Doodad.__init__(self, filepaths, x, y, layer)
+      self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
+      self.type = "healingStation"
+    def activate(self, activator):
+      activator.hp = activator.maxHp
+      activator.hpBar.updateBar()
+      for files in activator.bloodySprites:
+          try:
+            os.remove(files)
+          except:
+            None
+      activator.booodySprites = []
+      activator.spritePaths = activator.unchangedSpritePaths
+      self.animatedSprite.animateOnce()
 
 
 # special animated doodad that emits light within 3 tiles. if is burnable, attacking
@@ -1667,8 +1785,11 @@ class Being():
         # activates an activatable object directly in front
 
     def activateTarget(self):
-      self.getFrontTarget().activate()
-
+      target = self.getFrontTarget()
+      try:
+        target.activate(self)
+      except:
+        target.activate()
 
         # Updates wallet by amount
 
@@ -2103,7 +2224,7 @@ class Being():
               damage = self.atk
               if damage <= 0:
                 damage = 1
-              thread.start_new_thread(threadDamageCalculation, (target, damage, self.weapon.animationDelay*2))
+              thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
 
 
 
@@ -2498,10 +2619,9 @@ class ShopKeeper(Being):
     # Custom being for enemies. Slightly different logic
 
 class Enemy(Being):
-    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, species, level):
+    def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, level):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn)
-        self.species = species
-        for val in range(0, level):
+        for num in range(0, level):
             self.levelUp()
         self.gibSpriteList = [Sprite(path + r"RobotSprites/enemyArmGib.gif", self),
                               Sprite(path + r"RobotSprites/enemyLegGib.gif", self),
@@ -2580,6 +2700,21 @@ class Enemy(Being):
 
 
 
+class Threat2Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Rock", greenEnemySpritePaths, xSpawn, ySpawn, 10)
+
+class Threat3Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Rock", yellowEnemySpritePaths, xSpawn, ySpawn, 20)
+
+class Threat4Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Sword", purpleEnemySpritePaths, xSpawn, ySpawn, 30)
+
+class Threat5Enemy(Enemy):
+    def __init__(self, name, xSpawn, ySpawn):
+      Enemy.__init__(self, name, "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
 
@@ -2656,10 +2791,10 @@ class AnimatedGiblets():
 
 class HpBar():
     def __init__(self, parental):
-      self.sprites = [Sprite(path + "\\EffectSprites\\hpBarSpriteEmpty.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteCritical.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteLow.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteHalf.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteHigh.gif", self, 1), Sprite(path + "\\EffectSprites\\hpBarSpriteMost.gif", self, 1),
-                      Sprite(path + "\\EffectSprites\\hpBarSpriteFull.gif", self, 1)]
+      self.sprites = [Sprite(path + "/EffectSprites/hpBarSpriteEmpty.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteCritical.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteLow.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteHalf.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteHigh.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteMost.gif", self, 1),
+                      Sprite(path + "/EffectSprites/hpBarSpriteFull.gif", self, 1)]
       self.sprite = self.sprites[6]
       self.parental = parental
       self.coords = Coords(0, 0)
@@ -2791,11 +2926,13 @@ class ThreeStageAnimationCycle():
         # Initiates animation and adds to current animatedSpriteList
 
     def animate(self):
+        global animatedSpriteList
         animatedSpriteList.append(self)
         self.isAnimating = true
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
     def stopAnimating(self):
+        global animatedSpriteList
         animatedSpriteList.remove(self)
 
         # shortcut to object's sprite functions
@@ -2805,7 +2942,8 @@ class ThreeStageAnimationCycle():
         display.remove(self.sprite)
 
         # core animation
-    def threadAnimate(self, container):
+    def threadAnimate(self, x):
+        global animatedSpriteList
         self.sprite = self.spriteList[2]
         time.sleep(self.secondsBetween)
         while self in animatedSpriteList:
@@ -2832,9 +2970,26 @@ class ThreeStageAnimationCycle():
             self.sprite = self.spriteList[2]
             del self
 
+    def animateOnce(self):
+        global animatedSpriteList
+        animatedSpriteList.append(self)
+        self.isAnimating = true
+        x = None
+        thread.start_new_thread(self.threadAnimateOnce, (x,))
 
-
-
+    def threadAnimateOnce(self, x):
+        global animatedSpriteList
+        try:
+          self.removeSprite()
+        except:
+          None
+        for i in range (0, 3):
+          self.sprite = self.spriteList[i]
+          self.spawnSprite()
+          time.sleep(self.secondsBetween)
+          self.removeSprite()
+        self.isAnimating = false
+        animatedSpriteList.remove(self)
 
 
 
@@ -2849,7 +3004,6 @@ class ThreeStageAnimationCycle():
     #   spritePaths:    - list containing the filePaths of the Being's sprites
     #   xSpawn:         - initial x location
     #   ySpawn:         - initial y location
-    #   species:        - Being's species as a string
     #   level:          - Being's starting level
 
 class User(Being):
@@ -3374,6 +3528,7 @@ TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
 TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
 TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
 TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
+TOWN_AREA.objectList.append(HealingStation(healingStationSpritePaths, 896, 64))
 for i in TOWN_AREA.lightSources:
   TOWN_AREA.objectList.append(i)
 E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, eFieldAnimations)
@@ -3472,48 +3627,19 @@ dungeon_sound = music(path+"Audio/Night-Stalker.wav")
 
 
 #Menu Sprites
-<<<<<<< HEAD
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
-equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 1)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
-textBox = RawSprite(path + "Menu/textBox.png",480, 163, 0)
-
-
-"""
-class menu():
-  def __init__(self, listOfThings):
-    self.lineText = listOfThings
-    self.lineDifference = 12
-    for item in lineText:  #ran into issue with lineText not being global
-      self.addItem(item)
-
-  def addItem(self, item):
-    itemNameX = 250
-    startingY = 42
-    y = startingY
-    itemNo = 1
-    itemNoX = 240
-    for items in self.lineText:
-      display.add(Label(itemNo, x, y))     #ran into issue of Label not being global
-      display.add(Label(items.text, x, y))
-      y += 12
-      itemNo +=1
-
-
-#itemMenu = menu([str(bot1.hp), str(bot1.xp), str(bot1.level)])
-itemMenu = menu(bot1.inv)
-itemMenu.additem()
-
-
-#Roughly 30 pixels between each item
-#Starting position for text = 495,186
-"""
-=======
 defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
 itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
 equipMenu = RawSprite(path + "Menu/menuEquip.png",230, 0, 0)
 statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
-blankTest = RawSprite(path + "Menu/blankTest.png",480, 163, 0)
->>>>>>> parent of 9d9f5e1... Update RobotSaga.py
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
