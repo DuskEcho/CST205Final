@@ -850,7 +850,7 @@ def keyAction(a):
 
 def menuAction(menuInput):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
-  if menuInput == "1":
+  if menuInput == "u":
     if bot1Ready:
          statusMenu.sprite.spawnSprite()
          status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
@@ -864,21 +864,11 @@ def menuAction(menuInput):
 
 
 
-====
-
-===
-
-
-  elif menuInput == "2":
+  elif menuInput == "i":
     if bot1Ready:
         # textBox.sprite.spawnSprite()
         itemMenu.sprite.spawnSprite()
 
-
-  elif menuInput == "3":
-      if bot1Ready:
-      # textBox.sprite.spawnSprite()
-        shopMenu.sprite.spawnSprite()
 
 #Not in use, placeholder
   elif menuInput == "q":
@@ -886,13 +876,13 @@ def menuAction(menuInput):
       print "When this works, it will quit game."
 
   elif menuInput == "m":
-      if bot1Ready:
-           statusMenu.sprite.removeSprite()
-           itemMenu.sprite.removeSprite()
-           equipMenu.sprite.removeSprite()
-           defaultMenu.sprite.removeSprite()
-           statBox.sprite.removeSprite()
-           text.onKeyType(keyAction)
+    if bot1Ready:
+      statusMenu.sprite.removeSprite()
+      itemMenu.sprite.removeSprite()
+      equipMenu.sprite.removeSprite()
+      defaultMenu.sprite.removeSprite()
+      statBox.sprite.removeSprite()
+      text.onKeyType(keyAction)
 
 
 
