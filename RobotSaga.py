@@ -793,7 +793,10 @@ def loadNewArea(area):
     bot1.hpBar.updateBar()
     bot1.wallet.updateWalletDisplay()
     turnPass()
-    thread.start_new_thread(music.Stop, (background_music1,))
+    global background_music
+    thread.start_new_thread(music.loop2, (background_music,))
+    background_music = false
+    thread.start_new_thread(music.Stop, (background_music,))
 
 
 
@@ -3399,6 +3402,7 @@ class music:
 
 
     def Stop(self):
+      self.isPlaying = false
       stopPlaying(self.sound)
 
 
@@ -3415,8 +3419,14 @@ class music:
         time.sleep(20)
       return
 
-    def speed(self, num):
-        playAtRate(self.sound, num)
+    def loop2(self):
+      self.isPlaying = true
+      while self.isPlaying:
+        play(self.sound)
+        stopPlaying(self.sound)
+        time.sleep(20)
+      return
+        
         
 
             ######################
@@ -3845,8 +3855,6 @@ talk_sound = music(path+"Audio/Robot_blip.wav")
 
 
 background_music = music(path+"Audio/Still-of-Night_Looping.wav")
-background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
-#thread.start_new_thread(music.repeat, (background_music1,))
 
 #background music altered
 #quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
