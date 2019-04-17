@@ -1311,7 +1311,7 @@ class Map():
 class Doodad():
     def __init__(self, filepaths, x, y, passable = true, layer = 3):
         self.destructible = false
-        self.passable = passable
+        self.isPassable = passable
         self.coords = Coords(x, y)
         self.layer = layer
         self.spriteList = filepaths
@@ -1333,8 +1333,8 @@ class Activatable(Doodad):
 
 class HealingStation(Doodad):
     def __init__(self, filepaths, x, y, layer = 2):
-      self.isPassable = false #Change if you want to be passable
-      Doodad.__init__(self, filepaths, x, y, self.isPassable, layer)
+      passable = false #Change if you want to be passable
+      Doodad.__init__(self, filepaths, x, y, passable, layer)
       self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
       self.type = "healingStation"
     def activate(self, activator):
@@ -1355,8 +1355,8 @@ class HealingStation(Doodad):
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 3):
-        self.isPassable = false #Change if you want to be passable
-        Doodad.__init__(self, filepaths, x, y, self.isPassable, layer)
+        passable = false #Change if you want to be passable
+        Doodad.__init__(self, filepaths, x, y, passable, layer)
         self.isOn = false
         self.type = "light"
         self.isBurnable = burnable
@@ -1503,6 +1503,7 @@ class UserWallet(Wallet):
 
 class Lootbag():
     def __init__(self, itemList, coords):
+        self.isPassable = true
         self.contents = itemList
         self.coords = coords
         self.spriteList = [Sprite(path + r"EffectSprites/lootBag.gif", self),
