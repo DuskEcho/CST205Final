@@ -419,7 +419,7 @@ def turnPass():
 
 def inventoryFull():
     label = gui.Label("Not enough inventory space!")
-    showLabel(label) 
+    showLabel(label)
     delayRemoveObject(label, 2)
 
 
@@ -452,7 +452,7 @@ def slideSpriteDown(toBeMoved, targetYBig):
 
 def loadAreaCheck(player):
     global CURRENT_AREA
-    
+
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if CURRENT_AREA.otherAreas:
@@ -756,7 +756,7 @@ def loadNewArea(area):
     global bot1
     global background_music
     thread.start_new_thread(music.repeat, (background_music,))
-    
+
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -767,9 +767,9 @@ def loadNewArea(area):
     CURRENT_BG.spawnSprite()
     display.add(text)
     try:
-      currentBeingList.remove(bot1) 
+      currentBeingList.remove(bot1)
     except:
-      None   
+      None
     currentBeingList = area.beingList
     currentBeingList.append(bot1)
     bot1.area = CURRENT_AREA
@@ -880,16 +880,10 @@ def menuAction(menuInput):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if menuInput == "u":
     if bot1Ready:
-         statusMenu.sprite.spawnSprite()
-         status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
-         x=625
-         y=171
-
-         for item in status :
-             textBox =  gui.Label(str(item))
-             display.add(textBox,x,y)
-             y += 100
-
+        statusMenu.sprite.spawnSprite()
+        stats = Menu()
+        stats= stats.Menu.statusItems
+        stats.Menu.showLabels
 
 
   elif menuInput == "i":
@@ -907,11 +901,8 @@ def menuAction(menuInput):
     if bot1Ready:
       statusMenu.sprite.removeSprite()
       itemMenu.sprite.removeSprite()
-      equipMenu.sprite.removeSprite()
       defaultMenu.sprite.removeSprite()
-      statBox.sprite.removeSprite()
       text.onKeyType(keyAction)
-
 
 
 """
@@ -1062,7 +1053,7 @@ def loadBot():
     elif "Wallet" in line:
       bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
   fin.close()
-    
+
 def saveBot():
   global bot1
   fout = open(path + "SaveData.txt", 'w')
@@ -1076,7 +1067,7 @@ def saveBot():
   fout.write("Def:"+str(bot1.df)+"\n")
   fout.write("Wallet:"+str(bot1.wallet.value)+"\n")
   fout.close()
-    
+
 
         ####################
         #                  #
@@ -1398,12 +1389,12 @@ class Transaction():
           self.buyingMode()
         else:
           inventoryFull()
-       
+
 
     def sellingMode(self):
       #self.sellingWindowSprite.spawnSprite()
       for item in seller.inv:
-        None 
+        None
         #Add item to display, selling price, assign selling key
         #set selling price to item.value
         #set keyaction
@@ -1462,7 +1453,7 @@ class UserWallet(Wallet):
       self.label = gui.Label(str(self.value), gui.RIGHT)
       self.sprite.spawnSprite()
       display.add(self.label, 1000, 24)
-    
+
 
 
     def updateWalletDisplay(self):
@@ -2404,7 +2395,7 @@ class Being():
                 damage = 1
               thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
               thread.start_new_thread(music.Play, (hit_sound,))
-            
+
 
 
 
@@ -2489,7 +2480,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        
+
         if self.coords.y >= 0 and currentMap.isTraversable(targetSpot):
             self.coords.y -= BITS/2
             self.sprite.removeSprite()
@@ -2505,7 +2496,7 @@ class Being():
         else:
             self.isMoving = false
             thread.start_new_thread(music.Stop, (move,))
-            
+
 
     def threadMoveUp(self, x):
         time.sleep(.15)
@@ -2544,7 +2535,7 @@ class Being():
         else:
             self.isMoving = false
             thread.start_new_thread(music.Stop, (move2,))
-          
+
 
     def threadMoveDown(self, x):
         time.sleep(.15)
@@ -2741,7 +2732,7 @@ class Friendly(Being):
           except:
             None
         currentBeingList.remove(self)
-        del self        
+        del self
         thread.start_new_thread(music.Play, (dead_sound2,))
 
 
@@ -2792,7 +2783,7 @@ class ShopKeeper(Being):
         for files in self.bloodySprites:
             os.remove(files)
         currentBeingList.remove(self)
-        del self        
+        del self
         thread.start_new_thread(music.Play, (dead_sound4,))
 
 
@@ -3366,8 +3357,8 @@ class User(Being):
         speech = gui.Label(target.talkingLines[random.randint(0, len(target.talkingLines)-1)])
         showLabel(speech)
         delayRemoveObject(speech, 2)
-        
-        
+
+
 
     def dead(self):
         self.sprite.removeSprite()
@@ -3427,8 +3418,8 @@ class music:
         stopPlaying(self.sound)
         time.sleep(20)
       return
-        
-        
+
+
 
             ######################
             #                    #
@@ -3439,7 +3430,7 @@ class music:
 
 
 
-  
+
 backWidth = BITS * WIDTH_TILES
 backHeight = BITS * HEIGHT_TILES
 display = CustomDisplay("Robot Saga", backWidth, backHeight)
@@ -3823,7 +3814,7 @@ display.add(text, -32, -32)
 #display.drawImage(path + "newBack.png", 0, 0)
 
 
-#Music 
+#Music
 
 move = music(path+"Audio/footstep.wav")
 thread.start_new_thread(music.volume, (move, .08,))
@@ -3930,6 +3921,40 @@ shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
 #
 #
 #me
+class Menu():
+ def __init__(self):
+   global bot1
+   self.statusItems = [str(bot1.hp), str(bot1.xp), str(bot1.level)]
+   self.invItems = bot1.inv
+   self.labelList = []
+   #self.sprite = Sprite(path + "Menu/menuStatus.png",230, 0, 0)
+
+
+ def openMenu(self):
+   self.sprite.spawnSprite()
+
+
+ def showLabels(self):
+   x = 625
+   y = 171
+   for item in self.statusItems:
+     label = gui.Label(item)
+     display.add(label, x, y)
+     self.labelList.append(label)
+     y += 100
+
+
+"""
+old code
+     status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
+         x=625
+         y=171
+
+         for item in status :
+             textBox =  gui.Label(str(item))
+             display.add(textBox,x,y)
+             y += 100
+"""
 
 
 loadIntro()
