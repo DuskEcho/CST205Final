@@ -1156,14 +1156,16 @@ class Area():
             #printNow(str(testCoords.x) + "," + str(testCoords.y))
             #printNow("CURRENT")
             #printNow(str(being.coords.x) + "," + str(being.coords.y))
+            #TODO beinglist and objectList into dicitionary so I can look up effifiently
             for thing in self.beingList:
-                #printNow(thing.name)
                 if thing.name == being.name:
                     continue
-                #printNow(str(thing.coords.x) + "," + str(thing.coords.y))
-                #printNow(str(being.coords.x) + "," + str(being.coords.y))
                 if testCoords.x == thing.coords.x and testCoords.y == thing.coords.y:
-                    #printNow("Thing in spot")
+                    return false
+            for thing in self.objectList:
+                if thing.isPassable:
+                    continue
+                if testCoords.x == thing.coords.x and testCoords.y == thing.coords.y:
                     return false
             return true
         return false
@@ -1307,8 +1309,9 @@ class Map():
     #    isAnimating          - bool indicating animation activity
 
 class Doodad():
-    def __init__(self, filepaths, x, y, layer = 3):
+    def __init__(self, filepaths, x, y, passable = true, layer = 3):
         self.destructible = false
+        self.passable = passable
         self.coords = Coords(x, y)
         self.layer = layer
         self.spriteList = filepaths
@@ -1330,7 +1333,8 @@ class Activatable(Doodad):
 
 class HealingStation(Doodad):
     def __init__(self, filepaths, x, y, layer = 2):
-      Doodad.__init__(self, filepaths, x, y, layer)
+      self.isPassable = false #Change if you want to be passable
+      Doodad.__init__(self, filepaths, x, y, self.isPassable, layer)
       self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
       self.type = "healingStation"
     def activate(self, activator):
@@ -1351,7 +1355,8 @@ class HealingStation(Doodad):
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 3):
-        Doodad.__init__(self, filepaths, x, y, layer)
+        self.isPassable = false #Change if you want to be passable
+        Doodad.__init__(self, filepaths, x, y, self.isPassable, layer)
         self.isOn = false
         self.type = "light"
         self.isBurnable = burnable
