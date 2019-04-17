@@ -3,7 +3,8 @@
 
 All rights reserved.  Not to be duplicated without explicit permission of original creators.
 
-Original Assets:\n
+Original Assets:
+
 Bot sprites
 Lamp sprites
 healing station sprites
