@@ -1053,8 +1053,22 @@ def loadBot():
       bot1.df = int(line[len("Def:"):line.index('\n')])
     elif "Wallet" in line:
       bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
+  fin.close()
     
-
+def saveBot():
+  global bot1
+  fout = open(path + "SaveData.txt", 'w')
+  fout.write("CharName:"+str(bot1.name)+"\n")
+  fout.write("Weapon:"+str(bot1.weapon.name)+"\n")
+  fout.write("Level:"+str(bot1.level)+"\n")
+  fout.write("MaxHp:"+str(bot1.maxHp)+"\n")
+  fout.write("CurrentHp:"+str(bot1.hp)+"\n")
+  fout.write("Xp:"+str(bot1.xp)+"\n")
+  fout.write("Atk:"+str(bot1.atk)+"\n")
+  fout.write("Def:"+str(bot1.df)+"\n")
+  fout.write("Wallet:"+str(bot1.wallet.value)+"\n")
+  fout.close()
+    
 
         ####################
         #                  #
