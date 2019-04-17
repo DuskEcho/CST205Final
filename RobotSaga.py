@@ -1151,6 +1151,9 @@ class Area():
         self.westArea = None
         self.otherAreas = []
 
+    ##def isTraversable(self):
+        #if self.mapObject.isTraversable():
+            #for thing in beingList:
 
     def activateAnimations(self):
         for animatedSprite in self.persistentAnimations:
@@ -2523,10 +2526,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        printNow(currentMap.isTraversable(targetSpot))
-        printNow("PreCheck")
         if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
-            printNow("movingDown")
             self.coords.y += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[6], self)
