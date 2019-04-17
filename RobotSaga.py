@@ -926,10 +926,10 @@ statusMenu.sprite.spawnSprite()
 
 
 def mainMenuAction(input):
-  text.onKeyType(blockKeys)
   global title
   global startScreen
   global text
+  text.onKeyType(blockKeys)
   title.removeSprite()
   startScreen.removeSprite()
   if input == "1":
