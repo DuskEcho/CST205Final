@@ -29,6 +29,8 @@ SAGA original logo (added textures to be cited)
 
 All code from DuskEcho
 
-All code from shellhn
+All code from Shellhn
+
+All code from Anelon
 
 All other art/music property of their respective owners (to be cited)
