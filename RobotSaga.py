@@ -752,6 +752,7 @@ def loadNewArea(area):
     global CURRENT_BG
     global currentMap
     global CURRENT_AREA
+    global bot1
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -759,12 +760,15 @@ def loadNewArea(area):
     currentMap = area.mapObject
     CURRENT_BG = area.mapSprite
     CURRENT_AREA = area
-    bot1.area = area
     CURRENT_BG.spawnSprite()
     display.add(text)
-    currentBeingList.remove(bot1)
+    try:
+      currentBeingList.remove(bot1) 
+    except:
+      None   
     currentBeingList = area.beingList
     currentBeingList.append(bot1)
+    bot1.area = CURRENT_AREA
     objectList = area.objectList
     gibList = area.gibList
     animatedSpriteList = area.animatedSpriteList
@@ -920,6 +924,10 @@ def mainMenuAction(input):
   global text
   title.removeSprite()
   startScreen.removeSprite()
+  if input == "1":
+    loadBot()
+  else:
+    newBot()
   startGame()
 
 # To pass to getKeyTyped in order to block inputs
@@ -997,7 +1005,6 @@ def startGame():
   global gibList
   global animatedSpriteList
   global lightSources
-  global bot1
   CURRENT_AREA = TOWN_AREA
   CURRENT_BG = TOWN_AREA.mapSprite
   CURRENT_BG.spawnSprite()
@@ -1007,8 +1014,6 @@ def startGame():
   animatedSpriteList = TOWN_AREA.animatedSpriteList
   lightSources = TOWN_AREA.lightSources
   bot1Spawn = Coords(13*BITS, 1*BITS)
-  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-  bot1.area = CURRENT_AREA
   shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
   shopKeeper.sprite.spawnSprite()
   friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
@@ -1019,6 +1024,37 @@ def startGame():
   loading.removeSprite()
   text.grabFocus()
   text.onKeyType(keyAction)
+
+def newBot():
+  global bot1
+  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
+  bot1.area = CURRENT_AREA
+
+def loadBot():
+  global bot1
+  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
+  fin = open(path + "SaveData.txt")
+  for line in fin:
+    if "CharName:" in line:
+      bot1.name = line[len("Name:"):line.index('\n')]
+    elif "Weapon:" in line:
+      bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
+    elif "Level:" in line:
+      bot1.level = int(line[len("Level:"):line.index('\n')])
+    elif "MaxHp:" in line:
+      bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
+    elif "CurrentHp:" in line:
+      bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
+    elif "Xp:" in line:
+      bot1.xp = int(line[len("Xp:"):line.index('\n')])
+    elif "Atk:" in line:
+      bot1.atk = int(line[len("Atk:"):line.index('\n')])
+    elif "Def" in line:
+      bot1.df = int(line[len("Def:"):line.index('\n')])
+    elif "Wallet" in line:
+      bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
+    
+
 
         ####################
         #                  #
