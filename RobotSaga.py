@@ -224,7 +224,7 @@ menuSpritePaths = [path + "Menu/menuDefault.png",
 # Numbers correspond to stats
 
 
-# Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range]
+# Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range, currencyValue]
 # weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
 # first right frame, repeat for frames two and three]
 weaponStatsList = {
@@ -250,7 +250,7 @@ weaponStatsList = {
                   path + "WeaponSprites/Stick/stickFireUp3.gif",
                   path + "WeaponSprites/Stick/stickFireDown3.gif",
                   path + "WeaponSprites/Stick/stickFireLeft3.gif",
-                  path + "WeaponSprites/Stick/stickFireRight3.gif"], 1],
+                  path + "WeaponSprites/Stick/stickFireRight3.gif"], 1, 0],
     "Rock": [2, [path + "WeaponSprites/Rock/rockUp1.gif",
                   path + "WeaponSprites/Rock/rockDown1.gif",
                   path + "WeaponSprites/Rock/rockLeft1.gif",
@@ -262,7 +262,7 @@ weaponStatsList = {
                   path + "WeaponSprites/Rock/rockUp3.gif",
                   path + "WeaponSprites/Rock/rockDown3.gif",
                   path + "WeaponSprites/Rock/rockLeft3.gif",
-                  path + "WeaponSprites/Rock/rockRight3.gif",], false, None, 1],
+                  path + "WeaponSprites/Rock/rockRight3.gif",], false, None, 1, 200],
     "Sword": [5, [path + "WeaponSprites/Sword/swordUp1.gif",
                   path + "WeaponSprites/Sword/swordDown1.gif",
                   path + "WeaponSprites/Sword/swordLeft1.gif",
@@ -274,7 +274,7 @@ weaponStatsList = {
                   path + "WeaponSprites/Sword/swordUp3.gif",
                   path + "WeaponSprites/Sword/swordDown3.gif",
                   path + "WeaponSprites/Sword/swordLeft3.gif",
-                  path + "WeaponSprites/Sword/swordRight3.gif"], false, None, 1],
+                  path + "WeaponSprites/Sword/swordRight3.gif"], false, None, 1, 1000],
     "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp1.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherDown1.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherLeft1.gif",
@@ -286,7 +286,7 @@ weaponStatsList = {
                   path + "WeaponSprites/Botsmasher/botsmasherUp3.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherDown3.gif",
                   path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1]
+                  path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1, 10000]
    }
 
 # Helmet dict. Array in form [def power, spritePath(currently Unused)]
@@ -1372,19 +1372,54 @@ class LightSource(Doodad):
 
 
 
-        # Class for merchant items and "buy/sell" transaction
+        # Class  "buy/sell" transaction
 
-class ItemForSale():
-    def __init__(self, price, item):
-        self.price = price
-        self.item = item
 
-    def buy(self, buyer, seller):
-        buyer.inventoryAdd(self.item)
-        buyer.changeWallet(self.price * - 1)
-        seller.changeWallet(self.price)
-        seller.inventoryRemove(self)
-        del self
+
+
+class Transaction():
+    def __init__(self, buyer, seller):
+      global bot1
+      self.buyer = buyer
+      self.seller = seller
+      #self.buyingWindowSprite = Sprite()
+      #self.sellingWindowSprite = Sprite()
+      if seller is bot1:
+        self.sellingMode()
+      else:
+        if len(bot1.inv) < MAX_INVENTORY:
+          self.buyingMode()
+        else:
+          inventoryFull()
+       
+
+    def sellingMode(self):
+      #self.sellingWindowSprite.spawnSprite()
+      for item in seller.inv:
+        None 
+        #Add item to display, selling price, assign selling key
+        #set selling price to item.value
+        #set keyaction
+
+
+    def buyingMode(self):
+      #self.buyingWindowSprite.spawnSprite()
+      for item in buyer.inv:
+        None
+        #Add item to display, add price to display, assign a buying key
+        #set buying price to int(item.value * (1.5))
+
+
+    def buy(self, item):
+      global bot1
+      cost = item.value * (1)
+      if buyer is bot1:
+        cost = int(item.value * (1.5))
+      if len(self.buyer.inv) < MAX_INVENTORY:
+        self.buyer.changeWallet(cost* (-1))
+        self.buyer.inventoryAdd(item)
+        self.seller.changeWallet(cost)
+        self.seller.inventoryRemove(item)
 
 
 
@@ -1717,6 +1752,7 @@ class Weapon():
           self.sprites = self.originalSprites
           self.sprite = Sprite(self.sprites[3], self)
           self.onFire = false
+          self.value = weaponStatsList[self.name][5]
           self.displayed = false
           self.currentAnimation = None
           self.animationDelay = .15
@@ -1890,7 +1926,6 @@ class Being():
         self.bloodySprites = []
         self.lightSprites = []
         self.darkSprites = []
-        self.inv.append(self.weapon)
         if itemList != None:
             self.inv += itemList
         currentBeingList.append(self)
@@ -1930,9 +1965,12 @@ class Being():
         # Adds/removes item to/from inventory list
 
     def inventoryAdd(self, item):
-        self.inv.append(item)
+        if len(self.inv) < MAX_INVENTORY:
+          self.inv.append(item)
+        else:
+          inventoryFull()
     def inventoryRemove(self, item):
-        self.inv.Remove(item)
+        self.inv.remove(item)
 
 
 
@@ -2190,7 +2228,7 @@ class Being():
         # Actions to be taken on hp <= 0
 
     def dead(self):
-
+        self.inv.append(self.weapon)
         self.dropLoot()
         self.sprite.removeSprite()
         for files in self.bloodySprites:
@@ -2675,6 +2713,7 @@ class Friendly(Being):
 
     def dead(self):
         self.giblets()
+        self.inventoryAdd(self.weapon)
         self.dropLoot()
         self.sprite.removeSprite()
         for files in self.bloodySprites:
@@ -2727,6 +2766,7 @@ class ShopKeeper(Being):
         #play animation
         #delete coordinate data from grid
         self.giblets()
+        self.inventoryAdd(self.weapon)
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
@@ -2800,6 +2840,7 @@ class Enemy(Being):
         #play animation
         #delete coordinate data from grid
         self.giblets()
+        self.inventoryAdd(self.weapon)
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
@@ -2914,7 +2955,9 @@ class AnimatedGiblets():
 class Potion():
     def __init__(self):
       self.parental = None
+      self.name = "Potion"
       self.restoreValue = 10
+      self.value = 20
 
     def use(self):
       self.parental.changeHp(self.restoreValue)
@@ -3164,23 +3207,24 @@ class User(Being):
         None
 
 
-               # EQUIPMENT CLUSTER
+               # EQUIPMENT CLUSTER###
         # The following 6 functions handle equipping items
         # to  specific parts of the body.  Atk and Df stats
         # are adjusted accordingly.  The equipped item must
         # correlate to one of the itemLists
 
     def setWeapon(self, weapon):
-        if self.weapon != "Stick":
-            inventoryAdd(self.weapon)
-        self.atk -= weaponStatsList[self.weapon]
+        self.inventoryAdd(self.weapon)
+        self.atk -= weaponStatsList[self.weapon.name][0]
+        if weapon in self.inv:
+          self.inventoryRemove(weapon)
         self.weapon = weapon
-        self.atk += weaponStatsList[self.weapon]
+        self.atk += weaponStatsList[self.weapon.name][0]
 
 
     def setHelm(self, helm):
         if self.helm != "Hair":
-            inventoryAdd(self.helm)
+            self.inventoryAdd(self.helm)
         self.df -= helmStatsList(self.helm)
         self.helm = helm
         self.df += helmStatsList(self.helm)
@@ -3188,7 +3232,7 @@ class User(Being):
 
     def setChest(self, chest):
         if self.chest != "BDaySuit":
-            inventoryAdd(self.chest)
+            self.inventoryAdd(self.chest)
         self.df -= chestStatsList(self.chest)
         self.chest = chest
         self.df += chestStatsList(self.chest)
@@ -3196,7 +3240,7 @@ class User(Being):
 
     def setLegs(self, legs):
         if self.legs != "Shame":
-            inventoryAdd(self.legs)
+            self.inventoryAdd(self.legs)
         self.df -= legsStatsList(self.legs)
         self.legs = legs
         self.df += legsStatsList(self.legs)
@@ -3204,7 +3248,7 @@ class User(Being):
 
     def setBoots(self, boots):
         if self.boots != "Toes":
-            inventoryAdd(self.boots)
+            self.inventoryAdd(self.boots)
         self.df -= bootsStatsList(self.boots)
         self.boots = boots
         self.df += bootsStatsList(self.boots)
@@ -3212,7 +3256,7 @@ class User(Being):
 
     def setGloves(self, gloves):
         if self.gloves != "Digits":
-            inventoryAdd(self.gloves)
+            self.inventoryAdd(self.gloves)
         self.df -= glovesStatsList(self.gloves)
         self.gloves = gloves
         self.df += glovesStatsList(self.gloves)
