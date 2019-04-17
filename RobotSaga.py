@@ -754,8 +754,11 @@ def loadNewArea(area):
     global currentMap
     global CURRENT_AREA
     global bot1
-    global background_music
-    thread.start_new_thread(music.repeat, (background_music,))
+    #global background_music
+    #thread.start_new_thread(music.loop2, (background_music,))
+    #background_music = false
+    #thread.start_new_thread(music.Stop, (background_music,))
+    
 
     for light in lightSources:
       if light.isOn:
@@ -793,10 +796,7 @@ def loadNewArea(area):
     bot1.hpBar.updateBar()
     bot1.wallet.updateWalletDisplay()
     turnPass()
-    global background_music
-    thread.start_new_thread(music.loop2, (background_music,))
-    background_music = false
-    thread.start_new_thread(music.Stop, (background_music,))
+  
 
 
 
@@ -1793,12 +1793,10 @@ class Weapon():
         # For use with being's "self.forwardCoords.x/y"
 
     def displayUp(self, x, y):
-        global weapon_swing
         if self.displayed == false:
           self.displayed = true
           if self.onFire == true:
             self.currentAnimation = self.burningAnimationUp
-            thread.start_new_thread(music.Play, (weapon_swing,))
           else:
             self.currentAnimation = self.animationUp
           self.currentAnimation.coords = Coords(x, y)
@@ -1806,24 +1804,20 @@ class Weapon():
 
 
     def displayDown(self, x, y):
-        global weapon_swing2
-        if self.displayed == false:
+       if self.displayed == false:
           self.displayed = true
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationDown
-            thread.start_new_thread(music.Play, (weapon_swing2,))
+            self.currentAnimation = self.burningAnimationDown            
           else:
             self.currentAnimation = self.animationDown
           self.currentAnimation.coords = Coords(x, y)
           self.currentAnimation.animate()
 
     def displayLeft(self, x, y):
-        global weapon_swing3
-        if self.displayed == false:
+       if self.displayed == false:
           self.displayed = true
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationLeft
-            thread.start_new_thread(music.Play, (weapon_swing3,))
+            self.currentAnimation = self.burningAnimationLeft            
           else:
             self.currentAnimation = self.animationLeft
           self.currentAnimation.coords = Coords(x, y)
@@ -1831,12 +1825,10 @@ class Weapon():
           self.displayed = true
 
 
-    def displayRight(self, x, y):
-        global weapon_swing4
+    def displayRight(self, x, y):       
         if self.displayed == false:
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationRight
-            thread.start_new_thread(music.Play, (weapon_swing4,))
+            self.currentAnimation = self.burningAnimationRight            
           else:
             self.currentAnimation = self.animationRight
           self.currentAnimation.coords = Coords(x, y)
@@ -2380,6 +2372,7 @@ class Being():
 
     def meleeAtk(self):
         global hit_sound
+        thread.start_new_thread(music.Play, (hit_sound,))
         self.displayWeapon()
         x = None
         thread.start_new_thread(self.threadHideWeapon, (None,))
@@ -2394,7 +2387,7 @@ class Being():
               if damage <= 0:
                 damage = 1
               thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
-              thread.start_new_thread(music.Play, (hit_sound,))
+              
 
 
 
@@ -3833,12 +3826,6 @@ dead_sound3 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 dead_sound4  = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 dead_sound5 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
-
-
-weapon_swing = music(path+"Audio/Sword_Swing.wav")
-weapon_swing2 = music(path+"Audio/Sword_Swing.wav")
-weapon_swing3 = music(path+"Audio/Sword_Swing.wav")
-weapon_swing4 = music(path+"Audio/Sword_Swing.wav")
 
 
 hit_sound  = music(path+"Audio/Metal_Bang.wav")
