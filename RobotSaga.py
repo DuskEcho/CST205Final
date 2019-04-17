@@ -3832,8 +3832,8 @@ hit_sound  = music(path+"Audio/Metal_Bang.wav")
 talk_sound = music(path+"Audio/Robot_blip.wav")
 
 
-#background music
-#background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
+background_music = music(path+"Audio/Still-of-Night_Looping.wav")
+background_music1 = music(path+"Audio/Still-of-Night_Looping.wav")
 #thread.start_new_thread(music.repeat, (background_music1,))
 
 #background music altered
