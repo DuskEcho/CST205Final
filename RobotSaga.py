@@ -1353,8 +1353,6 @@ class LightSource(Doodad):
             self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
             for being in currentBeingList:
-                distanceX = abs(being.coords.x - self.coords.x)
-                distanceY = abs(being.coords.y - self.coords.y)
                 if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
             #self.sprite.removeSprite()
@@ -1458,7 +1456,7 @@ class UserWallet(Wallet):
       self.label = gui.Label(str(self.value), gui.RIGHT)
       self.sprite.spawnSprite()
       display.add(self.label, 1000, 24)
-
+    
 
 
     def updateWalletDisplay(self):
@@ -2513,7 +2511,8 @@ class Being():
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
-            loadAreaCheck(bot1)
+            loadAreaCheck(self)
+            self.suckUpGiblets()
         if self.coords.y%32 != 0:
           self.coords.y = (self.coords.y/32)*32
 
@@ -2554,7 +2553,8 @@ class Being():
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
-          loadAreaCheck(bot1)
+            loadAreaCheck(self)
+            self.suckUpGiblets()
         if self.coords.y%32 != 0:
           self.coords.y = (self.coords.y/32)*32
 
@@ -2590,7 +2590,8 @@ class Being():
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
-          loadAreaCheck(bot1)
+            loadAreaCheck(self)
+            self.suckUpGiblets()
         if self.coords.x%32 != 0:
           self.coords.x = (self.coords.x/32)*32
 
@@ -2626,7 +2627,8 @@ class Being():
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
-          loadAreaCheck(bot1)
+            loadAreaCheck(self)
+            self.suckUpGiblets()
         if self.coords.x%32 != 0:
           self.coords.x = (self.coords.x/32)*32
 
@@ -3219,6 +3221,20 @@ class User(Being):
       self.wallet.updateWalletDisplay()
 
 
+    def suckUpGiblets(self):
+      global CURRENT_AREA
+      for gib in CURRENT_AREA.gibList:
+        distanceX = abs(self.coords.x - gib.parental.coords.x)
+        distanceY = abs(self.coords.y - gib.parental.coords.y)
+        if distanceX <= BITS and distanceY <= BITS:
+          gib.removeSprite()
+          CURRENT_AREA.gibList.remove(gib)
+          if gib.fileName == path + r"RobotSprites/friendlyHead.gif" or gib.fileName == path + r"RobotSprites/enemyHeadGib.gif":
+            self.changeWallet(5)
+          else:
+            self.changeWallet(1)
+
+
     def giblets():
         None
 
@@ -3377,6 +3393,7 @@ class music:
 
     def __init__(self, music_file):
       self.sound = makeSound(music_file)
+      self.isPlaying = false
 
     def Play(self):
       play(self.sound)
@@ -3384,6 +3401,7 @@ class music:
 
     def Stop(self):
       stopPlaying(self.sound)
+      self.isPlaying = false
 
 
     def volume(self, n):
@@ -3393,7 +3411,8 @@ class music:
 
 
     def repeat(self):
-      while true:
+      self.isPlaying = true
+      while self.isPlaying:
         play(self.sound)
         stopPlaying(self.sound)
         time.sleep(20)
@@ -3408,11 +3427,7 @@ class music:
             #    PSEUDO-MAIN     #
             #                    #
             ######################
-def startUp():
-  None
 
-def startPlay():
-  None
 
 
 
