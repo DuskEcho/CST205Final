@@ -659,6 +659,11 @@ def tileCoordToSpot(coord):
 def coordToTileCoord(coord):
     return Coords(coord.x/BITS, coord.y/BITS)
 
+PIXEL_WIDTH = WIDTH_TILES * BITS
+PIXEL_HEIGHT = HEIGHT_TILES * BITS
+#Goes from tile spot to pixel coords
+def tileSpotToCoord(spot):
+    return Coords((spot * BITS)%PIXEL_WIDTH, (spot / WIDTH_TILES)*BITS)
 
 #probably bad?
 def coordToTile(coord):
@@ -1154,9 +1159,24 @@ class Area():
         self.westArea = None
         self.otherAreas = []
 
-    ##def isTraversable(self):
-        #if self.mapObject.isTraversable():
-            #for thing in beingList:
+    def isTraversable(self, being, spot):
+        if self.mapObject.isTraversable(spot):
+            testCoords = tileSpotToCoord(spot)
+            printNow("TARGET")
+            printNow(str(testCoords.x) + "," + str(testCoords.y))
+            printNow("CURRENT")
+            printNow(str(being.coords.x) + "," + str(being.coords.y))
+            for thing in self.beingList:
+                printNow(thing.name)
+                if thing.name == being.name:
+                    continue
+                printNow(str(thing.coords.x) + "," + str(thing.coords.y))
+                printNow(str(being.coords.x) + "," + str(being.coords.y))
+                if testCoords.x == thing.coords.x and testCoords.y == thing.coords.y:
+                    printNow("Thing in spot")
+                    return false
+            return true
+        return false
 
     def activateAnimations(self):
         for animatedSprite in self.persistentAnimations:
@@ -2490,7 +2510,7 @@ class Being():
         targetCoord.y -= 1
         targetSpot = tileCoordToSpot(targetCoord)
         
-        if self.coords.y >= 0 and currentMap.isTraversable(targetSpot):
+        if self.coords.y >= 0 and CURRENT_AREA.isTraversable(self, targetSpot):
             self.coords.y -= BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[7], self)
@@ -2529,7 +2549,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.y < backHeight and currentMap.isTraversable(targetSpot):
+        if self.coords.y < backHeight and CURRENT_AREA.isTraversable(self, targetSpot):
             self.coords.y += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[6], self)
@@ -2568,7 +2588,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x >= 0 and currentMap.isTraversable(targetSpot):
+        if self.coords.x >= 0 and CURRENT_AREA.isTraversable(self, targetSpot):
             self.coords.x -= BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[4], self)
@@ -2604,7 +2624,7 @@ class Being():
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x < backWidth and currentMap.isTraversable(targetSpot):
+        if self.coords.x < backWidth and CURRENT_AREA.isTraversable(self, targetSpot):
             self.coords.x += BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[5], self)
