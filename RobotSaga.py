@@ -3393,7 +3393,6 @@ class music:
 
     def __init__(self, music_file):
       self.sound = makeSound(music_file)
-      self.isPlaying = false
 
     def Play(self):
       play(self.sound)
@@ -3401,7 +3400,6 @@ class music:
 
     def Stop(self):
       stopPlaying(self.sound)
-      self.isPlaying = false
 
 
     def volume(self, n):
@@ -3411,8 +3409,7 @@ class music:
 
 
     def repeat(self):
-      self.isPlaying = true
-      while self.isPlaying:
+      while true:
         play(self.sound)
         stopPlaying(self.sound)
         time.sleep(20)
