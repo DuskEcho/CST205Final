@@ -672,7 +672,6 @@ def coordToTile(coord):
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
     spot = coordToTile(Coords(x,y))
-    printNow(spot)
     return currentMap.isTraversable(spot)
 
 
@@ -1153,18 +1152,18 @@ class Area():
     def isTraversable(self, being, spot):
         if self.mapObject.isTraversable(spot):
             testCoords = tileSpotToCoord(spot)
-            printNow("TARGET")
-            printNow(str(testCoords.x) + "," + str(testCoords.y))
-            printNow("CURRENT")
-            printNow(str(being.coords.x) + "," + str(being.coords.y))
+            #printNow("TARGET")
+            #printNow(str(testCoords.x) + "," + str(testCoords.y))
+            #printNow("CURRENT")
+            #printNow(str(being.coords.x) + "," + str(being.coords.y))
             for thing in self.beingList:
-                printNow(thing.name)
+                #printNow(thing.name)
                 if thing.name == being.name:
                     continue
-                printNow(str(thing.coords.x) + "," + str(thing.coords.y))
-                printNow(str(being.coords.x) + "," + str(being.coords.y))
+                #printNow(str(thing.coords.x) + "," + str(thing.coords.y))
+                #printNow(str(being.coords.x) + "," + str(being.coords.y))
                 if testCoords.x == thing.coords.x and testCoords.y == thing.coords.y:
-                    printNow("Thing in spot")
+                    #printNow("Thing in spot")
                     return false
             return true
         return false
