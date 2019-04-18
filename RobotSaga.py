@@ -4100,15 +4100,15 @@ class Menu():
    self.sprite.spawnSprite()
 
 
- def showLabels(self):
+ def showLabels(self,startX = 700, startY = 171, lineJump = 100):
    #x = 625 - old measurements, might be better for items
-   x = 700
-   y = 171
+   x = startX
+   y = startY
    for item in self.statusItems:
      label = gui.Label(item)
      display.add(label, x, y)
      self.labelList.append(label)
-     y += 100
+     y +=lineJump
 
 
 """
