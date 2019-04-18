@@ -452,7 +452,6 @@ def slideSpriteDown(toBeMoved, targetYBig):
 
 def loadAreaCheck(player):
     global CURRENT_AREA
-
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if CURRENT_AREA.otherAreas:
@@ -1785,13 +1784,16 @@ class Weapon():
           self.animationDown = ThreeStageAnimationCycle(self.sprites[1], self.sprites[5], self.sprites[9], 0, 0, self.animationDelay)
           self.animationLeft = ThreeStageAnimationCycle(self.sprites[2], self.sprites[6], self.sprites[10], 0, 0, self.animationDelay)
           self.animationRight = ThreeStageAnimationCycle(self.sprites[3], self.sprites[7], self.sprites[11], 0, 0, self.animationDelay)
-          try:
-            self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, animationDelay)
-            self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, animationDelay)
-            self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, animationDelay)
-            self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, animationDelay)
-          except:
-            None
+          self.burningAnimationUp = None
+          self.burningAnimationDown = None
+          self.burningAnimationLeft = None
+          self.burningAnimationRight = None
+          if self.isBurnable:
+            self.burningAnimationUp = ThreeStageAnimationCycle(self.burningSprites[0], self.burningSprites[4], self.burningSprites[8], 0, 0, self.animationDelay)
+            self.burningAnimationDown = ThreeStageAnimationCycle(self.burningSprites[1], self.burningSprites[5], self.burningSprites[9], 0, 0, self.animationDelay)
+            self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, self.animationDelay)
+            self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, self.animationDelay)
+
 
 
 
@@ -2403,10 +2405,12 @@ class Being():
         self.displayWeapon()
         x = None
         thread.start_new_thread(self.threadHideWeapon, (None,))
+        if CURRENT_AREA.mapObject.getTileDesc(tileCoordToSpot(coordToTileCoord(self.forwardCoords))) == "lava":# SORRY ABOUT THIS MESS
+          self.weapon.burn()
         for target in self.getFrontTargetList():
             if isinstance(target, LightSource):
               if target.isBurnable and target.isOn and self.weapon.isBurnable:
-                self.weapon.burn()
+                self.weapon.burn()                                                    
               elif target.isBurnable and not target.isOn and self.weapon.onFire:
                 target.turnOn()
             elif isinstance(target, Being) or isinstance(target, Enemy):
