@@ -916,24 +916,21 @@ def keyAction(a):
         defaultMenu.sprite.spawnSprite()
         text.onKeyType(menuAction)
 
-
 def menuAction(menuInput):
+
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if menuInput == "u":
     if bot1Ready:
-        statusMenu.sprite.spawnSprite()
         stats = Menu()
-        stats.statusItems
+        statusMenu.sprite.spawnSprite()
         stats.showLabels()
 
 
   elif menuInput == "i":
     if bot1Ready:
-        # textBox.sprite.spawnSprite()
         itemMenu.sprite.spawnSprite()
 
 
-#Not in use, placeholder
   elif menuInput == "q":
     if bot1Ready:
       try:
@@ -959,6 +956,7 @@ def menuAction(menuInput):
       itemMenu.sprite.removeSprite()
       defaultMenu.sprite.removeSprite()
       text.onKeyType(keyAction)
+      menu.removeMenuLabels()
 
 
 """
@@ -4109,6 +4107,11 @@ class Menu():
      display.add(label, x, y)
      self.labelList.append(label)
      y +=lineJump
+
+ def removeMenuLabels (self):
+    for item in self.labelList:
+        label = item
+        display.remove(label)
 
 
 """
