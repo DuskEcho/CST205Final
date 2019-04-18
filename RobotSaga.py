@@ -1431,8 +1431,19 @@ class Door(Doodad):
         self.open()
 
 
-# special animated doodad that emits light within 3 tiles. if is burnable, attacking
-# with an onFire weapon will turnOn the light source
+      # special animated doodad that emits light within 3 tiles. if is burnable, attacking
+      # with an onFire weapon will turnOn the light source. Added to CURRENT_AREA.lightSources
+      # Constructor Parameters:
+      #    filepaths        -   sprite filepaths for animations (4 total)
+      #    x                -   x coords
+      #    y                -   y coords
+      #    layer            -   display layer position
+      #    burnable         -   burnable bool that determines interaction with flaming weapons
+      # 
+      # Members:
+      #    isOn             -   boolean light on/off status
+      #    type             -   string type for targeting
+      #    isBurnable       -   bool burnable status. 
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 3):
@@ -1443,12 +1454,16 @@ class LightSource(Doodad):
         self.isBurnable = burnable
         lightSources.append(self)
 
+
+        # turns the light on or off. Activated by a user's activateTarget()
     def activate(self):
         if self.isOn == true:
             self.turnOff()
         else:
             self.turnOn()
 
+        # turns the light on and runs a non-trivial check for nearby beings.
+        # Any beings in the area will activate lightenDarken(), lightening their sprites
     def turnOn(self):
         if self.isOn == false:
             self.isOn = true
@@ -1459,7 +1474,9 @@ class LightSource(Doodad):
                 distanceY = abs(being.coords.y - self.coords.y)
                 if distanceX <= BITS*3 and distanceY <= range:
                     being.lightenDarken()
-            #self.sprite.removeSprite()
+
+        # turns the light off and runs a non-trivial check for nearby beings.
+        # Any beings in the area will activate lightenDarken(), returning their sprites to pre-light status
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
@@ -1477,10 +1494,17 @@ class LightSource(Doodad):
 
 
 
-        # Class  "buy/sell" transaction
-
-
-
+      # Class  that handles the buying/selling logic.
+      # Runs a check to make sure the buyer has room in the inv before attempting to
+      # initiate "buy" mode
+      # Constructor Parameters:
+      #    buyer              - buyer being
+      #    seller             - seller being
+      #    
+      # Members:
+      #    buyer              - buyer being
+      #    seller             - seller being
+      #     
 
 class Transaction():
     def __init__(self, buyer, seller):
@@ -1497,7 +1521,7 @@ class Transaction():
         else:
           inventoryFull()
 
-
+          # pops up the selling display and adjusts the keyAction
     def sellingMode(self):
       #self.sellingWindowSprite.spawnSprite()
       for item in seller.inv:
@@ -1506,7 +1530,7 @@ class Transaction():
         #set selling price to item.value
         #set keyaction
 
-
+        # pops up the buying display and adjusts the keyAction
     def buyingMode(self):
       #self.buyingWindowSprite.spawnSprite()
       for item in buyer.inv:
@@ -1514,7 +1538,9 @@ class Transaction():
         #Add item to display, add price to display, assign a buying key
         #set buying price to int(item.value * (1.5))
 
-
+        # completes a transaction. Item is added to buyer inv, currency is removed
+        # from buyer, item is removed from seller inv, currency is added to seller
+        # runs a check to make sure the buyer has room in the inv 
     def buy(self, item):
       global bot1
       cost = item.value * (1)
@@ -1546,7 +1572,7 @@ class Wallet():
       self.value = amount
 
 
-      # User-exclusive wallet class.
+      # User-exclusive wallet class. Inherits from Wallet and calls Wallet.__init__()
       # Expansions:
       #   coords                - coords for the HUD icon (User only)
       #   sprite                - sprite for the HUD icon (User only)
@@ -1562,6 +1588,7 @@ class UserWallet(Wallet):
       display.add(self.label, 1000, 24)
 
 
+      # updates the currency display to the wallet's current value
 
     def updateWalletDisplay(self):
       self.sprite.spawnSprite()
@@ -1576,13 +1603,22 @@ class UserWallet(Wallet):
 
 
     # Container object for obtainable items. Often dropped by enemies.
-    # Animates in a new thread
+    # Animates in a new thread.  The object is added to the screen an objectList
+    # on instantiation.
     # Constructor Parameters:
     #    itemList             - list of items held by the Lootbag
     #    coords               - coords object holding location
     #    spriteList           - images used for animation
     #    sprite               - current spryte
     #    type                 - used for certain logic checks
+    # 
+    # Members:
+    #    isPassable           - defaults to true allowing beings to pass through
+    #    contents             - items contained within, to be picked up by beings
+    #    coords               - Coords object signifying location
+    #    spriteList           - object sprites (2, used for animation)
+    #    sprite               - current sprite  
+    #    type                 - string type used for targeting 
 
 class Lootbag():
     def __init__(self, itemList, coords):
@@ -1593,6 +1629,7 @@ class Lootbag():
                            Sprite(path + r"EffectSprites/lootBag2.gif", self)]
         self.sprite = self.spriteList[0]
         self.type = "lootbag"
+        objectList.append(loot)
 
         self.spawnSprite()
         x = None
@@ -1602,14 +1639,16 @@ class Lootbag():
 
 
 
-
+        # quick access to sprite functions
     def spawnSprite(self):
         display.place(self.sprite, self.coords.x, self.coords.y, 1)
     def removeSprite(self):
         display.remove(self.sprite)
 
 
-
+        # meant for use with thread.start_new_thread.
+        # alternates between the object's sprites at half-second intervals.
+        # Stops animation once the lootBag is removed from the CURRENT_AREA.objectList
     def threadAnimate(self, x):
         while self in objectList:
             time.sleep(.5)
@@ -1634,6 +1673,7 @@ class Lootbag():
 
 
     # Class used when an ownerless sprite is needed
+    # Acts as a sprite with Coords
 
 class RawSprite():
     def __init__(self, filename, x, y, layer = 4):
@@ -1887,6 +1927,8 @@ class Weapon():
         self.onFire = true
         thread.start_new_thread(self.threadFireCountdown, (x, ))
 
+      # meant for use with thread.start_new_thread. Sets onFire to false after 15 turns
+      # and reverts the weapon's sprites to the original sprites
     def threadFireCountdown(self, x):
         start = counter.turn
         finish = start + 15
@@ -2042,6 +2084,7 @@ class Being():
 
 
         # use this moveTo when moving beings around
+        # Being's coords will be set to the passed x/y
 
     def moveTo(self, x, y):
         self.sprite.moveTo(x, y)
@@ -2050,6 +2093,7 @@ class Being():
 
 
         # activates an activatable object directly in front
+        # Calls the target's activate() function
 
     def activateTarget(self):
       target = self.getFrontTarget()
@@ -2058,8 +2102,10 @@ class Being():
       except:
         target.activate()
 
-        # Updates wallet by amount
 
+
+        # Updates wallet by amount
+        # Wallet will increase by amount if positive, decrease if negative
     def changeWallet(self, amount):
         self.wallet.value += amount
         if self.wallet <= 0:
@@ -2072,7 +2118,7 @@ class Being():
 
 
         # Adds/removes item to/from inventory list
-
+        # Checks to ensure inventory is not full
     def inventoryAdd(self, item):
         if len(self.inv) < MAX_INVENTORY:
           self.inv.append(item)
@@ -2094,7 +2140,7 @@ class Being():
 
 
         # level-up logic. Semi-randomly increases max HP, Atk, df
-
+        # and refreshes hp
     def levelUp(self):
         self.xp = 0
         self.level += 1
@@ -2273,7 +2319,12 @@ class Being():
 
 
 
-        # Moves towards bot1. Distances should be passed in form self.x - bot1.x, same for y
+
+        # distanceX and distanceY are compared. The caller will attempt to reduce the distance
+        # Depending on which absolute value is greater, the caller will move either vertically
+        # or horizontally one space. If decision is made based on distanceX, movement will be horizontal
+        # distances can be either positive or negative. Movement seeks to approach zero (e.g., if value is negative,
+        # movement is in a positive direction) 
 
     def moveTowardsPlayer(self, distanceX, distanceY):
         if abs(distanceX) > abs(distanceY):
@@ -2321,13 +2372,13 @@ class Being():
 
 
 
-        # drops all contents of the inv list in a lootbag object
+        # drops all contents of the inv list in a lootbag object on the map
+        # The being's wallet is also dropped with any currency
 
     def dropLoot(self):
         newWallet = Wallet(None, self.wallet.value)
         self.inv.append(newWallet)
         loot = Lootbag(self.inv, self.coords)
-        objectList.append(loot)
 
 
 
