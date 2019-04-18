@@ -23,7 +23,7 @@ import gui
 import time
 import thread
 import os
-
+import sys
 
 
 
@@ -898,6 +898,21 @@ def menuAction(menuInput):
 #Not in use, placeholder
   elif menuInput == "q":
     if bot1Ready:
+      try:
+        music.stop(dungeon_sound)
+      except:
+        None
+      try:
+        music.stop(quieter_music)
+      except:
+        None
+      try:
+        music.stop(background_music)
+      except:
+        None
+      saveBot()
+      display.hide()
+      sys.exit()
       print "When this works, it will quit game."
 
   elif menuInput == "m":
