@@ -1388,7 +1388,21 @@ class HealingStation(Doodad):
 
 
 
-      #Special doodad class used mainly in dungeon.  
+      # Special doodad class used mainly in dungeons. Can be activated by player with user.activateTarget() 
+      # Constructor Parameters:
+      #    filepaths        -   sprite filepaths for animations (4 total)
+      #    x                -   x coords
+      #    y                -   y coords
+      #    layer            -   display layer position
+      #    passable         -   default isPassable status 
+      #    locked           -   default locked status
+      #    lockedMessage    -   string displayed on attempted activate() while locked
+      #    
+      # Members:
+      #    isLocked         -   bool determining locked status
+      #    coords           -   Coords object for placement
+      #    sprite           -   object sprite 
+
 class Door(Doodad):
     def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
       Doodad.__init__(self, filepaths, x, y, passable = false)
@@ -1396,19 +1410,25 @@ class Door(Doodad):
       self.coords = Coords(x, y)
       self.sprite = Sprite(path + "tempDoorSprite.gif", self, 3)
 
+
+      # allows a being to pass through the door's coords and removes the sprite
     def open():
       self.isPassable = true
       self.sprite.removeSprite
 
+      # prevents beings from passing through the door's coords and spawns the sprite
     def close():
       self.isPassable = false
       self.sprite.spawnSprite
 
+      # opens the door if it is unlocked, otherwise desplays the door's locked message
     def activate() 
       if self.isLocked:
         label = gui.Label(lockedMessage)
         showLabel(label)
         delayRemoveObject(label, 2)
+      else:
+        self.open()
 
 
 # special animated doodad that emits light within 3 tiles. if is burnable, attacking
