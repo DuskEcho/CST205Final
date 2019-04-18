@@ -3778,6 +3778,12 @@ E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, eFieldAn
 NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
 N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap, nFieldAnimations)
 DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
+DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 32, 1))
+DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 32, 1))
+DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 512, 1))
+DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 512, 1))
+for i in DUNGEON_ENTRANCE_AREA.lightSources:
+  DUNGEON_ENTRANCE_AREA.objectList.append(i)
 DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
 DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
 DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), keyRoomMap)
