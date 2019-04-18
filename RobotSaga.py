@@ -761,7 +761,7 @@ def loadNewArea(area):
     #thread.start_new_thread(music.loop2, (background_music,))
     #background_music = false
     #thread.start_new_thread(music.Stop, (background_music,))
-    
+
 
     for light in lightSources:
       if light.isOn:
@@ -799,7 +799,7 @@ def loadNewArea(area):
     bot1.hpBar.updateBar()
     bot1.wallet.updateWalletDisplay()
     turnPass()
-  
+
 
 
 
@@ -885,8 +885,8 @@ def menuAction(menuInput):
     if bot1Ready:
         statusMenu.sprite.spawnSprite()
         stats = Menu()
-        stats= stats.Menu.statusItems
-        stats.Menu.showLabels
+        stats.statusItems
+        stats.showLabels()
 
 
   elif menuInput == "i":
@@ -1388,20 +1388,20 @@ class HealingStation(Doodad):
 
 
 
-      # Special doodad class used mainly in dungeons. Can be activated by player with user.activateTarget() 
+      # Special doodad class used mainly in dungeons. Can be activated by player with user.activateTarget()
       # Constructor Parameters:
       #    filepaths        -   sprite filepaths for animations (4 total)
       #    x                -   x coords
       #    y                -   y coords
       #    layer            -   display layer position
-      #    passable         -   default isPassable status 
+      #    passable         -   default isPassable status
       #    locked           -   default locked status
       #    lockedMessage    -   string displayed on attempted activate() while locked
-      #    
+      #
       # Members:
       #    isLocked         -   bool determining locked status
       #    coords           -   Coords object for placement
-      #    sprite           -   object sprite 
+      #    sprite           -   object sprite
 
 class Door(Doodad):
     def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
@@ -1422,7 +1422,7 @@ class Door(Doodad):
       self.sprite.spawnSprite
 
       # opens the door if it is unlocked, otherwise desplays the door's locked message
-    def activate() 
+    def activate():
       if self.isLocked:
         label = gui.Label(lockedMessage)
         showLabel(label)
@@ -1439,11 +1439,11 @@ class Door(Doodad):
       #    y                -   y coords
       #    layer            -   display layer position
       #    burnable         -   burnable bool that determines interaction with flaming weapons
-      # 
+      #
       # Members:
       #    isOn             -   boolean light on/off status
       #    type             -   string type for targeting
-      #    isBurnable       -   bool burnable status. 
+      #    isBurnable       -   bool burnable status.
 
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 3):
@@ -1500,11 +1500,11 @@ class LightSource(Doodad):
       # Constructor Parameters:
       #    buyer              - buyer being
       #    seller             - seller being
-      #    
+      #
       # Members:
       #    buyer              - buyer being
       #    seller             - seller being
-      #     
+      #
 
 class Transaction():
     def __init__(self, buyer, seller):
@@ -1540,7 +1540,7 @@ class Transaction():
 
         # completes a transaction. Item is added to buyer inv, currency is removed
         # from buyer, item is removed from seller inv, currency is added to seller
-        # runs a check to make sure the buyer has room in the inv 
+        # runs a check to make sure the buyer has room in the inv
     def buy(self, item):
       global bot1
       cost = item.value * (1)
@@ -1611,14 +1611,14 @@ class UserWallet(Wallet):
     #    spriteList           - images used for animation
     #    sprite               - current spryte
     #    type                 - used for certain logic checks
-    # 
+    #
     # Members:
     #    isPassable           - defaults to true allowing beings to pass through
     #    contents             - items contained within, to be picked up by beings
     #    coords               - Coords object signifying location
     #    spriteList           - object sprites (2, used for animation)
-    #    sprite               - current sprite  
-    #    type                 - string type used for targeting 
+    #    sprite               - current sprite
+    #    type                 - string type used for targeting
 
 class Lootbag():
     def __init__(self, itemList, coords):
@@ -1960,7 +1960,7 @@ class Weapon():
        if self.displayed == false:
           self.displayed = true
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationDown            
+            self.currentAnimation = self.burningAnimationDown
           else:
             self.currentAnimation = self.animationDown
           self.currentAnimation.coords = Coords(x, y)
@@ -1970,7 +1970,7 @@ class Weapon():
        if self.displayed == false:
           self.displayed = true
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationLeft            
+            self.currentAnimation = self.burningAnimationLeft
           else:
             self.currentAnimation = self.animationLeft
           self.currentAnimation.coords = Coords(x, y)
@@ -1978,10 +1978,10 @@ class Weapon():
           self.displayed = true
 
 
-    def displayRight(self, x, y):       
+    def displayRight(self, x, y):
         if self.displayed == false:
           if self.onFire == true:
-            self.currentAnimation = self.burningAnimationRight            
+            self.currentAnimation = self.burningAnimationRight
           else:
             self.currentAnimation = self.animationRight
           self.currentAnimation.coords = Coords(x, y)
@@ -2324,7 +2324,7 @@ class Being():
         # Depending on which absolute value is greater, the caller will move either vertically
         # or horizontally one space. If decision is made based on distanceX, movement will be horizontal
         # distances can be either positive or negative. Movement seeks to approach zero (e.g., if value is negative,
-        # movement is in a positive direction) 
+        # movement is in a positive direction)
 
     def moveTowardsPlayer(self, distanceX, distanceY):
         if abs(distanceX) > abs(distanceY):
@@ -2546,7 +2546,7 @@ class Being():
         for target in self.getFrontTargetList():
             if isinstance(target, LightSource):
               if target.isBurnable and target.isOn and self.weapon.isBurnable:
-                self.weapon.burn()                                                    
+                self.weapon.burn()
               elif target.isBurnable and not target.isOn and self.weapon.onFire:
                 target.turnOn()
             elif isinstance(target, Being) or isinstance(target, Enemy):
@@ -2554,7 +2554,7 @@ class Being():
               if damage <= 0:
                 damage = 1
               thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
-              
+
 
 
 
@@ -4094,7 +4094,8 @@ class Menu():
 
 
  def showLabels(self):
-   x = 625
+   #x = 625 - old measurements, might be better for items
+   x = 700
    y = 171
    for item in self.statusItems:
      label = gui.Label(item)
