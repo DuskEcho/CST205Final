@@ -912,7 +912,7 @@ def menuAction(menuInput):
         None
       saveBot()
       display.hide()
-      sys.exit()
+   #   sys.exit()
       print "When this works, it will quit game."
 
   elif menuInput == "m":
