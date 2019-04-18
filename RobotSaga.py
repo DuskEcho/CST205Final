@@ -2417,7 +2417,7 @@ class Being():
 
 
 
-        # Helper for lightenDarken(). Separated to allow for early returns. Determins if
+        # Helper for lightenDarken(). Separated to allow for early returns. Determines if
         # a valid light source is within the range passed
 
     def lightWithinRange(self, range):
@@ -2441,7 +2441,9 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[self.facing], self)
         self.sprite.spawnSprite()
 
-        # Lightens the BeingSprites
+        # Lightens the BeingSprites by creating new image files for lightened sprites and
+        # setting the being's spritelist to a list containing the new sprites. Sprites are lightened pixel
+        # by pixel.
     def lightenPixels(self):
         self.darkSprites = self.spritePaths
         spriteNum = 0
@@ -2463,7 +2465,8 @@ class Being():
         self.sprite.spawnSprite()
 
         # Adds an oil effect to the BeingSprites at varied intensity depending
-        # on being.hp (higher effect at lower hp)
+        # on being.hp (higher effect at lower hp).  Achieved by creating new image files
+        # and setting the beings spriteList to a list containing the new sprites.
     def bloodify(self):
         spriteNum = 0
 
@@ -2492,7 +2495,7 @@ class Being():
 
 
         # For use with actions that can target more than one target (e.g., attacks)
-
+        # Returns a list of objects and beings that are directly in front of the being
     def getFrontTargetList(self):
         bigList = currentBeingList + objectList
         targetList = []
@@ -2508,7 +2511,7 @@ class Being():
 
 
         #for use with actions that can only target one target (e.g., talking)
-
+        # Returns one object or being directly in front of the target
     def getFrontTarget(self):
         bigList = currentBeingList + objectList
         for target in bigList:
