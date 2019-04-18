@@ -1364,6 +1364,31 @@ class HealingStation(Doodad):
       self.animatedSprite.animateOnce()
 
 
+
+
+
+class Door(Doodad):
+    def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
+      Doodat.__init__(self, filepaths, x, y, passable = false)
+      self.isLocked = locked
+      self.coords = Coords(x, y)
+      self.sprite = Sprite(path + "tempDoorSprite.gif", self, 3)
+
+    def open():
+      self.isPassable = true
+      self.sprite.removeSprite
+
+    def close():
+      self.isPassable = false
+      self.sprite.spawnSprite
+
+    def activate() 
+      if self.isLocked:
+        label = gui.Label(lockedMessage)
+        showLabel(label)
+        delayRemoveObject(label, 2)
+
+
 # special animated doodad that emits light within 3 tiles. if is burnable, attacking
 # with an onFire weapon will turnOn the light source
 
