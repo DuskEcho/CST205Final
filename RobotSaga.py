@@ -1345,12 +1345,34 @@ class Activatable(Doodad):
       onActivateFunction()
 
 
+
+
+
+
+
+
+
+
+      # Special doodad that heals the user upon activation.
+      # Inherits from doodad and calls doodad.__init__()
+      # Constructor Parameters:
+      #    filepaths        -   sprite filepaths for animations (4 total)
+      #    x                -   x coords
+      #    y                -   y coords
+      #    layer            -   display layer position
+      #
+      # Members:
+      #    animatedSprite   -   ThreeStageAnimationCycle that plays upon usage using spriteList[1-3]
+      #    type             -   string type used in targeting
+
 class HealingStation(Doodad):
     def __init__(self, filepaths, x, y, layer = 2):
       passable = false #Change if you want to be passable
       Doodad.__init__(self, filepaths, x, y, passable, layer)
       self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
       self.type = "healingStation"
+
+      # core function. Heals activator and clears out bloody sprites
     def activate(self, activator):
       activator.hp = activator.maxHp
       activator.hpBar.updateBar()
@@ -1366,10 +1388,10 @@ class HealingStation(Doodad):
 
 
 
-
+      #Special doodad class used mainly in dungeon.  
 class Door(Doodad):
     def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
-      Doodat.__init__(self, filepaths, x, y, passable = false)
+      Doodad.__init__(self, filepaths, x, y, passable = false)
       self.isLocked = locked
       self.coords = Coords(x, y)
       self.sprite = Sprite(path + "tempDoorSprite.gif", self, 3)
