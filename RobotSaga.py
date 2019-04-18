@@ -62,6 +62,43 @@ bot1 = None
 
 
 
+class music:
+
+    def __init__(self, music_file):
+      self.sound = makeSound(music_file)
+
+    def Play(self):
+      play(self.sound)
+
+
+    def Stop(self):
+      self.isPlaying = false
+      stopPlaying(self.sound)
+
+
+    def volume(self, n):
+      for sample in getSamples(self.sound):
+        value = getSampleValue(sample)
+        setSampleValue(sample, value*n)
+
+
+    def repeat(self):
+      while true:
+        play(self.sound)
+        stopPlaying(self.sound)
+        time.sleep(20)
+      return
+
+    def loop2(self):
+      self.isPlaying = true
+      while self.isPlaying:
+        play(self.sound)
+        stopPlaying(self.sound)
+        time.sleep(20)
+      return
+
+
+
 # Basic class for turn counter instances.
 
 class TurnCounter():
@@ -722,7 +759,8 @@ def loadIntro():
     time.sleep(1.5)
     text.onKeyType(mainMenuAction)
     text.grabFocus()
-
+    global dungeon_sound
+    #thread.start_new_thread(music.play, (dungeon_sound,))
 
 
 # Clears the display, sets up layers for use, and displays
@@ -757,12 +795,9 @@ def loadNewArea(area):
     global currentMap
     global CURRENT_AREA
     global bot1
-    #global background_music
+    global background_music
     #thread.start_new_thread(music.loop2, (background_music,))
-    #background_music = false
-    #thread.start_new_thread(music.Stop, (background_music,))
     
-
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -899,15 +934,15 @@ def menuAction(menuInput):
   elif menuInput == "q":
     if bot1Ready:
       try:
-        music.stop(dungeon_sound)
+        music.Stop(dungeon_sound)
       except:
         None
       try:
-        music.stop(quieter_music)
+        music.Stop(quieter_music)
       except:
         None
       try:
-        music.stop(background_music)
+        music.Stop(background_music)
       except:
         None
       saveBot()
@@ -1146,6 +1181,8 @@ class CustomDisplay(gui.Display):
     #    sourth/east/westArea - See above
 
 class Area():
+       
+    
     def __init__(self, mapSprite, mapObject, persistantAnimations = []):
         self.beingList = [] #beings
         self.objectList = [] #lootbags, chests, doodads, etc.
@@ -1162,6 +1199,8 @@ class Area():
         self.eastArea = None
         self.westArea = None
         self.otherAreas = []
+      
+    
 
     def isTraversable(self, being, spot):
         if self.mapObject.isTraversable(spot):
@@ -1188,8 +1227,8 @@ class Area():
         for animatedSprite in self.persistentAnimations:
           animatedSprite.animate()
 
-
-
+   
+   
 
 
 
@@ -1254,6 +1293,9 @@ class Tile():
     # Object that holds collision/terrain information
 
 class Map():
+    
+   
+    
     def __init__(self, tileMap):
         #self.map = back
         self.tileMap = {} #change to make map
@@ -1422,7 +1464,7 @@ class Door(Doodad):
       self.sprite.spawnSprite
 
       # opens the door if it is unlocked, otherwise desplays the door's locked message
-    def activate() 
+    def activate():
       if self.isLocked:
         label = gui.Label(lockedMessage)
         showLabel(label)
@@ -3543,41 +3585,6 @@ class User(Being):
 
 
 
-class music:
-
-    def __init__(self, music_file):
-      self.sound = makeSound(music_file)
-
-    def Play(self):
-      play(self.sound)
-
-
-    def Stop(self):
-      self.isPlaying = false
-      stopPlaying(self.sound)
-
-
-    def volume(self, n):
-      for sample in getSamples(self.sound):
-        value = getSampleValue(sample)
-        setSampleValue(sample, value*n)
-
-
-    def repeat(self):
-      while true:
-        play(self.sound)
-        stopPlaying(self.sound)
-        time.sleep(20)
-      return
-
-    def loop2(self):
-      self.isPlaying = true
-      while self.isPlaying:
-        play(self.sound)
-        stopPlaying(self.sound)
-        time.sleep(20)
-      return
-
 
 
             ######################
@@ -3998,25 +4005,22 @@ dead_sound3 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 dead_sound4  = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 dead_sound5 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
 
-
-
 hit_sound  = music(path+"Audio/Metal_Bang.wav")
 
 talk_sound = music(path+"Audio/Robot_blip.wav")
 
 
-background_music = music(path+"Audio/Still-of-Night_Looping.wav")
-
 #background music altered
-#quieter_music = music(path+"Audio/Still-of-Night_Looping.wav")
-#thread.start_new_thread(music.volume, (quieter_music, .08,))
-#thread.start_new_thread(music.speed, (quieter_music, .05,))
-#thread.start_new_thread(music.repeat, (quieter_music,))
-#thread.start_new_thread(music.Play, (quieter_music,))
+background_music = music(path+"Audio/Still-of-Night_Looping.wav")
+thread.start_new_thread(music.volume, (background_music, .07,))
 
+
+#global dungeon_sound  
 #dungeon_sound = music(path+"Audio/Night-Stalker.wav")
-#thread.start_new_thread(music.repeat, (dungeon_sound,))
-#thread.start_new_thread(music.Play, (dungeon_sound,))
+#thread.start_new_thread(music.volume, (dungeon_sound, .08,))
+#thread.start_new_thread(music.loop2, (background_music,))
+#thread.start_new_thread(music.Stop, (background_music,))
+
 
 
 
