@@ -1,9 +1,9 @@
 CharName:bot1
 Weapon:Stick
-Level:0
-MaxHp:10
-CurrentHp:9
-Xp:0
-Atk:5
-Def:5
-Wallet:0
+Level:7
+MaxHp:45
+CurrentHp:35
+Xp:9
+Atk:2008
+Def:19
+Wallet:106

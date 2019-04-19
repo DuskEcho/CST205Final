@@ -2487,7 +2487,8 @@ class Being():
         # Note ** controls are intentionally locked during this logic
     def bloodify(self):
         global text
-        text.onKeyType(blockKeys)
+        if isinstance(self, User):
+          text.onKeyType(blockKeys)
         spriteNum = 0
         for files in self.bloodySprites:
             os.remove(files)  
@@ -2510,7 +2511,8 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.bloodySprites[self.facing], self)
         self.sprite.spawnSprite()
-        text.onKeyType(keyAction)
+        if isinstance(self, User):
+          text.onKeyType(keyAction)
 
 
 
