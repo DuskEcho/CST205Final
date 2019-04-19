@@ -250,11 +250,6 @@ healingStationSpritePaths = [path + "ObjectSprites/rechargeStation1.gif",
                         path + "ObjectSprites/rechargeStation3.gif",
                         path + "ObjectSprites/rechargeStation4.gif"]
 
-#Not sure if needed, might delete
-menuSpritePaths = [path + "Menu/menuDefault.png",
-                    path + "Menu/menuItem.png",
-                    path + "Menu/menuStatus.png",
-                    path + "Menu/menuEquip.png"]
 
 # Dictionaries for items
 # Numbers correspond to stats
@@ -382,37 +377,12 @@ mapNameList = ["town", "dungeon", "path"]
         ####################
 
 
-
-
-# TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
-# Converts the given rawText to a Label object to be added to the
-# display, then adds at coordsX, coordsY.
-
-
-
-def showText(rawText, coordsX = 1280 * (2/5), coordsY = 0):
-    label = gui.Label(rawText)
-    label.position = (coordsX, coordsY)
-    display.add(rawText, coordsX, coordsY)
+                     
 
 
 
 
-
-
-
-# Takes an array of animatable objects and animates them all.
-# All sprites in the list must have an animate() member function to call.
-
-def animateSpriteSet(stationaryAnimatedSpriteSet):
-    for sprite in stationaryAnimatedSpriteSet:
-      sprite.animate()
-
-
-
-# TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
-# Adds the given gui.Label to the display at the Label's coords (default 0, 0)
-
+# Removes the passed object from the display
 
 def removeLabel(label):
     display.remove(label)
@@ -471,6 +441,7 @@ def slideRight(toBeMoved, targetXBig):
     if toBeMoved.coords.x < targetXBig:
         thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
 
+# Slide-down logic identical to the above, but for vertical sliding
 def slideSpriteDown(toBeMoved, targetYBig):
     time.sleep(.005)
     toBeMoved.coords.y += 1
@@ -794,11 +765,10 @@ def loadNewArea(area):
     global CURRENT_AREA
     global bot1
     global background_music
+
     #thread.start_new_thread(music.loop2, (background_music,))
     #background_music = false
     #thread.start_new_thread(music.Stop, (background_music,))
-
-
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -826,7 +796,6 @@ def loadNewArea(area):
     for gib in gibList:
         display.add(gib)
     loading.removeSprite()
-
     for light in CURRENT_AREA.wasOn:
         light.turnOn()
     for sprite in CURRENT_AREA.persistentAnimations:
@@ -843,6 +812,13 @@ def loadNewArea(area):
  # for use with future sprites
 
 def setUpLayers():
+    global layer0
+    global layer1
+    global layer2
+    global layer3
+    global layer4
+    global layer5
+    global layer6
     layer0.spawnSprite()
     layer1.spawnSprite()
     layer2.spawnSprite()
@@ -911,6 +887,12 @@ def keyAction(a):
       menu.openMenu()
       text.onKeyType(menuAction)
 
+
+
+
+
+    # Keybindings/controls for menus
+
 def menuAction(menuInput):
 
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
@@ -951,17 +933,9 @@ def menuAction(menuInput):
       text.onKeyType(keyAction)
 
 
-"""
-defaultMenu.sprite.spawnSprite()
-itemMenu.sprite.spawnSprite()
-equipMenu.sprite.spawnSprite()
-statusMenu.sprite.spawnSprite()
-"""
 
 
-
-
-
+    # Default controls for main menu
 def mainMenuAction(input):
   global title
   global startScreen
@@ -975,6 +949,12 @@ def mainMenuAction(input):
     newBot()
   startGame()
 
+
+
+
+
+
+
 # To pass to getKeyTyped in order to block inputs
 # (e.g., during animations or delays)
 
@@ -985,42 +965,10 @@ def blockKeys(a):
 
 
 
-
-# Currently not in use
-
-def initialSetup():
-    for item in weaponStatsList:
-        lootTable[item] = weaponStatsList[item]
-    for item in helmStatsList:
-        lootTable[item] = helmStatsList[item]
-    for item in chestStatsList:
-        lootTable[item] = chestStatsList[item]
-    for item in legsStatsList:
-        lootTable[item] = legsStatsList[item]
-    for item in feetStatsList:
-        lootTable[item] = feetStatsList[item]
-
-
-
-
-
-
-def damageCalculation(target, damage):
-  if target != bot1:
-    target.hostile = true
-  target.changeHp(damage*(-1))
-  target.displayDamage()
-  if target.hp <= 0:
-    self.changeXp(target.xpValue)
-    global friendlyGreen
-    global friendlyOrange
-    global shopKeeper
-    if target == friendlyGreen:
-      del friendlyGreen
-    elif target == friendlyOrange:
-      del friendlyOrange
-    elif target == shopKeeper:
-      del shopKeeper
+# Damage calculation logic for combat. Note:
+# Certain friendlies will be obliterated on defeat
+# Currently meant to be called with thread.start_new_thread
+# to line up damage with animations
 
 def threadDamageCalculation(self, target, damage, delay):
   time.sleep(delay)
@@ -1040,6 +988,9 @@ def threadDamageCalculation(self, target, damage, delay):
     elif target == shopKeeper:
       del shopKeeper
 
+
+
+  # Game startup/bootup logic
 def startGame():
   loading.spawnSprite()
   global CURRENT_AREA
@@ -1071,38 +1022,55 @@ def startGame():
   loading.removeSprite()
   menu = Menu(bot1)
   text.grabFocus()
+  time.sleep(.2) #gives sliding title time to finish
   text.onKeyType(keyAction)
 
+
+  # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
   global bot1
   bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
   bot1.area = CURRENT_AREA
 
+
+  # Logic for loading a character. If data exists, bot1 will be loaded from it.
+  # Otherwise, the starting screen will replay with a message warning the user
 def loadBot():
   global bot1
   bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-  fin = open(path + "SaveData.txt")
-  for line in fin:
-    if "CharName:" in line:
-      bot1.name = line[len("Name:"):line.index('\n')]
-    elif "Weapon:" in line:
-      bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
-    elif "Level:" in line:
-      bot1.level = int(line[len("Level:"):line.index('\n')])
-    elif "MaxHp:" in line:
-      bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
-    elif "CurrentHp:" in line:
-      bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
-    elif "Xp:" in line:
-      bot1.xp = int(line[len("Xp:"):line.index('\n')])
-    elif "Atk:" in line:
-      bot1.atk = int(line[len("Atk:"):line.index('\n')])
-    elif "Def" in line:
-      bot1.df = int(line[len("Def:"):line.index('\n')])
-    elif "Wallet" in line:
-      bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
-  fin.close()
+  try:
+    fin = open(path + "SaveData.txt")
+    for line in fin:
+      if "CharName:" in line:
+        bot1.name = line[len("Name:"):line.index('\n')]
+      elif "Weapon:" in line:
+        bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
+      elif "Level:" in line:
+        bot1.level = int(line[len("Level:"):line.index('\n')])
+      elif "MaxHp:" in line:
+        bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
+      elif "CurrentHp:" in line:
+        bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
+      elif "Xp:" in line:
+        bot1.xp = int(line[len("Xp:"):line.index('\n')])
+      elif "Atk:" in line:
+        bot1.atk = int(line[len("Atk:"):line.index('\n')])
+      elif "Def" in line:
+        bot1.df = int(line[len("Def:"):line.index('\n')])
+      elif "Wallet" in line:
+        bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
+    fin.close()
+  except:
+    loadIntro()
+    warning = gui.Label("No Save found!")
+    display.add(warning, 330, 100)
+    threadRemoveSprite(2, warning)
 
+
+
+
+
+    # Saves the user's stats to a file for future loading
 def saveBot():
   global bot1
   fout = open(path + "SaveData.txt", 'w')
@@ -1118,6 +1086,18 @@ def saveBot():
   fout.close()
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         ####################
         #                  #
         #      CLASSES     #
@@ -1125,7 +1105,8 @@ def saveBot():
         ####################
 
 
-    # A custom class created to override gui.Display's default destructor.
+    # A custom class created to override gui.Display's default destructor. 
+    # Though not useful for Python, this will be useful when converting to a new language
 
 class CustomDisplay(gui.Display):
 
@@ -1139,8 +1120,6 @@ class CustomDisplay(gui.Display):
     music.Stop(quieter_music)
     music.Stop(background_music1)
     music.Stop(dungeon_sound)
-
-
     gui.display.__del__(self)
 
 
@@ -3549,6 +3528,7 @@ class User(Being):
 
             # action - attempts to steal an item from a target
             # Being.  If the attempt fails, the Being turns hostile
+            # Attempt will not initiate if the inventory is full
 
     def steal(self, target):
       if len(self.inv) < MAX_INVENTORY:
@@ -3567,6 +3547,9 @@ class User(Being):
         else:
             inventoryFull()
 
+
+            # Talks to the being directly in front
+
     def talk(self):
         global talk_sound
         thread.start_new_thread(music.Play, (talk_sound,))
@@ -3584,6 +3567,9 @@ class User(Being):
         delayRemoveObject(speech, 2)
 
 
+
+        # Logic for hp == 0.  The player will drop all loot/money
+        # and respawn at lv 0 with default eqiupment
 
     def dead(self):
         self.sprite.removeSprite()
