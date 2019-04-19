@@ -424,7 +424,7 @@ def turnPass():
 
 def inventoryFull():
     label = gui.Label("Not enough inventory space!")
-    showLabel(label)
+#    showLabel(label)
     delayRemoveObject(label, 2)
 
 
@@ -766,7 +766,7 @@ def loadNewArea(area):
     global bot1
     global background_music
 
-    #thread.start_new_thread(music.loop2, (background_music,))
+    thread.start_new_thread(music.loop2, (background_music,))
     #background_music = false
     #thread.start_new_thread(music.Stop, (background_music,))
     for light in lightSources:
@@ -2484,12 +2484,16 @@ class Being():
         # Adds an oil effect to the BeingSprites at varied intensity depending
         # on being.hp (higher effect at lower hp).  Achieved by creating new image files
         # and setting the beings spriteList to a list containing the new sprites.
+        # Note ** controls are intentionally locked during this logic
     def bloodify(self):
+        global text
+        text.onKeyType(blockKeys)
         spriteNum = 0
-
+        for files in self.bloodySprites:
+            os.remove(files)  
         self.bloodySprites = []
-        for sprites in range(0, len(self.spritePaths)):
-            pic = makePicture(self.spritePaths[sprites])
+        for sprites in range(0, len(self.unchangedSpritePaths)):
+            pic = makePicture(self.unchangedSpritePaths[sprites])
             for x in range(0, getWidth(pic)-1):
                 for y in range(0, getHeight(pic)-1):
                     p = getPixel(pic, x, y)
@@ -2506,7 +2510,7 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.bloodySprites[self.facing], self)
         self.sprite.spawnSprite()
-
+        text.onKeyType(keyAction)
 
 
 
@@ -3397,7 +3401,7 @@ class User(Being):
         self.hpBar = HpBar(self)
         self.wallet = UserWallet(self, 0)
         self.sprite.spawnSprite()
-
+        self.held = false
         # Updates the user's wallet by the amount given.
         # Also has the wallet update the currency display
     def changeWallet(self, amount):
@@ -3414,13 +3418,14 @@ class User(Being):
       for gib in CURRENT_AREA.gibList:
         distanceX = abs(self.coords.x - gib.parental.coords.x)
         distanceY = abs(self.coords.y - gib.parental.coords.y)
-        if distanceX <= BITS and distanceY <= BITS:
+        if distanceX + distanceY<= BITS:
           gib.removeSprite()
           CURRENT_AREA.gibList.remove(gib)
           if gib.fileName == path + r"RobotSprites/friendlyHead.gif" or gib.fileName == path + r"RobotSprites/enemyHeadGib.gif":
             self.changeWallet(5)
           else:
             self.changeWallet(1)
+          break
 
       # Player doesn't currently drop gibs
     def giblets():
@@ -4206,7 +4211,7 @@ old code
 """
 
 
-#loadIntro()
+loadIntro()
 
-newBot()
-startGame()
+#newBot()
+#startGame()
