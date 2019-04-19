@@ -3446,9 +3446,6 @@ class User(Being):
       elif self.atk <= 85:
         self.stunLevel2()
       else:
-        damage = (-10)
-        if self.atk > 150:
-          damage = (-30)
         self.stunLevel3(damage)
 
 
@@ -3508,13 +3505,14 @@ class User(Being):
         # Level 3 stun logic.
         # Handles targeting.
         # Targets within 2 tiles will be stunned for 3 turns,
-        # hostile after, and will take damage (set to 10 for now)
+        # hostile after, and will take damage scaled with bot1's atk
     def stunLevel3(self, damage = (-10)):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
       self.specialSprite3.coords.x = self.coords.x - 64
       self.specialSprite3.coords.y = self.coords.y - 64
       self.specialSprite3.animateOnce()
+      damage = self.atk/4
       for being in CURRENT_AREA.beingList:
         if self.stun3InRange(being) and being is not self:
           being.hostile = true
