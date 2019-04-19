@@ -2645,8 +2645,11 @@ class Being():
             if item.type == "lootbag" and item.coords.x == coords.x and item.coords.y == coords.y:
                 if len(self.inv) + len(item.contents) < MAX_INVENTORY:
                   self.inv += item.contents
-                  item.removeSprite()
                   objectList.remove(item)
+                  try:
+                    item.removeSprite()
+                  except:
+                    None
                   del item
                   for item in self.inv:
                     if isinstance(item, Wallet):
@@ -3022,7 +3025,6 @@ class Enemy(Being):
         items.append(self.randomInvItem())
         items.append(self.wallet)
         loot = Lootbag(items, self.coords)
-        objectList.append(loot)
 
 
 
