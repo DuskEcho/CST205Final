@@ -1671,7 +1671,7 @@ class Lootbag():
                            Sprite(path + r"EffectSprites/lootBag2.gif", self)]
         self.sprite = self.spriteList[0]
         self.type = "lootbag"
-        objectList.append(loot)
+        objectList.append(self)
 
         self.spawnSprite()
         x = None
@@ -4194,4 +4194,7 @@ old code
 """
 
 
-loadIntro()
+#loadIntro()
+
+newBot()
+startGame()
