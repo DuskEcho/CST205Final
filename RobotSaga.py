@@ -4113,7 +4113,8 @@ class Menu():
         light.turnOff()
         CURRENT_AREA.wasOn.append(light)
     for animation in CURRENT_AREA.persistentAnimations:
-      self.animationHoldList.append(animation)
+      if animation not in self.animationHoldList:
+        self.animationHoldList.append(animation)
       try:
         animation.stopAnimating()
       except:
@@ -4193,7 +4194,4 @@ old code
 """
 
 
-#loadIntro()
-
-newBot()
-startGame()
+loadIntro()
