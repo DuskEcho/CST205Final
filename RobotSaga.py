@@ -3518,12 +3518,17 @@ class User(Being):
       self.specialSprite3.coords.x = self.coords.x - 64
       self.specialSprite3.coords.y = self.coords.y - 64
       self.specialSprite3.animateOnce()
-      damage = self.atk/4
+      damage = self.atk/(-4)
+      beingsToDamage = []
       for being in CURRENT_AREA.beingList:
         if self.stun3InRange(being) and being is not self:
-          being.hostile = true
-          being.stun()
-          being.changeHp(damage)
+          beingsToDamage.append(being)
+      for being in beingsToDamage:
+        being.hostile = true
+        being.stun()
+        being.changeHp(damage)
+      beingsToDamage = []
+
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # for use with stunLevel3()
