@@ -2997,7 +2997,7 @@ class ShopKeeper(Being):
 
 
 
-    # Custom being for enemies. Slightly different logic
+    # Custom being for enemies. Slightly different logic for giblets and loot
 
 class Enemy(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, level):
@@ -3080,7 +3080,7 @@ class Enemy(Being):
 
 
 
-
+  # The following cluster acts as shortcuts to create higher level enemies with better weapons
 
 class Threat2Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
@@ -3166,7 +3166,7 @@ class AnimatedGiblets():
 
 
 
-
+    # In development class for potions
 class Potion():
     def __init__(self):
       self.parental = None
@@ -3180,6 +3180,9 @@ class Potion():
 
 
         # Singleton class for player's HP Bar
+        # Parental        - Owner (meant to be player)
+        # Sprites         - Sprites for visual "levels"
+        # coords          - sprite coords
 
 class HpBar():
     def __init__(self, parental):
@@ -3192,6 +3195,7 @@ class HpBar():
       self.coords = Coords(0, 0)
       self.sprite.spawnSprite()
 
+      # Updates the bar's sprite based on owner HP levels
     def updateBar(self):
       hpPercentage = ((self.parental.hp*1.0)/self.parental.maxHp)*100
       self.sprite.removeSprite()
@@ -3249,22 +3253,24 @@ class StationaryAnimatedSprite():
 
 
 
-
+        # Initiates the animation by creating a new thread.
     def animate(self):
         animatedSpriteList.append(self)
         self.isAnimating = true
-        x = None
-        thread.start_new_thread(self.threadAnimate, (x,))
+        thread.start_new_thread(self.threadAnimate, (None,))
     def stopAnimating(self):
         global animatedSpriteList
         animatedSpriteList.remove(self)
 
+        # Sprite creation/removal
     def spawnSprite(self):
         self.sprite.spawnSprite()
     def removeSprite(self):
         display.remove(self.sprite)
 
-
+        # Actual animation logic. Meant for use in thread.start_new_thread().
+        # Flickers between two sprites at random intervals. Animation is stopped when
+        # the object is removed from the animatedSpriteList
     def threadAnimate(self, container):
         while self in animatedSpriteList:
             time.sleep(random.randint(0, 2)/10.0)
@@ -3322,8 +3328,7 @@ class ThreeStageAnimationCycle():
         global animatedSpriteList
         animatedSpriteList.append(self)
         self.isAnimating = true
-        x = None
-        thread.start_new_thread(self.threadAnimate, (x,))
+        thread.start_new_thread(self.threadAnimate, (None,))
 
     def stopAnimating(self):
         global animatedSpriteList
@@ -3335,7 +3340,7 @@ class ThreeStageAnimationCycle():
     def removeSprite(self):
         display.remove(self.sprite)
 
-        # core animation
+        # core animation, cycles through the sprites repeatedly at set intervals
     def threadAnimate(self, x):
         global animatedSpriteList
         self.sprite = self.spriteList[2]
@@ -3364,12 +3369,12 @@ class ThreeStageAnimationCycle():
             self.sprite = self.spriteList[2]
             del self
 
+        # Runs one 3-stage animation cycle by creating a new thread
     def animateOnce(self):
         global animatedSpriteList
         animatedSpriteList.append(self)
         self.isAnimating = true
-        x = None
-        thread.start_new_thread(self.threadAnimateOnce, (x,))
+        thread.start_new_thread(self.threadAnimateOnce, (None,))
 
     def threadAnimateOnce(self, x):
         global animatedSpriteList
@@ -3414,12 +3419,17 @@ class User(Being):
         self.wallet = UserWallet(self, 0)
         self.sprite.spawnSprite()
 
-
+        # Updates the user's wallet by the amount given.
+        # Also has the wallet update the currency display
     def changeWallet(self, amount):
       Being.changeWallet(self, amount)
       self.wallet.updateWalletDisplay()
 
-
+      # Combination cleanup/money creation.
+      # Too many giblets on screen causes issues, so
+      # This was implemented to give the user a reason to cleanup
+      # Removes giblets within BITS pixels of the player
+      # and converts them to money for the player's wallet
     def suckUpGiblets(self):
       global CURRENT_AREA
       for gib in CURRENT_AREA.gibList:
@@ -3433,7 +3443,7 @@ class User(Being):
           else:
             self.changeWallet(1)
 
-
+      # Player doesn't currently drop gibs
     def giblets():
         None
 
@@ -3457,6 +3467,8 @@ class User(Being):
         if self.helm != "Hair":
             self.inventoryAdd(self.helm)
         self.df -= helmStatsList(self.helm)
+        if helm in self.inv:
+          self.inventoryRemove(helm)
         self.helm = helm
         self.df += helmStatsList(self.helm)
 
@@ -3465,6 +3477,8 @@ class User(Being):
         if self.chest != "BDaySuit":
             self.inventoryAdd(self.chest)
         self.df -= chestStatsList(self.chest)
+        if chest in self.inv:
+          self.inventoryRemove(chest)
         self.chest = chest
         self.df += chestStatsList(self.chest)
 
@@ -3473,6 +3487,8 @@ class User(Being):
         if self.legs != "Shame":
             self.inventoryAdd(self.legs)
         self.df -= legsStatsList(self.legs)
+        if legs in self.inv:
+          self.inventoryRemove(legs)
         self.legs = legs
         self.df += legsStatsList(self.legs)
 
@@ -3481,6 +3497,8 @@ class User(Being):
         if self.boots != "Toes":
             self.inventoryAdd(self.boots)
         self.df -= bootsStatsList(self.boots)
+        if boots in self.inv:
+          self.inventoryRemove(boots)
         self.boots = boots
         self.df += bootsStatsList(self.boots)
 
@@ -3489,6 +3507,8 @@ class User(Being):
         if self.gloves != "Digits":
             self.inventoryAdd(self.gloves)
         self.df -= glovesStatsList(self.gloves)
+        if gloves in self.inv:
+          self.inventoryRemove(gloves)
         self.gloves = gloves
         self.df += glovesStatsList(self.gloves)
 
