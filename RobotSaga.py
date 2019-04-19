@@ -3430,9 +3430,16 @@ class User(Being):
         self.wallet = UserWallet(self, 0)
         self.sprite.spawnSprite()
         self.held = false
-        # Updates the user's wallet by the amount given.
-        # Also has the wallet update the currency display
 
+
+
+        # Initiates bot1's special attack. The attack has three levels, based
+        # on bot1's atk value. Level 1 stuns the target(s) directly ahead for 3 turns.
+        # Level 2 stuns targets that are exactly 2 tiles away for 3 turns
+        # Level 3 stuns and damages all targets within 2 tiles
+        #
+        # bot1's Hp will be drained 25% (rounded up)
+        # One of the three stun's will be called
     def specialAtk(self):
       if self.atk <= 45:
         self.stunLevel1()
@@ -3441,6 +3448,11 @@ class User(Being):
       else:
         self.stunLevel3()
 
+
+        # Level 1 stun logic.  
+        # Handles targeting.
+        # The target directly ahead of bot1 will be stunned
+        # for 3 turns and hostile thereafter
     def stunLevel1(self):
       self.changeHp((self.hp/(-4.0)))
       self.stunLv1Animate()
@@ -3466,6 +3478,11 @@ class User(Being):
         self.specialSprites1[3].coords.y = bot1.coords.y 
         self.specialSprites1[3].animateOnce()
     
+
+        # Level 2 stun logic.
+        # Handles targeting.
+        # Targets exactly 2 tiles away will be stunned
+        # for 3 turns and hostile thereafter
     def stunLevel2(self):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
@@ -3476,11 +3493,19 @@ class User(Being):
         if self.stun2InRange(being) and being is not self:
           being.hostile = true
           being.stun()
+        # Returns a boolean if the being passed
+        # is exactly 2 tiles (64pixels) away.
+        # For use with stunLevel2()
     def stun2InRange(self, being):   
       distanceX = abs(self.coords.x - being.coords.x)
       distanceY = abs(self.coords.y - being.coords.y)
       return (distanceX + distanceY > 32 and distanceX + distanceY <= 64)
 
+
+        # Level 3 stun logic.
+        # Handles targeting.
+        # Targets within 2 tiles will be stunned for 3 turns,
+        # hostile after, and will take damage (set to 10 for now)
     def stunLevel3(self):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
@@ -3492,11 +3517,17 @@ class User(Being):
           being.hostile = true
           being.stun()
           being.changeHp(-10)
+        # Returns a boolean if the being passed
+        # is exactly 2 tiles (64pixels) away.
+        # for use with stunLevel3()
     def stun3InRange(self, being):   
       distanceX = abs(self.coords.x - being.coords.x)
       distanceY = abs(self.coords.y - being.coords.y)
       return distanceX + distanceY <= 64
 
+
+      # Updates the user's wallet by the amount given,
+      # positive or negative.  calls wallet.updateWalletDisplay()
     def changeWallet(self, amount):
       Being.changeWallet(self, amount)
       self.wallet.updateWalletDisplay()
