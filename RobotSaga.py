@@ -3423,8 +3423,8 @@ class User(Being):
                                 ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Down.gif", path + "EffectSprites/lv1Stun2Down.gif", path + "EffectSprites/lv1Stun3Down.gif", self.coords.x, self.coords.y+32, .1),
                                 ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Left.gif", path + "EffectSprites/lv1Stun2Left.gif", path + "EffectSprites/lv1Stun3Left.gif", self.coords.x, self.coords.x-32, .1),
                                 ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Right.gif", path + "EffectSprites/lv1Stun2Right.gif", path + "EffectSprites/lv1Stun3Right.gif", self.coords.x, self.coords.x+32, .1),]
-        self.specialSprite2 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", self.coords.x, self.coords.x+32, .1)
-        self.specialSprite3 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", self.coords.x, self.coords.x+32, .1)
+        self.specialSprite2 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun2.gif", path + "EffectSprites/lv2Stun3.gif", self.coords.x, self.coords.x+32, .1)
+        self.specialSprite3 = ThreeStageAnimationCycle(path + "EffectSprites/lv3Stun1.gif", path + "EffectSprites/lv3Stun2.gif", path + "EffectSprites/lv3Stun3.gif", self.coords.x, self.coords.x+32, .1)
         self.area = CURRENT_AREA
         self.hpBar = HpBar(self)
         self.wallet = UserWallet(self, 0)
