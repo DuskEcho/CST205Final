@@ -59,8 +59,7 @@ DUNGEON_AREA = None
 CURRENT_AREA = None
 CURRENT_BG = None
 bot1 = None
-
-
+menu = None
 
 class music:
 
@@ -414,8 +413,7 @@ def animateSpriteSet(stationaryAnimatedSpriteSet):
 # TEMPORARY TEXT DISPLAY UNTIL MENUS ARE IN PLACE
 # Adds the given gui.Label to the display at the Label's coords (default 0, 0)
 
-def showLabel(label):
-    display.add(label, 1280*(2/5), 0)
+
 def removeLabel(label):
     display.remove(label)
 
@@ -913,22 +911,23 @@ def keyAction(a):
 
   elif a == "m": #Activates menu, switches to menu controls
     if bot1Ready:
-        defaultMenu.sprite.spawnSprite()
-        text.onKeyType(menuAction)
+      global menu
+      menu.openMenu()
+      text.onKeyType(menuAction)
 
 def menuAction(menuInput):
 
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
+  global menu
+
   if menuInput == "u":
     if bot1Ready:
-        stats = Menu()
-        statusMenu.sprite.spawnSprite()
-        stats.showLabels()
+      menu.openStatusMenu()
 
 
   elif menuInput == "i":
     if bot1Ready:
-        itemMenu.sprite.spawnSprite()
+        menu.openItemMenu()
 
 
   elif menuInput == "q":
@@ -952,11 +951,8 @@ def menuAction(menuInput):
 
   elif menuInput == "m":
     if bot1Ready:
-      statusMenu.sprite.removeSprite()
-      itemMenu.sprite.removeSprite()
-      defaultMenu.sprite.removeSprite()
+      menu.closeMenu()
       text.onKeyType(keyAction)
-      menu.removeMenuLabels()
 
 
 """
@@ -1058,6 +1054,8 @@ def startGame():
   global gibList
   global animatedSpriteList
   global lightSources
+  global bot1
+  global menu
   CURRENT_AREA = TOWN_AREA
   CURRENT_BG = TOWN_AREA.mapSprite
   CURRENT_BG.spawnSprite()
@@ -1075,6 +1073,7 @@ def startGame():
   friendlyGreen.sprite.spawnSprite()
   loadNewArea(TOWN_AREA)#refresh screen, start animations
   loading.removeSprite()
+  menu = Menu(bot1)
   text.grabFocus()
   text.onKeyType(keyAction)
 
@@ -3255,6 +3254,7 @@ class StationaryAnimatedSprite():
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
     def stopAnimating(self):
+        global animatedSpriteList
         animatedSpriteList.remove(self)
 
     def spawnSprite(self):
@@ -3322,6 +3322,7 @@ class ThreeStageAnimationCycle():
         self.isAnimating = true
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
+
     def stopAnimating(self):
         global animatedSpriteList
         animatedSpriteList.remove(self)
@@ -4031,10 +4032,10 @@ thread.start_new_thread(music.volume, (background_music, .07,))
 
 
 #Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 0)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 0)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 0)
-shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
+defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
+itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
+statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
+shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 1)
 #textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
 #potion = Potion()
 #potion.parental = bot1
@@ -4085,33 +4086,98 @@ shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 0)
 #
 #
 #me
+
 class Menu():
- def __init__(self):
-   global bot1
-   self.statusItems = [str(bot1.hp), str(bot1.xp), str(bot1.level)]
-   self.invItems = bot1.inv
-   self.labelList = []
-   #self.sprite = Sprite(path + "Menu/menuStatus.png",230, 0, 0)
+  def __init__(self, player):
+    global bot1
+    self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
+    self.invItems = []
+    for item in player.inv:
+      self.invItems.append(gui.Label(item.name))
+    self.labelList = []
+    self.player = player
+    self.coords = Coords(230, 0)
+    self.animationHoldList = []
+    self.sprites = [Sprite(path +"Menu/menuDefault.png", self, 1),
+                    Sprite(path + "Menu/menuItem.png", self, 1),
+                    Sprite(path + "Menu/menuStatus.png", self, 1),
+                    Sprite (path + "Menu/shopMenu.png", self, 1)
+                    ]
+    self.sprite = self.sprites[0]
 
 
- def openMenu(self):
-   self.sprite.spawnSprite()
-
-
- def showLabels(self,startX = 700, startY = 171, lineJump = 100):
-   #x = 625 - old measurements, might be better for items
-   x = startX
-   y = startY
-   for item in self.statusItems:
-     label = gui.Label(item)
-     display.add(label, x, y)
-     self.labelList.append(label)
-     y +=lineJump
-
- def removeMenuLabels (self):
-    for item in self.labelList:
-        label = item
-        display.remove(label)
+  def openMenu(self):
+    global CURRENT_AREA
+    for light in CURRENT_AREA.lightSources:
+      if light.isOn:
+        light.turnOff()
+        CURRENT_AREA.wasOn.append(light)
+    for animation in CURRENT_AREA.persistentAnimations:
+      self.animationHoldList.append(animation)
+      try:
+        animation.stopAnimating()
+      except:
+        None
+    self.sprite.spawnSprite()
+  
+  def openItemMenu(self):
+    self.switchToMenu(self.sprites[1], self.invItems)
+  
+  def openStatusMenu(self):
+    self.switchToMenu(self.sprites[2], self.statusItems)
+   
+  def openShopMenu(self):
+    self.switchToMenu(self.sprites[3])
+  
+  
+  
+  def switchToMenu(self, newSprite, labelsToShow):
+    self.sprite.removeSprite()
+    self.sprite = newSprite
+    self.openMenu()
+    try:
+      for label in self.labelList:
+        removeLabel(label)
+    except:
+      None
+    self.labelList = labelsToShow
+    self.updateStats()
+    self.showLabels(self.labelList)
+    self.sprite.spawnSprite
+  
+  
+  
+  def closeMenu(self):
+    try:
+      for label in self.labelList:
+        removeLabel(label)
+    except:
+      None
+    self.sprite.removeSprite()
+    for light in CURRENT_AREA.wasOn:
+      light.turnOn()
+      CURRENT_AREA.wasOn.remove(light)
+    for animation in self.animationHoldList:
+      animation.animate()
+    self.animationHoldList = []
+  
+  def updateStats(self):
+    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level))]
+    self.invItems = self.player.inv
+  
+  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 100):
+    #x = 625 - old measurements, might be better for items
+    self.updateStats()
+    x = startX
+    y = startY
+    for item in labelsToShow:
+      display.addOrder(item, 0, x, y)
+      y +=lineJump
+  
+  def removeMenuLabels (self):
+     for item in self.labelList:
+         label = item
+         removeLabel(label)
 
 
 """
@@ -4127,4 +4193,7 @@ old code
 """
 
 
-loadIntro()
+#loadIntro()
+
+newBot()
+startGame()
