@@ -863,22 +863,18 @@ def keyAction(a):
   bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
   if a == "w":
     if bot1Ready:
-        bot1.isMoving = true
         bot1.moveUp()
         turnPass()
   elif a == "s":
     if bot1Ready:
-        bot1.isMoving = true
         bot1.moveDown()
         turnPass()
   elif a == "a":
     if bot1Ready:
-        bot1.isMoving = true
         bot1.moveLeft()
         turnPass()
   elif a == "d":
     if bot1Ready:
-        bot1.isMoving = true
         bot1.moveRight()
         turnPass()
   elif a == "W":
@@ -2678,6 +2674,7 @@ class Being():
 
     def moveUp(self):
         global move
+        self.isMoving = true
         self.faceUp()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y -= 1
@@ -2705,7 +2702,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[0], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
-        self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
@@ -2713,10 +2709,12 @@ class Being():
             self.suckUpGiblets()
         if self.coords.y%32 != 0:
           self.coords.y = (self.coords.y/32)*32
+        self.isMoving = false
 
 
     def moveDown(self):
         global move2
+        self.isMoving = true
         self.faceDown()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
@@ -2744,7 +2742,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
-        self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
@@ -2752,10 +2749,12 @@ class Being():
             self.suckUpGiblets()
         if self.coords.y%32 != 0:
           self.coords.y = (self.coords.y/32)*32
+        self.isMoving = false
 
 
     def moveLeft(self):
         global move3
+        self.isMoving = true
         self.faceLeft()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x -= 1
@@ -2781,7 +2780,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[2], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
-        self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
@@ -2789,9 +2787,11 @@ class Being():
             self.suckUpGiblets()
         if self.coords.x%32 != 0:
           self.coords.x = (self.coords.x/32)*32
+        self.isMoving = false
 
     def moveRight(self):
         global move
+        self.isMoving = true
         self.faceRight()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x += 1
@@ -2818,7 +2818,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[3], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
-        self.isMoving = false
         self.pickUpLoot(self.coords)
         self.lightenDarken()
         if isinstance(self, User):
@@ -2826,6 +2825,7 @@ class Being():
             self.suckUpGiblets()
         if self.coords.x%32 != 0:
           self.coords.x = (self.coords.x/32)*32
+        self.isMoving = false
 
 
         # changes the being's sprite to one facing the corresponding
@@ -4108,6 +4108,7 @@ class Menu():
 
   def openMenu(self):
     global CURRENT_AREA
+    self.updateStats()
     for light in CURRENT_AREA.lightSources:
       if light.isOn:
         light.turnOff()
@@ -4122,17 +4123,21 @@ class Menu():
     self.sprite.spawnSprite()
   
   def openItemMenu(self):
+    self.updateStats()
     self.switchToMenu(self.sprites[1], self.invItems)
   
   def openStatusMenu(self):
+    self.updateStats()
     self.switchToMenu(self.sprites[2], self.statusItems)
    
   def openShopMenu(self):
+    self.updateStats()
     self.switchToMenu(self.sprites[3])
   
   
   
   def switchToMenu(self, newSprite, labelsToShow):
+    self.updateStats()
     self.sprite.removeSprite()
     self.sprite = newSprite
     self.openMenu()
@@ -4142,7 +4147,6 @@ class Menu():
     except:
       None
     self.labelList = labelsToShow
-    self.updateStats()
     self.showLabels(self.labelList)
     self.sprite.spawnSprite
   
