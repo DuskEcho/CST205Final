@@ -3449,7 +3449,7 @@ class User(Being):
       elif self.atk <= 85:
         self.stunLevel2()
       else:
-        self.stunLevel3(damage)
+        self.stunLevel3()
 
 
         # Level 1 stun logic.  
