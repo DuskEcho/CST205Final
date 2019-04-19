@@ -3484,11 +3484,14 @@ class User(Being):
 
         # Level 2 stun logic.
         # Handles targeting.
-        # Targets exactly 2 tiles away will be stunned
+        # Targets exactly 2 tiles away will be stunned in
+        # addition to the target directly in front
         # for 3 turns and hostile thereafter
+        # calls stunLevel1
+        # hp is reduced through the stunLevel1 call
     def stunLevel2(self):
       global CURRENT_AREA
-      self.changeHp((self.hp/(-4.0)))
+      self.stunLevel1()
       self.specialSprite2.coords.x = self.coords.x - 64
       self.specialSprite2.coords.y = self.coords.y - 64
       self.specialSprite2.animateOnce()
