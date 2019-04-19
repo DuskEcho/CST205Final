@@ -223,14 +223,14 @@ yellowEnemySpritePaths = [path + "RobotSprites/YellowRobotBack.gif",
                path + "RobotSprites/YellowRobotFront.gif",
                path + "RobotSprites/YellowRobotBack.gif",]
 shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
-                         path + "RobotSprites/ShopkeeperbotFront.gif",
-                         path + "RobotSprites/ShopkeeperbotLeft.gif",
-                         path + "RobotSprites/ShopkeeperbotRight.gif",
-                         path + "RobotSprites/ShopkeeperbotMovingLeft.gif",
-                         path + "RobotSprites/ShopkeeperbotMovingRight.gif",
-                         path + "RobotSprites/ShopkeeperbotMovingFront.gif",
-                         path + "RobotSprites/ShopkeeperbotMovingBack.gif",
-                         path + "RobotSprites/ShopkeeperbotCloseup.gif",]
+               path + "RobotSprites/ShopkeeperbotFront.gif",
+               path + "RobotSprites/ShopkeeperbotLeft.gif",
+               path + "RobotSprites/ShopkeeperbotRight.gif",
+               path + "RobotSprites/ShopkeeperbotMovingLeft.gif",
+               path + "RobotSprites/ShopkeeperbotMovingRight.gif",
+               path + "RobotSprites/ShopkeeperbotMovingFront.gif",
+               path + "RobotSprites/ShopkeeperbotMovingBack.gif",
+               path + "RobotSprites/ShopkeeperbotCloseup.gif",]
 
 
 
@@ -426,7 +426,7 @@ def turnPass():
 def inventoryFull():
     label = gui.Label("Not enough inventory space!")
 #    showLabel(label)
-    delayRemoveObject(label, 2)
+ #   delayRemoveObject(label, 2)
 
 
 # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
@@ -2508,29 +2508,32 @@ class Being():
     def bloodify(self):
         global text
         if isinstance(self, User):
-          text.onKeyType(blockKeys)
-        spriteNum = 0
-        for files in self.bloodySprites:
-            os.remove(files)  
-        self.bloodySprites = []
-        for sprites in range(0, len(self.unchangedSpritePaths)):
-            pic = makePicture(self.unchangedSpritePaths[sprites])
-            for x in range(0, getWidth(pic)-1):
-                for y in range(0, getHeight(pic)-1):
-                    p = getPixel(pic, x, y)
-                    if getColor(p) != makeColor(0, 0, 0):
-                        if random.randint(0, 100) > (self.hp*100)/self.maxHp:
-                          setRed(p, (getRed(p)+228)/3)
-                          setGreen(p, (getGreen(p)+174)/3)
-                          setBlue(p, (getBlue(p)+14)/3)
-            newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
-            writePictureTo(pic, newPicPath)
-            self.bloodySprites.append(newPicPath)
-            spriteNum += 1
-        self.spritePaths = self.bloodySprites
-        self.sprite.removeSprite()
-        self.sprite = BeingSprite(self.bloodySprites[self.facing], self)
-        self.sprite.spawnSprite()
+          text.onKeyType(blockKeys) 
+        try:
+          spriteNum = 0
+          for files in self.bloodySprites:
+              os.remove(files)  
+          self.bloodySprites = []
+          for sprites in range(0, len(self.unchangedSpritePaths)):
+              pic = makePicture(self.unchangedSpritePaths[sprites])
+              for x in range(0, getWidth(pic)-1):
+                  for y in range(0, getHeight(pic)-1):
+                      p = getPixel(pic, x, y)
+                      if getColor(p) != makeColor(0, 0, 0):
+                          if random.randint(0, 100) > (self.hp*100)/self.maxHp:
+                            setRed(p, (getRed(p)+228)/3)
+                            setGreen(p, (getGreen(p)+174)/3)
+                            setBlue(p, (getBlue(p)+14)/3)
+              newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
+              writePictureTo(pic, newPicPath)
+              self.bloodySprites.append(newPicPath)
+              spriteNum += 1
+          self.spritePaths = self.bloodySprites
+          self.sprite.removeSprite()
+          self.sprite = BeingSprite(self.bloodySprites[self.facing], self)
+          self.sprite.spawnSprite()
+        except: 
+          None
         if isinstance(self, User):
           text.onKeyType(keyAction)
 
