@@ -3434,9 +3434,9 @@ class User(Being):
         # Also has the wallet update the currency display
 
     def specialAtk(self):
-      if self.atk >= 45:
+      if self.atk <= 45:
         self.stunLevel1()
-      elif self.atk >= 85:
+      elif self.atk <= 85:
         self.stunLevel2()
       else:
         self.stunLevel3()
@@ -3469,9 +3469,11 @@ class User(Being):
     def stunLevel2(self):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
+      self.specialSprite2.coords.x = self.coords.x - 64
+      self.specialSprite2.coords.y = self.coords.y - 64
       self.specialSprite2.animateOnce()
       for being in CURRENT_AREA.beingList:
-        if self.stun2InRange(being):
+        if self.stun2InRange(being) and being not is self:
           being.stun()
     def stun2InRange(self, being):   
       distanceX = abs(self.coords.x - being.coords.x)
@@ -3481,9 +3483,11 @@ class User(Being):
     def stunLevel3(self):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
+      self.specialSprite3.coords.x = self.coords.x - 64
+      self.specialSprite3.coords.y = self.coords.y - 64
       self.specialSprite3.animateOnce()
       for being in CURRENT_AREA.beingList:
-        if self.stun3InRange(being):
+        if self.stun3InRange(being) and being not is self:
           being.stun()
           being.changeHp(-10)
     def stun3InRange(self, being):   
