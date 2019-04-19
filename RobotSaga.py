@@ -411,7 +411,8 @@ def turnPass():
         spawnEnemy()
 
     for person in currentBeingList:
-        if person.hostile == true:
+      if person.active: #separated to leave room for friendly AIs in the future
+        if person.hostile:
             person.simpleHostileAI()
     if bot1.hp <= 0:
         bot1.coords.x = 0
@@ -865,6 +866,10 @@ def keyAction(a):
   elif a == "f": #attack
     if bot1Ready:
         bot1.meleeAtk()
+        turnPass()
+  elif a == "z": #attack
+    if bot1Ready:
+        bot1.specialAtk()
         turnPass()
   elif a == "g": #steal
     if bot1Ready:
@@ -1947,6 +1952,7 @@ class Weapon():
       # meant for use with thread.start_new_thread. Sets onFire to false after 15 turns
       # and reverts the weapon's sprites to the original sprites
     def threadFireCountdown(self, x):
+        global counter
         start = counter.turn
         finish = start + 15
         while counter.turn < finish:
@@ -2078,6 +2084,7 @@ class Being():
         self.lootValue = self.maxHp + self.atk + self.df
         self.xpValue = self.lootValue/2
         self.hostile = false
+        self.active = true
         self.inv = []
         self.coords = Coords(xSpawn, ySpawn)
         self.forwardCoords = Coords(self.coords.x + BITS, self.coords.y)
@@ -2102,6 +2109,19 @@ class Being():
 
         # use this moveTo when moving beings around
         # Being's coords will be set to the passed x/y
+
+    def stun(self):
+        thread.start_new_thread(self.threadStun, (None,))
+    def threadStun(self, x):
+        global counter
+        start = counter.turn
+        self.active = false
+        finish = start + 3
+        while counter.turn < finish:
+          None
+        self.active = true
+        
+
 
     def moveTo(self, x, y):
         self.sprite.moveTo(x, y)
@@ -3399,6 +3419,12 @@ class User(Being):
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
+        self.specialSprites1 = [ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Up.gif", path + "EffectSprites/lv1Stun2Up.gif", path + "EffectSprites/lv1Stun3Up.gif", self.coords.x, self.coords.y-32, .1),
+                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Down.gif", path + "EffectSprites/lv1Stun2Down.gif", path + "EffectSprites/lv1Stun3Down.gif", self.coords.x, self.coords.y+32, .1),
+                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Left.gif", path + "EffectSprites/lv1Stun2Left.gif", path + "EffectSprites/lv1Stun3Left.gif", self.coords.x, self.coords.x-32, .1),
+                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Right.gif", path + "EffectSprites/lv1Stun2Right.gif", path + "EffectSprites/lv1Stun3Right.gif", self.coords.x, self.coords.x+32, .1),]
+        self.specialSprite2 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", self.coords.x, self.coords.x+32, .1)
+        self.specialSprite3 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun1.gif", self.coords.x, self.coords.x+32, .1)
         self.area = CURRENT_AREA
         self.hpBar = HpBar(self)
         self.wallet = UserWallet(self, 0)
@@ -3406,6 +3432,65 @@ class User(Being):
         self.held = false
         # Updates the user's wallet by the amount given.
         # Also has the wallet update the currency display
+
+    def specialAtk(self):
+      if self.atk >= 45:
+        self.stunLevel1()
+      elif self.atk >= 85:
+        self.stunLevel2()
+      else:
+        self.stunLevel3()
+
+    def stunLevel1(self):
+      self.changeHp((self.hp/(-4.0)))
+      self.stunLv1Animate()
+      for target in self.getFrontTargetList():
+        if isinstance(target, Being) or isinstance(target, Enemy):
+          target.hostile = true
+          target.stun()
+    def stunLv1Animate(self):
+      if self.facing == directionList["up"]:
+        self.specialSprites1[0].coords.x = bot1.coords.x 
+        self.specialSprites1[0].coords.y = bot1.coords.y - 32
+        self.specialSprites1[0].animateOnce()
+      elif self.facing == directionList["down"]:
+        self.specialSprites1[1].coords.x = bot1.coords.x 
+        self.specialSprites1[1].coords.y = bot1.coords.y + 32
+        self.specialSprites1[1].animateOnce()
+      elif self.facing == directionList["left"]:
+        self.specialSprites1[2].coords.x = bot1.coords.x - 32
+        self.specialSprites1[2].coords.y = bot1.coords.y 
+        self.specialSprites1[2].animateOnce()
+      else:
+        self.specialSprites1[3].coords.x = bot1.coords.x + 32
+        self.specialSprites1[3].coords.y = bot1.coords.y 
+        self.specialSprites1[3].animateOnce()
+    
+    def stunLevel2(self):
+      global CURRENT_AREA
+      self.changeHp((self.hp/(-4.0)))
+      self.specialSprite2.animateOnce()
+      for being in CURRENT_AREA.beingList:
+        if self.stun2InRange(being):
+          being.stun()
+    def stun2InRange(self, being):   
+      distanceX = abs(self.coords.x - being.coords.x)
+      distanceY = abs(self.coords.y - being.coords.y)
+      return (distanceX + distanceY > 32 and distanceX + distanceY <= 64)
+
+    def stunLevel3(self):
+      global CURRENT_AREA
+      self.changeHp((self.hp/(-4.0)))
+      self.specialSprite3.animateOnce()
+      for being in CURRENT_AREA.beingList:
+        if self.stun3InRange(being):
+          being.stun()
+          being.changeHp(-10)
+    def stun3InRange(self, being):   
+      distanceX = abs(self.coords.x - being.coords.x)
+      distanceY = abs(self.coords.y - being.coords.y)
+      return distanceX + distanceY <= 64
+
     def changeWallet(self, amount):
       Being.changeWallet(self, amount)
       self.wallet.updateWalletDisplay()
@@ -4213,7 +4298,7 @@ old code
 """
 
 
-loadIntro()
+#loadIntro()
 
-#newBot()
-#startGame()
+newBot()
+startGame()
