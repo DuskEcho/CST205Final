@@ -3446,7 +3446,10 @@ class User(Being):
       elif self.atk <= 85:
         self.stunLevel2()
       else:
-        self.stunLevel3()
+        damage = (-10)
+        if self.atk > 150:
+          damage = (-30)
+        self.stunLevel3(damage)
 
 
         # Level 1 stun logic.  
@@ -3506,7 +3509,7 @@ class User(Being):
         # Handles targeting.
         # Targets within 2 tiles will be stunned for 3 turns,
         # hostile after, and will take damage (set to 10 for now)
-    def stunLevel3(self):
+    def stunLevel3(self, damage = (-10)):
       global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
       self.specialSprite3.coords.x = self.coords.x - 64
@@ -3516,7 +3519,7 @@ class User(Being):
         if self.stun3InRange(being) and being is not self:
           being.hostile = true
           being.stun()
-          being.changeHp(-10)
+          being.changeHp(damage)
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # for use with stunLevel3()
