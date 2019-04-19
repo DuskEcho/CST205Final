@@ -3473,7 +3473,8 @@ class User(Being):
       self.specialSprite2.coords.y = self.coords.y - 64
       self.specialSprite2.animateOnce()
       for being in CURRENT_AREA.beingList:
-        if self.stun2InRange(being) and being not is self:
+        if self.stun2InRange(being) and being is not self:
+          being.hostile = true
           being.stun()
     def stun2InRange(self, being):   
       distanceX = abs(self.coords.x - being.coords.x)
@@ -3487,7 +3488,8 @@ class User(Being):
       self.specialSprite3.coords.y = self.coords.y - 64
       self.specialSprite3.animateOnce()
       for being in CURRENT_AREA.beingList:
-        if self.stun3InRange(being) and being not is self:
+        if self.stun3InRange(being) and being is not self:
+          being.hostile = true
           being.stun()
           being.changeHp(-10)
     def stun3InRange(self, being):   

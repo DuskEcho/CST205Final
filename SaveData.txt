@@ -2,7 +2,7 @@ CharName:bot1
 Weapon:Stick
 Level:0
 MaxHp:10
-CurrentHp:5
+CurrentHp:10
 Xp:0
 Atk:5
 Def:5
