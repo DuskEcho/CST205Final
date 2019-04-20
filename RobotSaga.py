@@ -3100,8 +3100,34 @@ class Being():
 
 
 
+#Hitbox class passes hits to parent class
+class Hitbox(Being):
+  def __init__(self, parent, xSpawn, ySpawn, itemList = None):
+    name = parent.getName() + "Hitbox"
+    Being.__init__(self, name, None, bossDragonHeadSpritePaths, xSpawn, ySpawn, itemList = None)
+    self.parent = parent
+
+    #if hitbox hit parent
+  def changeHp(self, amount):
+    self.parent.changeHp(amount)
+
+  #override thinking so it doesn't do anything
+  def simpleHostileAI(self):
+    return
 
 
+#hitbox helper class
+def makeHitbox(parent, width, height):
+    startx = parent.coords.x
+    starty = parent.coords.y
+    boxes = []
+    for x in range(0, width):
+        for y in range(0, height):
+            if x == 0 and y == 0:
+                continue
+            tempBox = Hitbox(parent, startx + width*BITS, starty + height*BITS)
+            boxes.append(tempBox)
+    return boxes
 
 
 
@@ -3313,9 +3339,35 @@ class Threat5Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
       Enemy.__init__(self, name, "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
 
+#Main Class for the first Boss
 class Boss1(Enemy):
     def __init__(self):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 14*BITS, 4*BITS, 50)
+        self.leftHand = false
+        self.rightHand = false
+        self.leftHandStunned = true
+        self.rightHandStunned = true
+        hitBoxes = makeHitbox(self, 4, 4)
+
+    def changeHp(self, amount):
+        #if healing heal
+        if amount >= 0:
+            self.hp += int(amount)
+            return
+        #can only take damage if both hands are stunned
+        if self.leftHandStunned and self.rightHandStunned:
+            self.hp = int(self.hp + amount)
+            if self.hp > self.maxHp:
+                self.hp = self.maxHp
+            elif self.hp <= 0:
+                self.dead()
+            else:
+                self.bloodify()
+            try:
+              self.hpBar.updateBar()
+            except:
+              None
+
     def simpleHostileAI(self):
         #DoNothingSucessfully
         return
