@@ -1770,7 +1770,7 @@ class Being():
         # Adds/removes item to/from inventory list
         # Checks to ensure inventory is not full
     def inventoryAdd(self, item):
-        if len(self.inv) < MAX_INVENTORY:
+        if len(self.inv) < WorldData.MAX_INVENTORY:
           self.inv.append(item)
         else:
           inventoryFull()
@@ -2134,7 +2134,7 @@ class Being():
                             setRed(p, (getRed(p)+228)/3)
                             setGreen(p, (getGreen(p)+174)/3)
                             setBlue(p, (getBlue(p)+14)/3)
-              newPicPath = WorldData.path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
+              newPicPath = WorldData.path + "RobotSprites/" + self.name + str(WorldData.currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
               writePictureTo(pic, newPicPath)
               self.bloodySprites.append(newPicPath)
               spriteNum += 1
@@ -2817,7 +2817,7 @@ class AnimatedGiblets():
 
 
     def threadAnimate(self, container):
-        while self.spriteList[0] in gibList:
+        while self.spriteList[0] in WorldData.gibList:
             time.sleep(random.randint(0, 2)/10.0)
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -2826,7 +2826,7 @@ class AnimatedGiblets():
             else:
                 self.sprite = self.spriteList[0]
                 self.spawnSprite()
-        if self.spriteList[0] not in gibList:
+        if self.spriteList[0] not in WorldData.gibList:
             self.removeSprite()
             del self
 
@@ -3490,9 +3490,9 @@ def clearBadSprites():
 # clears giblets from the display()
 
 def clearGibList():
-    for sprite in gibList:
+    for sprite in WorldData.gibList:
         WorldData.display.remove(sprite)
-        gibList.remove(sprite)
+        WorldData.gibList.remove(sprite)
         del sprite
 
 
