@@ -1021,6 +1021,7 @@ def startGame():
   shopKeeper.sprite.spawnSprite()
   friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
   friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
+  boss = Boss1()#creates boss class
   friendlyOrange.sprite.spawnSprite()
   friendlyGreen.sprite.spawnSprite()
   loadNewArea(TOWN_AREA)#refresh screen, start animations
@@ -3105,6 +3106,10 @@ class Threat4Enemy(Enemy):
 class Threat5Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
       Enemy.__init__(self, name, "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
+
+class Boss1(Enemy):
+    def __init__(self):
+
 
 
 
