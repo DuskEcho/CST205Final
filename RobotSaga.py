@@ -231,6 +231,9 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                path + "RobotSprites/ShopkeeperbotMovingFront.gif",
                path + "RobotSprites/ShopkeeperbotMovingBack.gif",
                path + "RobotSprites/ShopkeeperbotCloseup.gif",]
+bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
+bossRightHandSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
+bossLeftHandSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
 
 
 
@@ -1023,7 +1026,6 @@ def startGame():
   shopKeeper.sprite.spawnSprite()
   friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
   friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
-  boss = Boss1()#creates boss class
   friendlyOrange.sprite.spawnSprite()
   friendlyGreen.sprite.spawnSprite()
   loadNewArea(TOWN_AREA)#refresh screen, start animations
@@ -3111,6 +3113,7 @@ class Threat5Enemy(Enemy):
 
 class Boss1(Enemy):
     def __init__(self):
+        Enemy.__init__(self, "DragonHead", "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
 
@@ -4095,6 +4098,8 @@ DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), key
 DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), miniBossMap)
 DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), bossKeyMap)
 DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), bossRoomMap)
+boss = Boss1()#creates boss class
+DUNGEON_BOSSROOM_AREA.beingList.append(boss)
 
 #OverWorld connections
 joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
