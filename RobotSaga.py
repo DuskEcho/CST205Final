@@ -49,22 +49,73 @@ BITS = 32
 WIDTH_TILES = 32
 #how many tiles there are tall
 HEIGHT_TILES = 18
+backWidth = BITS * WIDTH_TILES
+backHeight = BITS * HEIGHT_TILES
 MAX_BEINGS = 6
 MAX_INVENTORY = 10
 TOWN_AREA = None
 E_FIELD_AREA = None
 NE_FIELD_AREA = None
 N_FIELD_AREA = None
-DUNGEON_AREA = None
+DUNGEON_ENTRANCE_AREA = None
+DUNGEON_EASTROOM_AREA = None
+DUNGEON_WESTROOM_AREA = None
+DUNGEON_KEYROOM_AREA = None
+DUNGEON_MINIBOSS_AREA = None
+DUNGEON_BOSSKEY_AREA = None
+DUNGEON_BOSSROOM_AREA = None
 CURRENT_AREA = None
 CURRENT_BG = None
 bot1 = None
 menu = None
+layer0 = None
+layer1 = None
+layer2 = None
+layer3 = None
+layer4 = None
+layer5 = None
+layer6 = None
+currentMap = None
+display = None
+loading = None
+title = None
+startScreen = None
 
-class music:
+move = None
+move1 = None
+move2 = None
+move3 = None
+move4 = None
+dead_sound = None
+dead_sound2 = None
+dead_sound3 = None
+dead_sound4 = None
+dead_sound5 = None
+hit_sound = None
+talk_sound = None
+background_Music = None
+dungeon_sound = None
 
-    def __init__(self, music_file):
-      self.sound = makeSound(music_file)
+dirt = None
+dirtWall = None
+grass = None
+stone = None
+stoneWall = None
+hole = None
+lavaRock = None
+water = None
+lava = None
+fence = None
+chest = None
+door = None
+blank = None
+text = None
+structPath = None
+
+class Music:
+
+    def __init__(self, Music_file):
+      self.sound = makeSound(Music_file)
 
     def Play(self):
       play(self.sound)
@@ -232,8 +283,8 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                path + "RobotSprites/ShopkeeperbotMovingBack.gif",
                path + "RobotSprites/ShopkeeperbotCloseup.gif",]
 bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
-bossRightHandSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
-bossLeftHandSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
+bossRightHandSpritePaths = [path + "dungeon/boss/AttackRightHand.png"]
+bossLeftHandSpritePaths = [path + "dungeon/boss/AttackLeftHand.png"]
 
 
 
@@ -462,6 +513,7 @@ def slideSpriteDown(toBeMoved, targetYBig):
 
 def loadAreaCheck(player):
     global CURRENT_AREA
+    global currentMap
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if CURRENT_AREA.otherAreas:
@@ -474,14 +526,14 @@ def loadAreaCheck(player):
             bot1.coords.y = coordY
             bot1.coords.x = coordX
             loadNewArea(CURRENT_AREA.otherAreas[0])
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+            CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         elif currentMap.getTileDesc(currSpot) == "door":
             coordY = (HEIGHT_TILES/2) * BITS
             coordX = (WIDTH_TILES/2) * BITS
             bot1.coords.y = coordY
             bot1.coords.x = coordX
             loadNewArea(CURRENT_AREA.otherAreas[0])
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
+            CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     if player.coords.y <= 0:
         bot1.coords.y = maxAceptableHeight
         loadNewArea(CURRENT_AREA.northArea)
@@ -722,9 +774,13 @@ def getTexture(spot):
 
 def loadIntro():
     global loading
+    global text
     global title
     global startScreen
-    global text
+    startScreen = RawSprite(path + "Fullscreens/startScreen.png", 0, 0, 2)
+    title = RawSprite(path + "EffectSprites/Title.gif", 286, -64, 1)
+    loading.spawnSprite()
+    title.spawnSprite()
     loading.spawnSprite()
     time.sleep(1.5)
     startScreen.spawnSprite()
@@ -735,7 +791,7 @@ def loadIntro():
     text.onKeyType(mainMenuAction)
     text.grabFocus()
     global dungeon_sound
-    #thread.start_new_thread(music.play, (dungeon_sound,))
+    #thread.start_new_thread(Music.play, (dungeon_sound,))
 
 
 # Clears the display, sets up layers for use, and displays
@@ -770,11 +826,11 @@ def loadNewArea(area):
     global currentMap
     global CURRENT_AREA
     global bot1
-    global background_music
+    global background_Music
 
-    #thread.start_new_thread(music.loop2, (background_music,))
-    #background_music = false
-    #thread.start_new_thread(music.Stop, (background_music,))
+    #thread.start_new_thread(Music.loop2, (background_Music,))
+    #background_Music = false
+    #thread.start_new_thread(Music.Stop, (background_Music,))
     for light in lightSources:
       if light.isOn:
         light.turnOff()
@@ -825,13 +881,36 @@ def setUpLayers():
     global layer4
     global layer5
     global layer6
-    layer0.spawnSprite()
-    layer1.spawnSprite()
-    layer2.spawnSprite()
-    layer3.spawnSprite()
-    layer4.spawnSprite()
-    layer5.spawnSprite()
-    layer6.spawnSprite()
+    try:
+      layer0.removeSprite()
+      layer1.removeSprite()
+      layer2.removeSprite()
+      layer3.removeSprite()
+      layer4.removeSprite()
+      layer5.removeSprite()
+      layer6.removeSprite()
+      layer0.spawnSprite()
+      layer1.spawnSprite()
+      layer2.spawnSprite()
+      layer3.spawnSprite()
+      layer4.spawnSprite()
+      layer5.spawnSprite()
+      layer6.spawnSprite()
+    except:
+      layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
+      layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
+      layer2 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 2)
+      layer3 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 3)
+      layer4 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 4)
+      layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
+      layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
+      layer0.spawnSprite()
+      layer1.spawnSprite()
+      layer2.spawnSprite()
+      layer3.spawnSprite()
+      layer4.spawnSprite()
+      layer5.spawnSprite()
+      layer6.spawnSprite()
 
 
 
@@ -921,15 +1000,15 @@ def menuAction(menuInput):
   elif menuInput == "q":
     if bot1Ready:
       try:
-        music.Stop(dungeon_sound)
+        Music.Stop(dungeon_sound)
       except:
         None
       try:
-        music.Stop(quieter_music)
+        Music.Stop(quieter_Music)
       except:
         None
       try:
-        music.Stop(background_music)
+        Music.Stop(background_Music)
       except:
         None
       saveBot()
@@ -946,14 +1025,14 @@ def menuAction(menuInput):
 
 
     # Default controls for main menu
-def mainMenuAction(input):
+def mainMenuAction(inp):
   global title
   global startScreen
   global text
   text.onKeyType(blockKeys)
   title.removeSprite()
   startScreen.removeSprite()
-  if input == "1":
+  if inp == "1":
     loadBot()
   else:
     newBot()
@@ -1124,12 +1203,12 @@ class CustomDisplay(gui.Display):
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
-    #insert stop music logic here
-    music.Stop(move)
-    music.Stop(dead_sound)
-    music.Stop(quieter_music)
-    music.Stop(background_music1)
-    music.Stop(dungeon_sound)
+    #insert stop Music logic here
+    Music.Stop(move)
+    Music.Stop(dead_sound)
+    Music.Stop(quieter_Music)
+    Music.Stop(background_Music1)
+    Music.Stop(dungeon_sound)
     gui.display.__del__(self)
 
 
@@ -1215,6 +1294,102 @@ class Area():
 
 
 
+class Menu():
+  def __init__(self, player):
+    global bot1
+    self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
+    self.invItems = []
+    for item in player.inv:
+      self.invItems.append(gui.Label(item.name))
+    self.labelList = []
+    self.player = player
+    self.coords = Coords(230, 0)
+    self.animationHoldList = []
+    self.sprites = [Sprite(path +"Menu/menuDefault.png", self, 1),
+                    Sprite(path + "Menu/menuItem.png", self, 1),
+                    Sprite(path + "Menu/menuStatus.png", self, 1),
+                    Sprite (path + "Menu/shopMenu.png", self, 1)
+                    ]
+    self.sprite = self.sprites[0]
+
+
+  def openMenu(self):
+    global CURRENT_AREA
+    self.updateStats()
+    for light in CURRENT_AREA.lightSources:
+      if light.isOn:
+        light.turnOff()
+        CURRENT_AREA.wasOn.append(light)
+    for animation in CURRENT_AREA.persistentAnimations:
+      if animation not in self.animationHoldList:
+        self.animationHoldList.append(animation)
+      try:
+        animation.stopAnimating()
+      except:
+        None
+    self.sprite.spawnSprite()
+  
+  def openItemMenu(self):
+    self.updateStats()
+    self.switchToMenu(self.sprites[1], self.invItems)
+  
+  def openStatusMenu(self):
+    self.updateStats()
+    self.switchToMenu(self.sprites[2], self.statusItems)
+   
+  def openShopMenu(self):
+    self.updateStats()
+    self.switchToMenu(self.sprites[3])
+  
+  
+  
+  def switchToMenu(self, newSprite, labelsToShow):
+    self.updateStats()
+    self.sprite.removeSprite()
+    self.sprite = newSprite
+    self.openMenu()
+    try:
+      for label in self.labelList:
+        removeLabel(label)
+    except:
+      None
+    self.labelList = labelsToShow
+    self.showLabels(self.labelList)
+    self.sprite.spawnSprite
+  
+  
+  
+  def closeMenu(self):
+    try:
+      for label in self.labelList:
+        removeLabel(label)
+    except:
+      None
+    self.sprite.removeSprite()
+    for light in CURRENT_AREA.wasOn:
+      light.turnOn()
+      CURRENT_AREA.wasOn.remove(light)
+    for animation in self.animationHoldList:
+      animation.animate()
+    self.animationHoldList = []
+  
+  def updateStats(self):
+    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level))]
+    self.invItems = self.player.inv
+  
+  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 100):
+    #x = 625 - old measurements, might be better for items
+    self.updateStats()
+    x = startX
+    y = startY
+    for item in labelsToShow:
+      display.addOrder(item, 0, x, y)
+      y +=lineJump
+  
+  def removeMenuLabels (self):
+     for item in self.labelList:
+         label = item
+         removeLabel(label)
 
 
 
@@ -1304,6 +1479,19 @@ class Map():
 
 
     def updateMap(self, tiles):
+        global dirt
+        global dirtWall
+        global grass
+        global stone
+        global stoneWall
+        global hole
+        global lavaRock
+        global water
+        global lava
+        global fence
+        global chest
+        global door
+        global blank
         for spot in range(0, len(tiles)):
             if tiles[spot] == "g": self.placeTex(grass, spot)
             elif tiles[spot] == "l": self.placeTex(lavaRock, spot)
@@ -1318,8 +1506,8 @@ class Map():
             elif tiles[spot] == ".": self.placeTex(blank, spot)
             elif tiles[spot] == ",": self.placeTex(blank, spot)
             elif tiles[spot] == "o": self.placeTex(door, spot)
-            elif tiles[spot] == "h": self.placeStruct(house, spot, "house")
-            elif tiles[spot] == "t": self.placeStruct(tree1, spot, "tree")
+            elif tiles[spot] == "h": self.placeStruct(makePicture(structPath + "house.png"), spot, "house")
+            elif tiles[spot] == "t": self.placeStruct(makePicture(structPath + "tree1.png"), spot, "tree")
             elif tiles[spot] == "c": self.placeStruct(chest, spot, "chest")
 
 
@@ -2438,7 +2626,7 @@ class Being():
         currentBeingList.remove(self)
         del self
         global dead_sound
-        thread.start_new_thread(music.Play, (dead_sound,))
+        thread.start_new_thread(Music.Play, (dead_sound,))
 
         # Handles lighting of sprites. If a valid light object is within the range
         # currently set to BITS * 3, a new set of sprites will be created and applied
@@ -2588,7 +2776,7 @@ class Being():
 
     def meleeAtk(self):
         global hit_sound
-        thread.start_new_thread(music.Play, (hit_sound,))
+        thread.start_new_thread(Music.Play, (hit_sound,))
         self.displayWeapon()
         x = None
         thread.start_new_thread(self.threadHideWeapon, (None,))
@@ -2705,11 +2893,11 @@ class Being():
             if self.facing == directionList["up"]:
               self.forwardCoords.y = self.coords.y - BITS - BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(music.Play, (move,))
+              thread.start_new_thread(Music.Play, (move,))
 
         else:
             self.isMoving = false
-            thread.start_new_thread(music.Stop, (move,))
+            thread.start_new_thread(Music.Stop, (move,))
 
 
     def threadMoveUp(self, x):
@@ -2746,10 +2934,10 @@ class Being():
             if self.facing == directionList["down"]:
               self.forwardCoords.y = self.coords.y + BITS + BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(music.Play, (move2,))
+              thread.start_new_thread(Music.Play, (move2,))
         else:
             self.isMoving = false
-            thread.start_new_thread(music.Stop, (move2,))
+            thread.start_new_thread(Music.Stop, (move2,))
 
 
     def threadMoveDown(self, x):
@@ -2785,10 +2973,10 @@ class Being():
             if self.facing == directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - BITS - BITS/2
-              thread.start_new_thread(music.Play, (move3,))
+              thread.start_new_thread(Music.Play, (move3,))
         else:
             self.isMoving = false
-            thread.start_new_thread(music.Stop, (move3,))
+            thread.start_new_thread(Music.Stop, (move3,))
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2822,10 +3010,10 @@ class Being():
             if self.facing == directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-              thread.start_new_thread(music.Play, (move4,))
+              thread.start_new_thread(Music.Play, (move4,))
         else:
             self.isMoving = false
-            thread.start_new_thread(music.Stop, (move4,))
+            thread.start_new_thread(Music.Stop, (move4,))
 
 
     def threadMoveRight(self, x):
@@ -2950,7 +3138,7 @@ class Friendly(Being):
             None
         currentBeingList.remove(self)
         del self
-        thread.start_new_thread(music.Play, (dead_sound2,))
+        thread.start_new_thread(Music.Play, (dead_sound2,))
 
 
 
@@ -3001,7 +3189,7 @@ class ShopKeeper(Being):
             os.remove(files)
         currentBeingList.remove(self)
         del self
-        thread.start_new_thread(music.Play, (dead_sound4,))
+        thread.start_new_thread(Music.Play, (dead_sound4,))
 
 
 
@@ -3074,8 +3262,8 @@ class Enemy(Being):
           os.remove(files)
         currentBeingList.remove(self)
         del self
-        music.Play(dead_sound3)
-        thread.start_new_thread(music.Play, (dead_sound3,))
+        Music.Play(dead_sound3)
+        thread.start_new_thread(Music.Play, (dead_sound3,))
 
 
 
@@ -3113,7 +3301,7 @@ class Threat5Enemy(Enemy):
 
 class Boss1(Enemy):
     def __init__(self):
-        Enemy.__init__(self, "DragonHead", "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
+        Enemy.__init__(self, "DragonHead", "Botsmasher", redEnemySpritePaths, 18*BITS, 5*BITS, 50)
 
 
 
@@ -3703,7 +3891,7 @@ class User(Being):
 
     def talk(self):
         global talk_sound
-        thread.start_new_thread(music.Play, (talk_sound,))
+        thread.start_new_thread(Music.Play, (talk_sound,))
         target = self.getFrontTarget()
         if target.coords.x < self.coords.x:
           target.faceRight()
@@ -3741,7 +3929,7 @@ class User(Being):
         removeLabel(self.wallet.label)
         self.__init__("bot1", "Stick", userSpritePaths, self.area)
         global dead_sound5
-        thread.start_new_thread(music.Play, (dead_sound5,))
+        thread.start_new_thread(Music.Play, (dead_sound5,))
 
 
 
@@ -3750,7 +3938,7 @@ class User(Being):
 
             ######################
             #                    #
-            #    PSEUDO-MAIN     #
+            #    OTHER GLOBALS   #
             #                    #
             ######################
 
@@ -3758,386 +3946,396 @@ class User(Being):
 
 
 
-backWidth = BITS * WIDTH_TILES
-backHeight = BITS * HEIGHT_TILES
-display = CustomDisplay("Robot Saga", backWidth, backHeight)
-layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
-layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
-layer2 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 2)
-layer3 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 3)
-layer4 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 4)
-layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
-layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
-setUpLayers()
-loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
-startScreen = RawSprite(path + "Fullscreens/startScreen.png", 0, 0, 2)
-title = RawSprite(path + "EffectSprites/Title.gif", 286, -64, 1)
-loading.spawnSprite()
-title.spawnSprite()
-#initailize background image
 
-tilesPath = path + "Tiles/LPC/tiles/"
-#Old, probably dont need textureMap anymore
-#textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
-
-#initailize textures
-#  Tile(isTraversable, isPassable, isTough, desc)
-#add Dirt
-dirt = Tile(true, true, false, "dirt")
-#add DirtWall
-dirtWall = Tile(false, true, false, "dirtWall")
-#add Grass
-grass = Tile(true, true, false, "grass")
-#add stone
-stone = Tile(true, true, false, "stone")
-#add stoneWall
-stoneWall = Tile(false, true, false, "stoneWall")
-#add hole
-hole = Tile(true, true, false, "hole")
-#add lavaRock
-lavaRock = Tile(true, true, false, "lavaRock")
-#add Water
-water = Tile(false, true, false, "water")
-#add Lava
-lava = Tile(false, true, false, "lava")
-#add Fence
-fence = Tile(false, true, false, "fence")
-#add Chest
-chest = Tile(false, true, false, "chest")
-#add Door tile
-door = Tile(true, false, false, "door")
-#add Blank
-blank = Tile(false, false, false, "Filler for structure class")
-
-#structures
-structPath = path + "Tiles/LPC/structures/"
-house = makePicture(structPath + "house.png")
-tree1 = makePicture(structPath + "tree1.png")
-
-#get width and height
-#texWidth = getWidth(textureMap)
-#texHeight = getHeight(textureMap)
-
-
-paths = ["d", "s", "h", ".", "o"]
-#create empty grass field will clean up later
-home  = "fffffffffffffddddfffffffffffffff"
-home += "fh......ggt,,ddddgh......ggggggf"
-home += "f.......gg,,,ddddg.......dgggggf"
-home += "f.......gg,,,ddddg.......ddggggf"
-home += "f..o....gggggddddg..o....ddggggf"
-home += "f..o....gggggddddg..o....ddggggf"
-home += "fgsssssssddddddddddddddddddggggf"
-home += "fgsssssssddddddddddddddddddggddd"
-home += "fgggsssssggggddddddddddddddddddd"
-home += "fgggddssgggggddddddddddddddddddf"
-home += "fgggdddggggwwwwddddddh......gggf"
-home += "fgggdddgggwwwwwwddddd.......gggf"
-home += "fgggdddwwwwwwwwwwwwdd.......gggf"
-home += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
-home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
-home += "fgdddddddwwwwwwwdddddddddddd,,,f"
-home += "fggddddddgggggggddddddddddddgdgf"
-home += "ffffffffffffffffffffffffffffffff"
-townMap = Map(home)
-townAnimations = [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
+def areaSetup():
+  global TOWN_AREA
+  global DUNGEON_ENTRANCE_AREA
+  global DUNGEON_EASTROOM_AREA
+  global DUNGEON_WESTROOM_AREA
+  global DUNGEON_KEYROOM_AREA
+  global DUNGEON_MINIBOSS_AREA
+  global DUNGEON_BOSSROOM_AREA
+  global DUNGEON_BOSSKEY_AREA
+  global E_FIELD_AREA
+  global NE_FIELD_AREA
+  global N_FIELD_AREA
+  global currentMap
+  global dirt
+  global dirtWall
+  global grass
+  global stone
+  global stoneWall
+  global hole
+  global lavaRock
+  global water
+  global lava
+  global fence
+  global chest
+  global door
+  global blank
+  global structPath
+  global loading
+  loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
+  
+  #initailize background image
+  
+  tilesPath = path + "Tiles/LPC/tiles/"
+  #Old, probably dont need textureMap anymore
+  #textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
+  
+  #initailize textures
+  #  Tile(isTraversable, isPassable, isTough, desc)
+  #add Dirt
+  dirt = Tile(true, true, false, "dirt")
+  #add DirtWall
+  dirtWall = Tile(false, true, false, "dirtWall")
+  #add Grass
+  grass = Tile(true, true, false, "grass")
+  #add stone
+  stone = Tile(true, true, false, "stone")
+  #add stoneWall
+  stoneWall = Tile(false, true, false, "stoneWall")
+  #add hole
+  hole = Tile(true, true, false, "hole")
+  #add lavaRock
+  lavaRock = Tile(true, true, false, "lavaRock")
+  #add Water
+  water = Tile(false, true, false, "water")
+  #add Lava
+  lava = Tile(false, true, false, "lava")
+  #add Fence
+  fence = Tile(false, true, false, "fence")
+  #add Chest
+  chest = Tile(false, true, false, "chest")
+  #add Door tile
+  door = Tile(true, false, false, "door")
+  #add Blank
+  blank = Tile(false, false, false, "Filler for structure class")
+  #structures
+  structPath = path + "Tiles/LPC/structures/"
+  
+  #get width and height
+  #texWidth = getWidth(textureMap)
+  #texHeight = getHeight(textureMap)
+  
+  
+  paths = ["d", "s", "h", ".", "o"]
+  #create empty grass field will clean up later
+  home  = "fffffffffffffddddfffffffffffffff"
+  home += "fh......ggt,,ddddgh......ggggggf"
+  home += "f.......gg,,,ddddg.......dgggggf"
+  home += "f.......gg,,,ddddg.......ddggggf"
+  home += "f..o....gggggddddg..o....ddggggf"
+  home += "f..o....gggggddddg..o....ddggggf"
+  home += "fgsssssssddddddddddddddddddggggf"
+  home += "fgsssssssddddddddddddddddddggddd"
+  home += "fgggsssssggggddddddddddddddddddd"
+  home += "fgggddssgggggddddddddddddddddddf"
+  home += "fgggdddggggwwwwddddddh......gggf"
+  home += "fgggdddgggwwwwwwddddd.......gggf"
+  home += "fgggdddwwwwwwwwwwwwdd.......gggf"
+  home += "fgggdddwwwwwwwwwwwwdd..o....t,,f"
+  home += "fgdddddwwwwwwwwwwwddd..o....,,,f"
+  home += "fgdddddddwwwwwwwdddddddddddd,,,f"
+  home += "fggddddddgggggggddddddddddddgdgf"
+  home += "ffffffffffffffffffffffffffffffff"
+  townMap = Map(home)
+  
+  currentMap = townMap
+  
+  nfield  = "ffffffffffffffffffffffffffffffff"
+  nfield += "fggggggggggggggggggggggggggggggf"
+  nfield += "fggggggggggggggggggggggggggggggf"
+  nfield += "fggggggggggwwwwwwwwwgggggggggggf"
+  nfield += "fgggggggwwwwwwwwwwwwwggggggggggf"
+  nfield += "fggggggwwwwwwwwwwwwwwggggggggggf"
+  nfield += "fggggggwwwwwwwwwwwwwdddddddddddg"
+  nfield += "fgggggwwwwwwwwgt,,gddddddddddddd"
+  nfield += "fgggggwwwwwwggg,,,ddddwwwwwddddd"
+  nfield += "fgggggwwwwwwggg,,,dddwwwwwwwddgg"
+  nfield += "fgggggwwwwwwddddddddgwwwwwwwddgf"
+  nfield += "fgggggwwwwwdddddddddwwwwwwwwddgf"
+  nfield += "fggggggwwdddddwwwwwwwwwwwwwwddgf"
+  nfield += "fggggggggdddwwwwwwwwwwwwwwddddgf"
+  nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
+  nfield += "fggggggggdddddddddddddddddddgggf"
+  nfield += "fggggggggddddddddddddddddddggggf"
+  nfield += "fffffffffffffddddfffffffffffffff"
+  nfieldMap = Map(nfield)
+  
+  efield  = "fffffffffffffddddfffffffffffffff"
+  efield += "fggggggggggggddddggggggggggggggf"
+  efield += "fggggggggggggdddgggggwwwwwwwgggf"
+  efield += "fggggggggggggdddgggggwwwwwwwwwgf"
+  efield += "fggggggggggdddddggggwwwwwwwwwwgf"
+  efield += "fgddddddddddddddggggwwwwwwwwwwgf"
+  efield += "ddddddddddddddggggggwwwwwwwwwwgf"
+  efield += "dddddddddddddggggggggggwwwwwwwgf"
+  efield += "dddddwwwwgggggggggggggggwwwwwggf"
+  efield += "ddddwwwwwggggggggggggggggggggggf"
+  efield += "fggwwwwwwwggggggggggggggggt,,ggf"
+  efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
+  efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
+  efield += "fgwwwwwwwwwwwwwgggggggggt,,t,,gf"
+  efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
+  efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
+  efield += "fggggggggggggggggggggggggggggggf"
+  efield += "ffffffffffffffffffffffffffffffff"
+  efieldMap = Map(efield)
+  
+  nefield  = "ffffffffffffffffffffffffffffffff"
+  nefield += "fggggggggggggggggggggggggggggggf"
+  nefield += "fggggggggggggggggggggwwwwwwwgggf"
+  nefield += "fggggggggggggggggggggwwwwwwwwwgf"
+  nefield += "fggggggggggggggggggggwwwwwwwwwgf"
+  nefield += "fggggggggggggggggdddHHHHHHwwwwgf"
+  nefield += "ddddddddddddddddddddHHHHHHwwwwgf"
+  nefield += "ddddddddddddddddddddddHHHHwwwwgf"
+  nefield += "ddddddddddddddddddddddHHHHwwwggf"
+  nefield += "ddddddggggggggdddddgHHHHHHgggggf"
+  nefield += "fggdddddggggggddddggHHHHHHgggggf"
+  nefield += "fgggdddddddgggdddggggggggggggggf"
+  nefield += "fgggggdddddddddddggggggggggggggf"
+  nefield += "fgggggggdddddddddggggggggggggggf"
+  nefield += "fgggggggdddddddddggggggggggggggf"
+  nefield += "fggggggggggggddddggggggggggggggf"
+  nefield += "fggggggggggggddddggggggggggggggf"
+  nefield += "fffffffffffffddddfffffffffffffff"
+  nefieldMap = Map(nefield)
+  
+  #old field no longer in use
+  field  = "ffffffffffffffffffffffffffffffff"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggwwwwwwwgggf"
+  field += "fggggggggggggggggggggwwwwwwwwwgf"
+  field += "fggggggggggggggggggggwwwwwwwwwgf"
+  field += "fgggggggggggggggggggggggggwwwwgf"
+  field += "fggggggggggggggggggggggggwwwwwgf"
+  field += "ggggggggggggggggggggggggwwwwwwgf"
+  field += "ggggggggggggggggggggggggwwwwwggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fggggggggggggggggggggggggggggggf"
+  field += "fffffffffffffggggfffffffffffffff"
+  fieldMap = Map(field)
+  
+  entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SlllllllllllllLLLllllllllllllllS"
+  entrance += "SllllllllLLLLlLLLllllLLLlllllllS"
+  entrance += "SllllllllLLLLLLLLLllLLLLlllllllS"
+  entrance += "SllllllllLLLLLLLLLLLLLLLlllllllS"
+  entrance += "SllllllllLLLLLLLLLLLLLlllllllllS"
+  entrance += "lllllllLLLLLLLooooLLLLllllllllll"
+  entrance += "lllllllLLLLLLLllllLLLLllllllllll"
+  entrance += "SllllllLLLLLllllllLLLLlllllllllS"
+  entrance += "SlllllllLLLLllllllLLLllllllllllS"
+  entrance += "SlllllllllLLlllllllLLllllllllllS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SllllllllllllllllllllllllllllllS"
+  entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  entranceMap = Map(entrance)
+  
+  westRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "Slllllllllllllllllllllllllllllll"
+  westRoom += "Slllllllllllllllllllllllllllllll"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SllllllllllllllllllllllllllllllS"
+  westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  westRoomMap = Map(westRoom)
+  
+  eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  eastRoom += "SllllllllllllllllllllllllllllllS"
+  eastRoom += "SllllllllllllllllllllllllllllllS"
+  eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
+  eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+  eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
+  eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
+  eastRoom += "SllllllllllllllllllllllllllllllS"
+  eastRoom += "lllllllllllllllllllllllllllllllS"
+  eastRoom += "lllllllllllLLLLllllllllllllLLllS"
+  eastRoom += "SlllLLllllLLLLLlllllllllLLLLLllS"
+  eastRoom += "SlllLLLlllLLLLLllllllLLLLLLLLllS"
+  eastRoom += "SlllLLLLLLLLLLLllllllLLLLLLLLllS"
+  eastRoom += "SlllLLLLLLLLLLLlllllLLLLLLLLlllS"
+  eastRoom += "SlllLLLLLLLlllllllllLLLLLLLllllS"
+  eastRoom += "SllllllllllllllllllllllllllllllS"
+  eastRoom += "SllllllllllllllllllllllllllllllS"
+  eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  eastRoomMap = Map(eastRoom)
+  
+  keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLlllc.lllLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  keyRoomMap = Map(keyRoom)
+  
+  miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
+  miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
+  miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  miniBossMap = Map(miniBoss)
+  
+  bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  bossKey += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
+  bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+  bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+  bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
+  bossKey += "SLLLLLLLlllllllllllllllllLLLLLLS"
+  bossKey += "SLLLLLLlllllllllllllllllllLLLLLS"
+  bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+  bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+  bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
+  bossKey += "SLLLLllllllllllllllllllllllLLLLS"
+  bossKey += "SLLLLllllllllllc.llllllllllLLLLS"
+  bossKey += "SLLLLLllllllllllllllllllllLLLLLS"
+  bossKey += "SLLLLLLllllllllllllllllllLLLLLLS"
+  bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  bossKeyMap = Map(bossKey)
+  
+  bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+  bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLlllLLLllllllLLLlllLLLLLLS"
+  bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+  bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+  bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+  bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+  bossRoom += "SLLLllllllllllllllllllllllllLLLS"
+  bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
+  bossRoom += "SLLLLLllllllllllllllllllllLLLLLS"
+  bossRoom += "SLLLLLLllllllllllllllllllLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
+  bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
+  bossRoomMap = Map(bossRoom)
+  
+  dungeonPath = path + "dungeon/"
+  TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
                   ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
-                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)]
-currentMap = townMap
-
-nfield  = "ffffffffffffffffffffffffffffffff"
-nfield += "fggggggggggggggggggggggggggggggf"
-nfield += "fggggggggggggggggggggggggggggggf"
-nfield += "fggggggggggwwwwwwwwwgggggggggggf"
-nfield += "fgggggggwwwwwwwwwwwwwggggggggggf"
-nfield += "fggggggwwwwwwwwwwwwwwggggggggggf"
-nfield += "fggggggwwwwwwwwwwwwwdddddddddddg"
-nfield += "fgggggwwwwwwwwgt,,gddddddddddddd"
-nfield += "fgggggwwwwwwggg,,,ddddwwwwwddddd"
-nfield += "fgggggwwwwwwggg,,,dddwwwwwwwddgg"
-nfield += "fgggggwwwwwwddddddddgwwwwwwwddgf"
-nfield += "fgggggwwwwwdddddddddwwwwwwwwddgf"
-nfield += "fggggggwwdddddwwwwwwwwwwwwwwddgf"
-nfield += "fggggggggdddwwwwwwwwwwwwwwddddgf"
-nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
-nfield += "fggggggggdddddddddddddddddddgggf"
-nfield += "fggggggggddddddddddddddddddggggf"
-nfield += "fffffffffffffddddfffffffffffffff"
-nfieldMap = Map(nfield)
-nFieldAnimations = [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 480, 192, .3)]
-
-efield  = "fffffffffffffddddfffffffffffffff"
-efield += "fggggggggggggddddggggggggggggggf"
-efield += "fggggggggggggdddgggggwwwwwwwgggf"
-efield += "fggggggggggggdddgggggwwwwwwwwwgf"
-efield += "fggggggggggdddddggggwwwwwwwwwwgf"
-efield += "fgddddddddddddddggggwwwwwwwwwwgf"
-efield += "ddddddddddddddggggggwwwwwwwwwwgf"
-efield += "dddddddddddddggggggggggwwwwwwwgf"
-efield += "dddddwwwwgggggggggggggggwwwwwggf"
-efield += "ddddwwwwwggggggggggggggggggggggf"
-efield += "fggwwwwwwwggggggggggggggggt,,ggf"
-efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
-efield += "fggwwwwwwwwwwwwggggggggggg,,,ggf"
-efield += "fgwwwwwwwwwwwwwgggggggggt,,t,,gf"
-efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
-efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
-efield += "fggggggggggggggggggggggggggggggf"
-efield += "ffffffffffffffffffffffffffffffff"
-efieldMap = Map(efield)
-eFieldAnimations = [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
+                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)])
+  TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
+  TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
+  TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
+  TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
+  TOWN_AREA.objectList.append(HealingStation(healingStationSpritePaths, 896, 64))
+  for i in TOWN_AREA.lightSources:
+    TOWN_AREA.objectList.append(i)
+  E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
                     ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 864, 384, .2),
-                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 832, 288, .2)]
-
-nefield  = "ffffffffffffffffffffffffffffffff"
-nefield += "fggggggggggggggggggggggggggggggf"
-nefield += "fggggggggggggggggggggwwwwwwwgggf"
-nefield += "fggggggggggggggggggggwwwwwwwwwgf"
-nefield += "fggggggggggggggggggggwwwwwwwwwgf"
-nefield += "fggggggggggggggggdddHHHHHHwwwwgf"
-nefield += "ddddddddddddddddddddHHHHHHwwwwgf"
-nefield += "ddddddddddddddddddddddHHHHwwwwgf"
-nefield += "ddddddddddddddddddddddHHHHwwwggf"
-nefield += "ddddddggggggggdddddgHHHHHHgggggf"
-nefield += "fggdddddggggggddddggHHHHHHgggggf"
-nefield += "fgggdddddddgggdddggggggggggggggf"
-nefield += "fgggggdddddddddddggggggggggggggf"
-nefield += "fgggggggdddddddddggggggggggggggf"
-nefield += "fgggggggdddddddddggggggggggggggf"
-nefield += "fggggggggggggddddggggggggggggggf"
-nefield += "fggggggggggggddddggggggggggggggf"
-nefield += "fffffffffffffddddfffffffffffffff"
-nefieldMap = Map(nefield)
-
-#old field no longer in use
-field  = "ffffffffffffffffffffffffffffffff"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggwwwwwwwgggf"
-field += "fggggggggggggggggggggwwwwwwwwwgf"
-field += "fggggggggggggggggggggwwwwwwwwwgf"
-field += "fgggggggggggggggggggggggggwwwwgf"
-field += "fggggggggggggggggggggggggwwwwwgf"
-field += "ggggggggggggggggggggggggwwwwwwgf"
-field += "ggggggggggggggggggggggggwwwwwggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fggggggggggggggggggggggggggggggf"
-field += "fffffffffffffggggfffffffffffffff"
-fieldMap = Map(field)
-
-entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SlllllllllllllLLLllllllllllllllS"
-entrance += "SllllllllLLLLlLLLllllLLLlllllllS"
-entrance += "SllllllllLLLLLLLLLllLLLLlllllllS"
-entrance += "SllllllllLLLLLLLLLLLLLLLlllllllS"
-entrance += "SllllllllLLLLLLLLLLLLLlllllllllS"
-entrance += "lllllllLLLLLLLooooLLLLllllllllll"
-entrance += "lllllllLLLLLLLllllLLLLllllllllll"
-entrance += "SllllllLLLLLllllllLLLLlllllllllS"
-entrance += "SlllllllLLLLllllllLLLllllllllllS"
-entrance += "SlllllllllLLlllllllLLllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SllllllllllllllllllllllllllllllS"
-entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-entranceMap = Map(entrance)
-
-westRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "Slllllllllllllllllllllllllllllll"
-westRoom += "Slllllllllllllllllllllllllllllll"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SllllllllllllllllllllllllllllllS"
-westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-westRoomMap = Map(westRoom)
-
-eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
-eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
-eastRoom += "SllLLLLLLLLLlllllllllLLLLLLLLllS"
-eastRoom += "SlllLLLLLLLlllllllllllLLLLLLlllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "lllllllllllllllllllllllllllllllS"
-eastRoom += "lllllllllllLLLLllllllllllllLLllS"
-eastRoom += "SlllLLllllLLLLLlllllllllLLLLLllS"
-eastRoom += "SlllLLLlllLLLLLllllllLLLLLLLLllS"
-eastRoom += "SlllLLLLLLLLLLLllllllLLLLLLLLllS"
-eastRoom += "SlllLLLLLLLLLLLlllllLLLLLLLLlllS"
-eastRoom += "SlllLLLLLLLlllllllllLLLLLLLllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SllllllllllllllllllllllllllllllS"
-eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-eastRoomMap = Map(eastRoom)
-
-keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLlllc.lllLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-keyRoomMap = Map(keyRoom)
-
-miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLllllllllllllllllllLLLLLLS"
-miniBoss += "SLLLLLLLllllllllllllllllLLLLLLLS"
-miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-miniBossMap = Map(miniBoss)
-
-bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-bossKey += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
-bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
-bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
-bossKey += "SLLLLLLLLLLllllllllllLLLLLLLLLLS"
-bossKey += "SLLLLLLLlllllllllllllllllLLLLLLS"
-bossKey += "SLLLLLLlllllllllllllllllllLLLLLS"
-bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
-bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
-bossKey += "SLLLLLlllllllllllllllllllllLLLLS"
-bossKey += "SLLLLllllllllllllllllllllllLLLLS"
-bossKey += "SLLLLllllllllllc.llllllllllLLLLS"
-bossKey += "SLLLLLllllllllllllllllllllLLLLLS"
-bossKey += "SLLLLLLllllllllllllllllllLLLLLLS"
-bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-bossKeyMap = Map(bossKey)
-
-bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLlllLLLllllllLLLlllLLLLLLS"
-bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
-bossRoom += "SLLLllllllllllllllllllllllllLLLS"
-bossRoom += "SLLLllllllllllllllllllllllllLLLS"
-bossRoom += "SLLLllllllllllllllllllllllllLLLS"
-bossRoom += "SLLLllllllllllllllllllllllllLLLS"
-bossRoom += "SLLLLllllllllllllllllllllllLLLLS"
-bossRoom += "SLLLLLllllllllllllllllllllLLLLLS"
-bossRoom += "SLLLLLLllllllllllllllllllLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
-bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-bossRoomMap = Map(bossRoom)
+                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 832, 288, .2)])
+  NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
+  N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap, [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 480, 192, .3)])
+  DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
+  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 32, 1))
+  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 32, 1))
+  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 512, 1))
+  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 512, 1))
+  for i in DUNGEON_ENTRANCE_AREA.lightSources:
+    DUNGEON_ENTRANCE_AREA.objectList.append(i)
+  DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
+  DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
+  DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), keyRoomMap)
+  DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), miniBossMap)
+  DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), bossKeyMap)
+  DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), bossRoomMap)
+  
+  #OverWorld connections
+  joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
+  joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
+  joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
+  joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
+  joinOtherAreas(NE_FIELD_AREA, DUNGEON_ENTRANCE_AREA)
+  #Dungeon Connections
+  joinOtherAreas(DUNGEON_ENTRANCE_AREA, NE_FIELD_AREA)
+  joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
+  joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
+  joinNorthSouthAreas(DUNGEON_KEYROOM_AREA, DUNGEON_WESTROOM_AREA)
+  joinNorthSouthAreas(DUNGEON_BOSSROOM_AREA, DUNGEON_ENTRANCE_AREA)
+  joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
+  joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
 
 
 
 
-dungeonPath = path + "dungeon/"
-TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, townAnimations)
-TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
-TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
-TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
-TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
-TOWN_AREA.objectList.append(HealingStation(healingStationSpritePaths, 896, 64))
-for i in TOWN_AREA.lightSources:
-  TOWN_AREA.objectList.append(i)
-E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, eFieldAnimations)
-NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
-N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap, nFieldAnimations)
-DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
-DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 32, 1))
-DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 32, 1))
-DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 512, 1))
-DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 512, 1))
-for i in DUNGEON_ENTRANCE_AREA.lightSources:
-  DUNGEON_ENTRANCE_AREA.objectList.append(i)
-DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
-DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
-DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), keyRoomMap)
-DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), miniBossMap)
-DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), bossKeyMap)
-DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), bossRoomMap)
-boss = Boss1()#creates boss class
-DUNGEON_BOSSROOM_AREA.beingList.append(boss)
 
-#OverWorld connections
-joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
-joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
-joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
-joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
-joinOtherAreas(NE_FIELD_AREA, DUNGEON_ENTRANCE_AREA)
-#Dungeon Connections
-joinOtherAreas(DUNGEON_ENTRANCE_AREA, NE_FIELD_AREA)
-joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
-joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
-joinNorthSouthAreas(DUNGEON_KEYROOM_AREA, DUNGEON_WESTROOM_AREA)
-joinNorthSouthAreas(DUNGEON_BOSSROOM_AREA, DUNGEON_ENTRANCE_AREA)
-joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
-joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
+def displaySetup():
+  global display
+  global text
+  display = CustomDisplay("Robot Saga", backWidth, backHeight)
+  setUpLayers()
 
+  # Currently acts as the "controller" to read inputs
+  text = gui.TextField("", 1)
 
+  # text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
+  # setting "function" to a different function will alter controls. Make sure to pass a function
+  # that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
+  # so for example:
+  #
+  # def randomFunction(key)
+  #   if key == "h":
+  #       doSomething
+  #
+  # text.onKeyType(randomFunction)
+  #
+  # would activate doSomething if "h" was pressed.
+  display.add(text, -32, -32)
 
-# Currently acts as the "controller" to read inputs
-text = gui.TextField("", 1)
-
-# text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
-# setting "function" to a different function will alter controls. Make sure to pass a function
-# that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
-# so for example:
-#
-# def randomFunction(key)
-#   if key == "h":
-#       doSomething
-#
-# text.onKeyType(randomFunction)
-#
-# would activate doSomething if "h" was pressed.
-display.add(text, -32, -32)
-
-
-
-#CURRENT_AREA = DUNGEON_ENTRANCE_AREA
 
 
 #loadIntro()  - Intro credits for production build. see loadIntro() definition for details
@@ -4146,220 +4344,55 @@ display.add(text, -32, -32)
 
 
 
-#display.drawImage(path + "newBack.png", 0, 0)
-
 
 #Music
-
-move = music(path+"Audio/footstep.wav")
-thread.start_new_thread(music.volume, (move, .08,))
-move1 = music(path+"Audio/footstep.wav")
-thread.start_new_thread(music.volume, (move, .08,))
-move2 = music(path+"Audio/footstep.wav")
-thread.start_new_thread(music.volume, (move, .08,))
-move3 = music(path+"Audio/footstep.wav")
-thread.start_new_thread(music.volume, (move, .08,))
-move4 = music(path+"Audio/footstep.wav")
-thread.start_new_thread(music.volume, (move, .08,))
-
-dead_sound = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-dead_sound2 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-dead_sound3 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-dead_sound4  = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-dead_sound5 = music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-
-hit_sound  = music(path+"Audio/Metal_Bang.wav")
-
-talk_sound = music(path+"Audio/Robot_blip.wav")
-
-
-#background music altered
-background_music = music(path+"Audio/Still-of-Night_Looping.wav")
-thread.start_new_thread(music.volume, (background_music, .07,))
-
-
-#global dungeon_sound
-#dungeon_sound = music(path+"Audio/Night-Stalker.wav")
-#thread.start_new_thread(music.volume, (dungeon_sound, .08,))
-#thread.start_new_thread(music.loop2, (background_music,))
-#thread.start_new_thread(music.Stop, (background_music,))
-
-
-
-
-
-
-
-
-
-#Menu Sprites
-defaultMenu = RawSprite(path +"Menu/menuDefault.png", 230, 0, 1)
-itemMenu = RawSprite(path + "Menu/menuItem.png",230, 0, 1)
-statusMenu = RawSprite(path + "Menu/menuStatus.png",230, 0, 1)
-shopMenu = RawSprite (path + "Menu/shopMenu.png", 230, 0, 1)
-#textBox = RawSprite(path + "Menu/textBox.png", 505, 160, 0)
-#potion = Potion()
-#potion.parental = bot1
-#bot1.inv.append(potion)
-
-
-
-#display.add(str(bot1.maxHp), 12, 12)
-#display.add(bot1.xp, 12, 24)
-#df
-#atk
-#xp
-#level
-#
-#
-#itemMenu = menu([str(bot1.hp), str(bot1.xp), str(bot1.level)])
-#itemMenu = menu(bot1.inv)
-#
-#class menu():
-#  def __init__(self, listOfThings):
-#    self.lineText = listOfThings
-#    self.lineDifference = 12
-#    for item in lineText:
-#      self.addItem(item)
-#
-#  def addItem(self, item):
-#    itemNameX = 250
-#    startingY = 42
-#    y = startingY
-#    itemNo = 1
-#    itemNoX = 240
-#    for items in self.lineText:
-#      display.addOrder(Label(itemNo), x, y, 0)
-#      display.addOrder(Label(items.text), x, y, 0)
-#      y += 12
-#      itemNo +=1
-#
-#
-#  def useItem
-#
-#if a == "1":
-#  bot1.inv[0].use()
-#if a == "2":
-#  bot1.inv[2].use()
-#
-#
-#
-#
-#
-#me
-
-class Menu():
-  def __init__(self, player):
-    global bot1
-    self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
-    self.invItems = []
-    for item in player.inv:
-      self.invItems.append(gui.Label(item.name))
-    self.labelList = []
-    self.player = player
-    self.coords = Coords(230, 0)
-    self.animationHoldList = []
-    self.sprites = [Sprite(path +"Menu/menuDefault.png", self, 1),
-                    Sprite(path + "Menu/menuItem.png", self, 1),
-                    Sprite(path + "Menu/menuStatus.png", self, 1),
-                    Sprite (path + "Menu/shopMenu.png", self, 1)
-                    ]
-    self.sprite = self.sprites[0]
-
-
-  def openMenu(self):
-    global CURRENT_AREA
-    self.updateStats()
-    for light in CURRENT_AREA.lightSources:
-      if light.isOn:
-        light.turnOff()
-        CURRENT_AREA.wasOn.append(light)
-    for animation in CURRENT_AREA.persistentAnimations:
-      if animation not in self.animationHoldList:
-        self.animationHoldList.append(animation)
-      try:
-        animation.stopAnimating()
-      except:
-        None
-    self.sprite.spawnSprite()
+def soundSetup():
+  global move
+  global move1
+  global move2
+  global move3
+  global move4
+  global dead_sound
+  global dead_sound2
+  global dead_sound3
+  global dead_sound4
+  global dead_sound5
+  global hit_sound
+  global talk_sound
+  global background_Music
+  global dungeon_sound
   
-  def openItemMenu(self):
-    self.updateStats()
-    self.switchToMenu(self.sprites[1], self.invItems)
+  move = Music(path+"Audio/footstep.wav")
+  thread.start_new_thread(Music.volume, (move, .08,))
+  move1 = Music(path+"Audio/footstep.wav")
+  thread.start_new_thread(Music.volume, (move, .08,))
+  move2 = Music(path+"Audio/footstep.wav")
+  thread.start_new_thread(Music.volume, (move, .08,))
+  move3 = Music(path+"Audio/footstep.wav")
+  thread.start_new_thread(Music.volume, (move, .08,))
+  move4 = Music(path+"Audio/footstep.wav")
+  thread.start_new_thread(Music.volume, (move, .08,))
   
-  def openStatusMenu(self):
-    self.updateStats()
-    self.switchToMenu(self.sprites[2], self.statusItems)
-   
-  def openShopMenu(self):
-    self.updateStats()
-    self.switchToMenu(self.sprites[3])
+  dead_sound = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound2 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound3 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound4  = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound5 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  
+  hit_sound  = Music(path+"Audio/Metal_Bang.wav")
+  
+  talk_sound = Music(path+"Audio/Robot_blip.wav")
   
   
-  
-  def switchToMenu(self, newSprite, labelsToShow):
-    self.updateStats()
-    self.sprite.removeSprite()
-    self.sprite = newSprite
-    self.openMenu()
-    try:
-      for label in self.labelList:
-        removeLabel(label)
-    except:
-      None
-    self.labelList = labelsToShow
-    self.showLabels(self.labelList)
-    self.sprite.spawnSprite
-  
-  
-  
-  def closeMenu(self):
-    try:
-      for label in self.labelList:
-        removeLabel(label)
-    except:
-      None
-    self.sprite.removeSprite()
-    for light in CURRENT_AREA.wasOn:
-      light.turnOn()
-      CURRENT_AREA.wasOn.remove(light)
-    for animation in self.animationHoldList:
-      animation.animate()
-    self.animationHoldList = []
-  
-  def updateStats(self):
-    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level))]
-    self.invItems = self.player.inv
-  
-  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 100):
-    #x = 625 - old measurements, might be better for items
-    self.updateStats()
-    x = startX
-    y = startY
-    for item in labelsToShow:
-      display.addOrder(item, 0, x, y)
-      y +=lineJump
-  
-  def removeMenuLabels (self):
-     for item in self.labelList:
-         label = item
-         removeLabel(label)
+  #background Music altered
+  background_Music = Music(path+"Audio/Still-of-Night_Looping.wav")
+  thread.start_new_thread(Music.volume, (background_Music, .07,))
+  dungeon_sound = Music(path+"Audio/Night-Stalker.wav")
 
+def main():
+  displaySetup()
+  areaSetup()
+  soundSetup()
+  loadIntro()
 
-"""
-old code
-     status = ([str(bot1.hp), str(bot1.xp), str(bot1.level)])
-         x=625
-         y=171
-
-         for item in status :
-             textBox =  gui.Label(str(item))
-             display.add(textBox,x,y)
-             y += 100
-"""
-
-
-#loadIntro()
-
-newBot()
-startGame()
+main()
