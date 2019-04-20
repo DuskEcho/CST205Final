@@ -282,9 +282,18 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                path + "RobotSprites/ShopkeeperbotMovingFront.gif",
                path + "RobotSprites/ShopkeeperbotMovingBack.gif",
                path + "RobotSprites/ShopkeeperbotCloseup.gif",]
-bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHead.png"]
-bossRightHandSpritePaths = [path + "dungeon/boss/AttackRightHand.png"]
-bossLeftHandSpritePaths = [path + "dungeon/boss/AttackLeftHand.png"]
+bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png",
+                             path + "dungeon/boss/SkullDragonHead.png"]
+bossRightHandSpritePaths = [path + "dungeon/boss/AttackRightHand.png",
+                            path + "dungeon/boss/AttackRightHand.png"]
+bossLeftHandSpritePaths = [path + "dungeon/boss/AttackLeftHand.png",
+                           path + "dungeon/boss/AttackLeftHand.png"]
 
 
 
@@ -1107,6 +1116,9 @@ def startGame():
   friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
   friendlyOrange.sprite.spawnSprite()
   friendlyGreen.sprite.spawnSprite()
+  #should be spawning boss in the dungeon?
+  boss = Boss1()
+  DUNGEON_BOSSROOM_AREA.beingList.append(boss)
   loadNewArea(TOWN_AREA)#refresh screen, start animations
   loading.removeSprite()
   menu = Menu(bot1)
@@ -2296,7 +2308,9 @@ class Being():
         self.darkSprites = []
         if itemList != None:
             self.inv += itemList
-        currentBeingList.append(self)
+        printNow(name)
+        if not "Boss" in name:
+            currentBeingList.append(self)
 
 
 
@@ -3301,7 +3315,7 @@ class Threat5Enemy(Enemy):
 
 class Boss1(Enemy):
     def __init__(self):
-        Enemy.__init__(self, "DragonHead", "Botsmasher", redEnemySpritePaths, 18*BITS, 5*BITS, 50)
+        Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 18*BITS, 5*BITS, 50)
 
 
 
