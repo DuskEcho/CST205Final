@@ -2279,6 +2279,7 @@ class Weapon():
 
 class Being():
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
+        printNow("Spawning Creature?")
         self.name = name
         self.level = 0
         self.hp = 10
@@ -2309,8 +2310,10 @@ class Being():
         if itemList != None:
             self.inv += itemList
         printNow(name)
-        if not "Boss" in name:
+        if not name or not "Boss" in name:
             currentBeingList.append(self)
+        else:
+            printNow("Don't append Boss")
 
 
 
@@ -3316,6 +3319,10 @@ class Threat5Enemy(Enemy):
 class Boss1(Enemy):
     def __init__(self):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 18*BITS, 5*BITS, 50)
+    #def simpleHostileAI(self):
+        #DoNothingSucessfully
+        #return
+
 
 
 
