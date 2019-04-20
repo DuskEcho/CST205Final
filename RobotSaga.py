@@ -27,92 +27,23 @@ import sys
 
 
 
-        ####################
-        #                  #
-        #     CONSTANTS    #
-        #                  #
-        #    (MIGHT BE     #
-        #     MOVED TO     #
-        #  STARTUP CLASS)  #
-        #                  #
-        #                  #
-        ####################
 
 
-        # used for movement animations. Lowest stable is .12
-moveAnimationSleep = .12  # any lower and coords get messed up
 
 
-#BITS is how many pixels are in each texture
-BITS = 32
-#how many tiles there are wide
-WIDTH_TILES = 32
-#how many tiles there are tall
-HEIGHT_TILES = 18
-backWidth = BITS * WIDTH_TILES
-backHeight = BITS * HEIGHT_TILES
-MAX_BEINGS = 6
-MAX_INVENTORY = 10
-TOWN_AREA = None
-E_FIELD_AREA = None
-NE_FIELD_AREA = None
-N_FIELD_AREA = None
-DUNGEON_ENTRANCE_AREA = None
-DUNGEON_EASTROOM_AREA = None
-DUNGEON_WESTROOM_AREA = None
-DUNGEON_KEYROOM_AREA = None
-DUNGEON_MINIBOSS_AREA = None
-DUNGEON_BOSSKEY_AREA = None
-DUNGEON_BOSSROOM_AREA = None
-CURRENT_AREA = None
-CURRENT_BG = None
-bot1 = None
-menu = None
-layer0 = None
-layer1 = None
-layer2 = None
-layer3 = None
-layer4 = None
-layer5 = None
-layer6 = None
-currentMap = None
-display = None
-loading = None
-title = None
-startScreen = None
 
-move = None
-move1 = None
-move2 = None
-move3 = None
-move4 = None
-dead_sound = None
-dead_sound2 = None
-dead_sound3 = None
-dead_sound4 = None
-dead_sound5 = None
-hit_sound = None
-talk_sound = None
-background_Music = None
-dungeon_sound = None
 
-dirt = None
-dirtWall = None
-grass = None
-stone = None
-stoneWall = None
-hole = None
-lavaRock = None
-water = None
-lava = None
-fence = None
-chest = None
-door = None
-blank = None
-text = None
-structPath = None
 
-class Music:
+
+
+
+
+
+
+
+
+
+class Music():
 
     def __init__(self, Music_file):
       self.sound = makeSound(Music_file)
@@ -156,1041 +87,14 @@ class TurnCounter():
         self.turn = 0
 
 
-# Main turn counter for game turns
-
-counter = TurnCounter()
 
 
-    #CONTAINERS
-#beings
-currentBeingList = []
-#interactable objects
-objectList = []
-#gore pieces
-gibList = []
-#animated sprites
-animatedSpriteList = []
-#light sources
-lightSources = []
+
 
 
 ##class CoreGame():   experimented with a class to hold game data. could be addressed later
 #    def __init__(self):
-        #add select game folder (to allow more portable loading of assets to path)
-try:
-           path #test to see if path exists
-except NameError: #if path does not exist make new path
-           printNow("Please select your game install folder")
-           path = pickAFolder()
-else: printNow("Welcome Back") #welcome the player back to the game
-
-
-
-
-
-
-
-# Sprite paths for beings. Arrays in form [back, front, left, right,
-# moving left, moving right, moving front, moving back]
-
-userSpritePaths = [path + "RobotSprites/botBlueBack.gif",
-               path + "RobotSprites/botBlueFront.gif",
-               path + "RobotSprites/botBlueSideLeft.gif",
-               path + "RobotSprites/botBlueSideRight.gif",
-               path + "RobotSprites/botBlueMovingLeft.gif",
-               path + "RobotSprites/botBlueMovingRight.gif",
-               path + "RobotSprites/botBlueMovingFront.gif",
-               path + "RobotSprites/botBlueMovingBack.gif",]
-friendlyGreenSpritePaths = [path + "RobotSprites/botGreenBack.gif",
-               path + "RobotSprites/botGreenFront.gif",
-               path + "RobotSprites/botGreenSideLeft.gif",
-               path + "RobotSprites/botGreenSideRight.gif",
-               path + "RobotSprites/botGreenMovingLeft.gif",
-               path + "RobotSprites/botGreenMovingRight.gif",
-               path + "RobotSprites/botGreenMovingFront.gif",
-               path + "RobotSprites/botGreenMovingBack.gif",]
-friendlyOrangeSpritePaths = [path + "RobotSprites/botOrangeBack.gif",
-               path + "RobotSprites/botOrangeFront.gif",
-               path + "RobotSprites/botOrangeSideLeft.gif",
-               path + "RobotSprites/botOrangeSideRight.gif",
-               path + "RobotSprites/botOrangeMovingLeft.gif",
-               path + "RobotSprites/botOrangeMovingRight.gif",
-               path + "RobotSprites/botOrangeFront.gif",
-               path + "RobotSprites/botOrangeBack.gif",]
-friendlyPinkSpritePaths = [path + "RobotSprites/botPinkBack.gif",
-               path + "RobotSprites/botPinkFront.gif",
-               path + "RobotSprites/botPinkSideLeft.gif",
-               path + "RobotSprites/botPinkSideRight.gif",
-               path + "RobotSprites/botPinkMovingLeft.gif",
-               path + "RobotSprites/botPinkMovingRight.gif",
-               path + "RobotSprites/botPinkFront.gif",
-               path + "RobotSprites/botPinkBack.gif",]
-friendlyYellowSpritePaths = [path + "RobotSprites/botYellowBack.gif",
-               path + "RobotSprites/botYellowFront.gif",
-               path + "RobotSprites/botYellowSideLeft.gif",
-               path + "RobotSprites/botYellowSideRight.gif",
-               path + "RobotSprites/botYellowMovingLeft.gif",
-               path + "RobotSprites/botYellowMovingRight.gif",
-               path + "RobotSprites/botYellowFront.gif",
-               path + "RobotSprites/botYellowBack.gif",]
-blueEnemySpritePaths = [path + "RobotSprites/blueRobotBack.gif",
-               path + "RobotSprites/blueRobotFront.gif",
-               path + "RobotSprites/BlueRobotSideLeft.gif",
-               path + "RobotSprites/BlueRobotSideRight.gif",
-               path + "RobotSprites/BlueRobotMovingLeft.gif",
-               path + "RobotSprites/BlueRobotMovingRight.gif",
-               path + "RobotSprites/BlueRobotMovingFront.gif",
-               path + "RobotSprites/BlueRobotMovingBack.gif",]
-greenEnemySpritePaths = [path + "RobotSprites/GreenRobotBack.gif",
-               path + "RobotSprites/GreenRobotFront.gif",
-               path + "RobotSprites/GreenRobotSideLeft.gif",
-               path + "RobotSprites/GreenRobotSideRight.gif",
-               path + "RobotSprites/GreenRobotMovingLeft.gif",
-               path + "RobotSprites/GreenRobotMovingRight.gif",
-               path + "RobotSprites/GreenRobotFront.gif",
-               path + "RobotSprites/GreenRobotBack.gif",]
-redEnemySpritePaths = [path + "RobotSprites/RedRobotBack.gif",
-               path + "RobotSprites/RedRobotFront.gif",
-               path + "RobotSprites/RedRobotSideLeft.gif",
-               path + "RobotSprites/RedRobotSideRight.gif",
-               path + "RobotSprites/RedRobotMovingLeft.gif",
-               path + "RobotSprites/RedRobotMovingRight.gif",
-               path + "RobotSprites/RedRobotFront.gif",
-               path + "RobotSprites/RedRobotBack.gif",]
-purpleEnemySpritePaths = [path + "RobotSprites/PurpleRobotBack.gif",
-               path + "RobotSprites/PurpleRobotFront.gif",
-               path + "RobotSprites/PurpleRobotSideLeft.gif",
-               path + "RobotSprites/PurpleRobotSideRight.gif",
-               path + "RobotSprites/PurpleRobotMovingLeft.gif",
-               path + "RobotSprites/PurpleRobotMovingRight.gif",
-               path + "RobotSprites/PurpleRobotFront.gif",
-               path + "RobotSprites/PurpleRobotBack.gif",]
-yellowEnemySpritePaths = [path + "RobotSprites/YellowRobotBack.gif",
-               path + "RobotSprites/YellowRobotFront.gif",
-               path + "RobotSprites/YellowRobotSideLeft.gif",
-               path + "RobotSprites/YellowRobotSideRight.gif",
-               path + "RobotSprites/YellowRobotMovingLeft.gif",
-               path + "RobotSprites/YellowRobotMovingRight.gif",
-               path + "RobotSprites/YellowRobotFront.gif",
-               path + "RobotSprites/YellowRobotBack.gif",]
-shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
-               path + "RobotSprites/ShopkeeperbotFront.gif",
-               path + "RobotSprites/ShopkeeperbotLeft.gif",
-               path + "RobotSprites/ShopkeeperbotRight.gif",
-               path + "RobotSprites/ShopkeeperbotMovingLeft.gif",
-               path + "RobotSprites/ShopkeeperbotMovingRight.gif",
-               path + "RobotSprites/ShopkeeperbotMovingFront.gif",
-               path + "RobotSprites/ShopkeeperbotMovingBack.gif",
-               path + "RobotSprites/ShopkeeperbotCloseup.gif",]
-bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png",
-                             path + "dungeon/boss/SkullDragonHeadLarge.png"]
-bossRightHandSpritePaths = [path + "dungeon/boss/AttackRightHand.png",
-                            path + "dungeon/boss/AttackRightHand.png"]
-bossLeftHandSpritePaths = [path + "dungeon/boss/AttackLeftHand.png",
-                           path + "dungeon/boss/AttackLeftHand.png"]
-
-
-
-# Sprites for light sources.  Arrays in form [off, on, bright]
-lightpostSpritePaths = [path + "ObjectSprites/lampOff.gif",
-                        path + "ObjectSprites/lampOn.gif",
-                        path + "ObjectSprites/lampBright.gif"]
-torchSpritePaths = [path + "ObjectSprites/metalTorchOff.gif",
-                        path + "ObjectSprites/metalTorchOn1.gif.gif",
-                        path + "ObjectSprites/metalTorchOn2.gif.gif"]
-
-bigTorchSpritePaths = [path + "ObjectSprites/metalBigTorchOff.gif",
-                        path + "ObjectSprites/metalBigTorchOn1.gif",
-                        path + "ObjectSprites/metalBigTorchOn2.gif"]
-healingStationSpritePaths = [path + "ObjectSprites/rechargeStation1.gif",
-                        path + "ObjectSprites/rechargeStation2.gif",
-                        path + "ObjectSprites/rechargeStation3.gif",
-                        path + "ObjectSprites/rechargeStation4.gif"]
-
-
-# Dictionaries for items
-# Numbers correspond to stats
-
-
-# Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range, currencyValue]
-# weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
-# first right frame, repeat for frames two and three]
-weaponStatsList = {
-    "Stick": [1, [path + "WeaponSprites/Stick/stickUp1.gif",
-                  path + "WeaponSprites/Stick/stickDown1.gif",
-                  path + "WeaponSprites/Stick/stickLeft1.gif",
-                  path + "WeaponSprites/Stick/stickRight1.gif",
-                  path + "WeaponSprites/Stick/stickUp2.gif",
-                  path + "WeaponSprites/Stick/stickDown2.gif",
-                  path + "WeaponSprites/Stick/stickLeft2.gif",
-                  path + "WeaponSprites/Stick/stickRight2.gif",
-                  path + "WeaponSprites/Stick/stickUp3.gif",
-                  path + "WeaponSprites/Stick/stickDown3.gif",
-                  path + "WeaponSprites/Stick/stickLeft3.gif",
-                  path + "WeaponSprites/Stick/stickRight3.gif",], true, [path + "WeaponSprites/Stick/stickFireUp1.gif",
-                  path + "WeaponSprites/Stick/stickFireDown1.gif",
-                  path + "WeaponSprites/Stick/stickFireLeft1.gif",
-                  path + "WeaponSprites/Stick/stickFireRight1.gif",
-                  path + "WeaponSprites/Stick/stickFireUp2.gif",
-                  path + "WeaponSprites/Stick/stickFireDown2.gif",
-                  path + "WeaponSprites/Stick/stickFireLeft2.gif",
-                  path + "WeaponSprites/Stick/stickFireRight2.gif",
-                  path + "WeaponSprites/Stick/stickFireUp3.gif",
-                  path + "WeaponSprites/Stick/stickFireDown3.gif",
-                  path + "WeaponSprites/Stick/stickFireLeft3.gif",
-                  path + "WeaponSprites/Stick/stickFireRight3.gif"], 1, 0],
-    "Rock": [2, [path + "WeaponSprites/Rock/rockUp1.gif",
-                  path + "WeaponSprites/Rock/rockDown1.gif",
-                  path + "WeaponSprites/Rock/rockLeft1.gif",
-                  path + "WeaponSprites/Rock/rockRight1.gif",
-                  path + "WeaponSprites/Rock/rockUp2.gif",
-                  path + "WeaponSprites/Rock/rockDown2.gif",
-                  path + "WeaponSprites/Rock/rockLeft2.gif",
-                  path + "WeaponSprites/Rock/rockRight2.gif",
-                  path + "WeaponSprites/Rock/rockUp3.gif",
-                  path + "WeaponSprites/Rock/rockDown3.gif",
-                  path + "WeaponSprites/Rock/rockLeft3.gif",
-                  path + "WeaponSprites/Rock/rockRight3.gif",], false, None, 1, 200],
-    "Sword": [5, [path + "WeaponSprites/Sword/swordUp1.gif",
-                  path + "WeaponSprites/Sword/swordDown1.gif",
-                  path + "WeaponSprites/Sword/swordLeft1.gif",
-                  path + "WeaponSprites/Sword/swordRight1.gif",
-                  path + "WeaponSprites/Sword/swordUp2.gif",
-                  path + "WeaponSprites/Sword/swordDown2.gif",
-                  path + "WeaponSprites/Sword/swordLeft2.gif",
-                  path + "WeaponSprites/Sword/swordRight2.gif",
-                  path + "WeaponSprites/Sword/swordUp3.gif",
-                  path + "WeaponSprites/Sword/swordDown3.gif",
-                  path + "WeaponSprites/Sword/swordLeft3.gif",
-                  path + "WeaponSprites/Sword/swordRight3.gif"], false, None, 1, 1000],
-    "Botsmasher": [12, [path + "WeaponSprites/Botsmasher/botsmasherUp1.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown1.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft1.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight1.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherUp2.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown2.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft2.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight2.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherUp3.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherDown3.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
-                  path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1, 10000]
-   }
-
-# Helmet dict. Array in form [def power, spritePath(currently Unused)]
-helmStatsList = {
-    "Hair": [0, "spritePath"],
-    "Leaf": [1, "spritePath"]
-    }
-
-# Helmet dict. Array in form [def power, spritePath(currently Unused)]
-chestStatsList = {
-    "BDaySuit": [0, "spritePath"],
-    "Fur Coat": [1, "spritePath"]
-    }
-
-# Helmet dict. Array in form [def power, spritePath(currently Unused)]
-legsStatsList = {
-    "Shame": [0, "spritePath"],
-    "Fur Pants": [1, "spritePath"]
-    }
-
-# Helmet dict. Array in form [def power, spritePath(currently Unused)]
-feetStatsList = {
-    "Toes": [0, "spritePath"],
-    "Fur Boots": [1, "spritePath"]
-    }
-
-# Helmet dict. Array in form [def power, spritePath(currently Unused)]
-handStatsList = {
-    "Digits": [0, "spritePath"],
-    "Fur Gloves": [1, "spritePath"]
-    }
-
-#item array. (currently unused)
-itemsList = {}  #potions, etc.
-
-#loot table (currently unused)
-lootTable = {}
-
-
-# Direction dict for reference with arrays
-directionList = {
-    "up": 0,
-    "down": 1,
-    "left": 2,
-    "right": 3
-    }
-
-mapNameList = ["town", "dungeon", "path"]
-
-
-
-
-        ####################
-        #                  #
-        #    FUNCTIONS     #
-        #                  #
-        ####################
-
-
-                     
-
-
-
-
-# Removes the passed object from the display
-
-def removeLabel(label):
-    display.remove(label)
-
-
-
-
-# All actions that depend on the turn counter go here. All actions/functions within
-# will occur with the passing of each turn (e.g., attack, player-directed movement)
-
-def turnPass():
-    global counter
-    global currentBeingList
-    counter.turn += 1
-    if  CURRENT_AREA != TOWN_AREA and len(currentBeingList)< MAX_BEINGS:
-      if counter.turn % 100 == 0 and bot1.level > 40:
-        spawnThreat5()
-      elif counter.turn % 80 == 0 and bot1.level >= 28:
-        spawnThreat4()
-      elif counter.turn % 40 == 0 and bot1.level >= 19:
-        if bot1.level >= 19:
-          spawnThreat3()
-        elif bot1.level >= 10:
-          spawnThreat2()
-      elif counter.turn % 20 == 0:
-        spawnEnemy()
-
-    for person in currentBeingList:
-      if person.active: #separated to leave room for friendly AIs in the future
-        if person.hostile:
-            person.simpleHostileAI()
-    if bot1.hp <= 0:
-        bot1.coords.x = 0
-        bot1.coords.y = 0
-        bot1.sprite.spawnSprite()
-    clearBadSprites()
-
-    #total action counter to affect shop/store stock
-
-
-def inventoryFull():
-    label = gui.Label("Not enough inventory space!")
-#    showLabel(label)
- #   delayRemoveObject(label, 2)
-
-
-# slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
-# parameters:
-# object        - object to be moved (must have a sprite)
-# targetXBig    - x coord target (must be greater than object.coords.x)
-
-def slideRight(toBeMoved, targetXBig):
-    time.sleep(.005)
-    toBeMoved.coords.x += 1
-    toBeMoved.forwardCoords.x += 1
-    display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
-    if toBeMoved.coords.x < targetXBig:
-        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
-
-# Slide-down logic identical to the above, but for vertical sliding
-def slideSpriteDown(toBeMoved, targetYBig):
-    time.sleep(.005)
-    toBeMoved.coords.y += 1
-    display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
-    if toBeMoved.coords.y < targetYBig:
-        thread.start_new_thread(slideSpriteDown, (toBeMoved, targetYBig))
-
-
-
-
-# Checks player coords to determine if a load is necessary.
-# may call loadNewArea
-# double calls for garbage sprite cleanup
-
-def loadAreaCheck(player):
-    global CURRENT_AREA
-    global currentMap
-    maxAceptableWidth = 960
-    maxAceptableHeight = 512
-    if CURRENT_AREA.otherAreas:
-        currCoord = coordToTileCoord(bot1.coords)
-        currSpot = tileCoordToSpot(currCoord)
-        if currentMap.getTileDesc(currSpot) == "hole":
-            #enter the dungeon!
-            coordY = (HEIGHT_TILES/2) * BITS
-            coordX = (WIDTH_TILES/2) * BITS
-            bot1.coords.y = coordY
-            bot1.coords.x = coordX
-            loadNewArea(CURRENT_AREA.otherAreas[0])
-            CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-        elif currentMap.getTileDesc(currSpot) == "door":
-            coordY = (HEIGHT_TILES/2) * BITS
-            coordX = (WIDTH_TILES/2) * BITS
-            bot1.coords.y = coordY
-            bot1.coords.x = coordX
-            loadNewArea(CURRENT_AREA.otherAreas[0])
-            CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-    if player.coords.y <= 0:
-        bot1.coords.y = maxAceptableHeight
-        loadNewArea(CURRENT_AREA.northArea)
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-
-    elif player.coords.y > maxAceptableHeight:
-        bot1.coords.y = BITS #place user one in from the edge
-        loadNewArea(CURRENT_AREA.southArea)
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-    elif player.coords.x <= 0:
-        bot1.coords.x = maxAceptableWidth
-        loadNewArea(CURRENT_AREA.westArea)
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-    elif player.coords.x > maxAceptableWidth:
-        bot1.coords.x = BITS #place user one in from the edge
-        loadNewArea(CURRENT_AREA.eastArea)
-        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
-
-
-
-
-
-# Joins area objects by placing both in the opposite area's opposite
-# area attribute.  Used when loading new areas. Arguments should be passed
-# as parameters are described (e.g., northArea should be the area to the north).
-
-def joinNorthSouthAreas(northArea, southArea):
-    northArea.southArea = southArea
-    southArea.northArea = northArea
-def joinEastWestAreas(eastArea, westArea):
-    eastArea.westArea = westArea
-    westArea.eastArea = eastArea
-def joinOtherAreas(target, area):
-    target.otherAreas.append(area)
-
-
-
-
-# Spawns the passed enemy object. If none is passed, the default spawned enemy is a blue enemy, lv 1,
-# with a stick as a weapon
-
-def spawnEnemy(toSpawn = None):
-    if toSpawn == None:
-      toSpawn = Enemy(None, "Stick", blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, 1)
-    if toSpawn.name == None:
-      global counter
-      toSpawn.name = ("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)))
-    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
-          toSpawn.coords.x = random.randint(0, 10)*32
-          toSpawn.coords.y =  random.randint(0, 10)*32
-      toSpawn.sprite.spawnSprite()
-
-
-      # Quick spawn commands for higher level enemies
-def spawnThreat2():
-    global counter
-    toSpawn = Threat2Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
-    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
-          toSpawn.coords.x = random.randint(0, 10)*32
-          toSpawn.coords.y =  random.randint(0, 10)*32
-      toSpawn.sprite.spawnSprite()
-def spawnThreat3():
-    global counter
-    toSpawn = Threat3Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
-    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
-          toSpawn.coords.x = random.randint(0, 10)*32
-          toSpawn.coords.y =  random.randint(0, 10)*32
-      toSpawn.sprite.spawnSprite()
-def spawnThreat4():
-    global counter
-    toSpawn = Threat4Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
-    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
-          toSpawn.coords.x = random.randint(0, 10)*32
-          toSpawn.coords.y =  random.randint(0, 10)*32
-      toSpawn.sprite.spawnSprite()
-def spawnThreat5():
-    global counter
-    toSpawn = Threat5Enemy("EnemyBorn" + str(counter.turn)+str(len(CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
-    if len(CURRENT_AREA.beingList) < MAX_BEINGS:
-      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
-          toSpawn.coords.x = random.randint(0, 10)*32
-          toSpawn.coords.y =  random.randint(0, 10)*32
-      toSpawn.sprite.spawnSprite()
-
-
-
-
-# Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
-
-def spawnFriendly(name = None, weap = "Stick", spritePaths = friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
-    if name == None:
-      global counter
-      name = ("FriendlyBorn" + str(counter.turn))
-    while not isTraversable(x, y):
-        x = random.randint(0, 10)*32
-        y =  random.randint(0, 10)*32
-    friendly = Friendly(name, weap, spritePaths, x, y)
-    friendly.sprite.spawnSprite()
-
-
-# Used to remove objects (labels, sprites, etc.) from the display after a delay.
-# only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
-# directly.
-# Parameters:
-#   object          - An object on the displays self.items list
-#   delay           - the amount of time in seconds to delay the removal
-
-def delayRemoveObject(object, delay):
-    thread.start_new_thread(threadDelayRemoveObject, (object, delay))
-def threadDelayRemoveObject(object, delay):
-    time.sleep(delay)
-    display.remove(object)
-
-
-
-
-
-
-# cleanup for duplicate sprites created when input is given
-# too quickly
-
-def clearBadSprites():
-    goodSprites = []
-    for being in currentBeingList:
-        goodSprites.append(being.sprite)
-    stop = time.time() + .5
-    for sprite in display.items:
-      if sprite not in goodSprites and type(sprite) == BeingSprite :
-          display.remove(sprite)
-      if time.time() >= stop:
-          break
-
-
-
-
-
-
-
-# clears giblets from the display()
-
-def clearGibList():
-    for sprite in gibList:
-        display.remove(sprite)
-        gibList.remove(sprite)
-        del sprite
-
-
-
-
-
-
-# used with thread.start_new_thread(threadRemoveSprite, (timeToWait, sprite))
-# in order to despawn a sprite after a delay. For use with animations.
-# parameters:
-#   timeToWait      - time in seconds to delay the sprite removal
-#   sprite          - sprite to be removed
-
-def threadRemoveSprite(timeToWait, sprite):
-    time.sleep(timeToWait)
-    display.remove(sprite)
-
-
-
-
-
-
-#helper Functions
-def spotToCoord(spot):
-    #if low set to 0d
-    if spot < 0: spot = 0
-    #if high set to max (should probably just throw error
-    if spot > WIDTH_TILES * HEIGHT_TILES: spot = WIDTH_TILES * HEIGHT_TILES - 1
-    return Coords(spot % WIDTH_TILES, spot / WIDTH_TILES)
-
-
-#given tile Coords give tile Spot in 1d array
-def tileCoordToSpot(coord):
-    return coord.x + coord.y * WIDTH_TILES
-
-
-#Goes from pixel coords to tile Coords
-def coordToTileCoord(coord):
-    return Coords(coord.x/BITS, coord.y/BITS)
-
-PIXEL_WIDTH = WIDTH_TILES * BITS
-PIXEL_HEIGHT = HEIGHT_TILES * BITS
-#Goes from tile spot to pixel coords
-def tileSpotToCoord(spot):
-    return Coords((spot * BITS)%PIXEL_WIDTH, (spot / WIDTH_TILES)*BITS)
-
-#probably bad?
-def coordToTile(coord):
-    return coord.x/BITS + (coord.y/BITS) * WIDTH_TILES
-
-#takes pixel coordanates and returns if the tile at that location is
-def isTraversable(x, y):
-    spot = coordToTile(Coords(x,y))
-    return currentMap.isTraversable(spot)
-
-
-#depricated can Delete
-def placeTex(tex, spot, back):
-    startx = (spot * BITS) % backWidth;
-    starty = ((spot * BITS) / backWidth) * BITS;
-    for x in range(0, BITS):
-        for y in range(0, BITS):
-            setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
-
-
-
-# Converts pixel coordinates to "spot" coordinates
-def textCoordToSpot(x, y):
-  col = texWidth/32
-  row = texHeight/32
-  return x + y*col
-
-#LEGACY can delete
-def getTexture(spot):
-    texture = makeEmptyPicture(BITS,BITS)
-    #spot to coord conversion
-    startx = (spot * BITS) % texWidth;
-    starty = ((spot * BITS) / texWidth) * BITS;
-    for x in range(0, BITS):
-        for y in range(0, BITS):
-            setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
-    return texture
-
-
-
-
-
-
-# intro credits, adjust to add fade, etc.
-
-def loadIntro():
-    global loading
-    global text
-    global title
-    global startScreen
-    startScreen = RawSprite(path + "Fullscreens/startScreen.png", 0, 0, 2)
-    title = RawSprite(path + "EffectSprites/Title.gif", 286, -64, 1)
-    loading.spawnSprite()
-    title.spawnSprite()
-    loading.spawnSprite()
-    time.sleep(1.5)
-    startScreen.spawnSprite()
-    loading.removeSprite()
-    title.spawnSprite()
-    slideSpriteDown(title, 104)
-    time.sleep(1.5)
-    text.onKeyType(mainMenuAction)
-    text.grabFocus()
-    global dungeon_sound
-    #thread.start_new_thread(Music.play, (dungeon_sound,))
-
-
-# Clears the display, sets up layers for use, and displays
-# the SAGA logo
-
-def loadingScreen():
-    display.removeAll()
-    setUpLayers()
-    loading.spawnSprite()
-
-
-
-
-
-# Compacts and stores information about the current area and
-# loads the next. The player will be spawned on the opposite side
-# of the screen they exited from.
-# Parameters:
-#     Area      - The area to be loaded
-
-def loadNewArea(area):
-    loadingScreen()
-    setUpLayers()
-    global currentBeingList
-    global gibList
-    global animatedSpriteList
-    global lightSources
-    global objectList
-    global text
-    global display
-    global CURRENT_BG
-    global currentMap
-    global CURRENT_AREA
-    global bot1
-    global background_Music
-
-    #thread.start_new_thread(Music.loop2, (background_Music,))
-    #background_Music = false
-    #thread.start_new_thread(Music.Stop, (background_Music,))
-    for light in lightSources:
-      if light.isOn:
-        light.turnOff()
-        CURRENT_AREA.wasOn.append(light)
-    currentMap = area.mapObject
-    CURRENT_BG = area.mapSprite
-    CURRENT_AREA = area
-    CURRENT_BG.spawnSprite()
-    display.add(text)
-    try:
-      currentBeingList.remove(bot1)
-    except:
-      None
-    currentBeingList = area.beingList
-    currentBeingList.append(bot1)
-    bot1.area = CURRENT_AREA
-    objectList = area.objectList
-    gibList = area.gibList
-    animatedSpriteList = area.animatedSpriteList
-    lightSources = area.lightSources
-    for being in currentBeingList:
-      being.sprite.spawnSprite()
-    for thing in area.objectList:
-        thing.sprite.spawnSprite()
-    for gib in gibList:
-        display.add(gib)
-    loading.removeSprite()
-    for light in CURRENT_AREA.wasOn:
-        light.turnOn()
-    for sprite in CURRENT_AREA.persistentAnimations:
-        sprite.animate()
-    text.grabFocus()
-    bot1.hpBar.updateBar()
-    bot1.wallet.updateWalletDisplay()
-    turnPass()
-
-
-
-
- # Adds 7 sprites as placeholders to create layers
- # for use with future sprites
-
-def setUpLayers():
-    global layer0
-    global layer1
-    global layer2
-    global layer3
-    global layer4
-    global layer5
-    global layer6
-    try:
-      layer0.removeSprite()
-      layer1.removeSprite()
-      layer2.removeSprite()
-      layer3.removeSprite()
-      layer4.removeSprite()
-      layer5.removeSprite()
-      layer6.removeSprite()
-      layer0.spawnSprite()
-      layer1.spawnSprite()
-      layer2.spawnSprite()
-      layer3.spawnSprite()
-      layer4.spawnSprite()
-      layer5.spawnSprite()
-      layer6.spawnSprite()
-    except:
-      layer0 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 0)
-      layer1 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 1)
-      layer2 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 2)
-      layer3 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 3)
-      layer4 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 4)
-      layer5 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 5)
-      layer6 = RawSprite(path + "EffectSprites/blankSprite.gif", 0, 0, 6)
-      layer0.spawnSprite()
-      layer1.spawnSprite()
-      layer2.spawnSprite()
-      layer3.spawnSprite()
-      layer4.spawnSprite()
-      layer5.spawnSprite()
-      layer6.spawnSprite()
-
-
-
-
-
-
-
-# Default keybindings/controls
-
-def keyAction(a):
-  bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
-  if a == "w":
-    if bot1Ready:
-        bot1.moveUp()
-        turnPass()
-  elif a == "s":
-    if bot1Ready:
-        bot1.moveDown()
-        turnPass()
-  elif a == "a":
-    if bot1Ready:
-        bot1.moveLeft()
-        turnPass()
-  elif a == "d":
-    if bot1Ready:
-        bot1.moveRight()
-        turnPass()
-  elif a == "W":
-        bot1.faceUp()
-  elif a == "A":
-        bot1.faceLeft()
-  elif a == "S":
-        bot1.faceDown()
-  elif a == "D":
-        bot1.faceRight()
-
-  elif a == "f": #attack
-    if bot1Ready:
-        bot1.meleeAtk()
-        turnPass()
-  elif a == "z": #attack
-    if bot1Ready:
-        bot1.specialAtk()
-        turnPass()
-  elif a == "g": #steal
-    if bot1Ready:
-        bot1.steal(bot1.getFrontTarget())
-        turnPass()
-  elif a == "q":
-    print("NotImplementedAtAll")
-  elif a == "t":
-    print("not implemented")
-  elif a == "v":
-    bot1.talk()
-  elif a == " ":
-      bot1.activateTarget()
-
-     #Menu Logic
-
-  elif a == "m": #Activates menu, switches to menu controls
-    if bot1Ready:
-      global menu
-      menu.openMenu()
-      text.onKeyType(menuAction)
-
-
-
-
-
-    # Keybindings/controls for menus
-
-def menuAction(menuInput):
-
-  bot1Ready = (bot1.weapon.displayed == false and bot1.isMoving == false)
-  global menu
-
-  if menuInput == "u":
-    if bot1Ready:
-      menu.openStatusMenu()
-
-
-  elif menuInput == "i":
-    if bot1Ready:
-        menu.openItemMenu()
-
-
-  elif menuInput == "q":
-    if bot1Ready:
-      try:
-        Music.Stop(dungeon_sound)
-      except:
-        None
-      try:
-        Music.Stop(quieter_Music)
-      except:
-        None
-      try:
-        Music.Stop(background_Music)
-      except:
-        None
-      saveBot()
-      display.hide()
-   #   sys.exit()
-      print "When this works, it will quit game."
-
-  elif menuInput == "m":
-    if bot1Ready:
-      menu.closeMenu()
-      text.onKeyType(keyAction)
-
-
-
-
-    # Default controls for main menu
-def mainMenuAction(inp):
-  global title
-  global startScreen
-  global text
-  text.onKeyType(blockKeys)
-  title.removeSprite()
-  startScreen.removeSprite()
-  if inp == "1":
-    loadBot()
-  else:
-    newBot()
-  startGame()
-
-
-
-
-
-
-
-# To pass to getKeyTyped in order to block inputs
-# (e.g., during animations or delays)
-
-def blockKeys(a):
-    None
-
-
-
-
-
-# Damage calculation logic for combat. Note:
-# Certain friendlies will be obliterated on defeat
-# Currently meant to be called with thread.start_new_thread
-# to line up damage with animations
-
-def threadDamageCalculation(self, target, damage, delay):
-  time.sleep(delay)
-  if target != bot1:
-    target.hostile = true
-  target.changeHp(damage*(-1))
-  target.displayDamage()
-  if target.hp <= 0:
-    self.changeXp(target.xpValue)
-    global friendlyGreen
-    global friendlyOrange
-    global shopKeeper
-    if target == friendlyGreen:
-      del friendlyGreen
-    elif target == friendlyOrange:
-      del friendlyOrange
-    elif target == shopKeeper:
-      del shopKeeper
-
-
-
-  # Game startup/bootup logic
-def startGame():
-  loading.spawnSprite()
-  global CURRENT_AREA
-  global TOWN_AREA
-  global CURRENT_BG
-  global currentBeingList
-  global objectList
-  global gibList
-  global animatedSpriteList
-  global lightSources
-  global bot1
-  global menu
-  CURRENT_AREA = TOWN_AREA
-  CURRENT_BG = TOWN_AREA.mapSprite
-  CURRENT_BG.spawnSprite()
-  currentBeingList = TOWN_AREA.beingList
-  objectList = TOWN_AREA.objectList
-  gibList = TOWN_AREA.gibList
-  animatedSpriteList = TOWN_AREA.animatedSpriteList
-  lightSources = TOWN_AREA.lightSources
-  bot1Spawn = Coords(13*BITS, 1*BITS)
-  shopKeeper = ShopKeeper("shopKeep", "Stick", shopKeeperSpritePaths, 3*BITS, 6*BITS)
-  shopKeeper.sprite.spawnSprite()
-  friendlyOrange = Friendly("orange", "Stick", friendlyOrangeSpritePaths, 8*BITS, 10*BITS)
-  friendlyGreen = Friendly("green", "Stick", friendlyGreenSpritePaths, 10*BITS, 10*BITS)
-  friendlyOrange.sprite.spawnSprite()
-  friendlyGreen.sprite.spawnSprite()
-  #should be spawning boss in the dungeon?
-  boss = Boss1()
-  DUNGEON_BOSSROOM_AREA.beingList.append(boss)
-  loadNewArea(TOWN_AREA)#refresh screen, start animations
-  loading.removeSprite()
-  menu = Menu(bot1)
-  text.grabFocus()
-  time.sleep(.2) #gives sliding title time to finish
-  text.onKeyType(keyAction)
-
-
-  # Logic for starting a new character.  Bot1/User will have starting stats
-def newBot():
-  global bot1
-  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-  bot1.area = CURRENT_AREA
-
-
-  # Logic for loading a character. If data exists, bot1 will be loaded from it.
-  # Otherwise, the starting screen will replay with a message warning the user
-def loadBot():
-  global bot1
-  bot1 = User("bot1", "Stick", userSpritePaths, TOWN_AREA)
-  try:
-    fin = open(path + "SaveData.txt")
-    for line in fin:
-      if "CharName:" in line:
-        bot1.name = line[len("Name:"):line.index('\n')]
-      elif "Weapon:" in line:
-        bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
-      elif "Level:" in line:
-        bot1.level = int(line[len("Level:"):line.index('\n')])
-      elif "MaxHp:" in line:
-        bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
-      elif "CurrentHp:" in line:
-        bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
-      elif "Xp:" in line:
-        bot1.xp = int(line[len("Xp:"):line.index('\n')])
-      elif "Atk:" in line:
-        bot1.atk = int(line[len("Atk:"):line.index('\n')])
-      elif "Def" in line:
-        bot1.df = int(line[len("Def:"):line.index('\n')])
-      elif "Wallet" in line:
-        bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
-    fin.close()
-  except:
-    loadIntro()
-    warning = gui.Label("No Save found!")
-    display.add(warning, 330, 100)
-    threadRemoveSprite(2, warning)
-
-
-
-
-
-    # Saves the user's stats to a file for future loading
-def saveBot():
-  global bot1
-  fout = open(path + "SaveData.txt", 'w')
-  fout.write("CharName:"+str(bot1.name)+"\n")
-  fout.write("Weapon:"+str(bot1.weapon.name)+"\n")
-  fout.write("Level:"+str(bot1.level)+"\n")
-  fout.write("MaxHp:"+str(bot1.maxHp)+"\n")
-  fout.write("CurrentHp:"+str(bot1.hp)+"\n")
-  fout.write("Xp:"+str(bot1.xp)+"\n")
-  fout.write("Atk:"+str(bot1.atk)+"\n")
-  fout.write("Def:"+str(bot1.df)+"\n")
-  fout.write("Wallet:"+str(bot1.wallet.value)+"\n")
-  fout.close()
-
-
-
-
-
-
+        #add select game folder (to allow more portable loading of assets to WorldData.path)
 
 
 
@@ -1204,6 +108,15 @@ def saveBot():
         #      CLASSES     #
         #                  #
         ####################
+
+
+
+class Coords():
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+
+
 
 
     # A custom class created to override gui.Display's default destructor. 
@@ -1226,6 +139,67 @@ class CustomDisplay(gui.Display):
 
 
 
+    # general class for sprites.
+    # to display on the main screen.
+    # parameters:
+    #   filename    - filename in string format
+    #   parental      - object that owns this instance. must have it's own coords
+    #   layer       - screen layer of sprite, 0 closest to front
+    # Members inherited from gui.icon
+
+class Sprite(gui.Icon):
+
+  def __init__(self, filename, parental, layer = 4):
+      gui.JPanel.__init__(self)
+      gui.Widget.__init__(self)
+      filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM- LEGACY, NOT SURE OF NECESSITY
+      self.fileName = filename
+      self.offset = (0,0)                # How much to compensate - LEGACY, NOT SURE OF NECESSITY
+      self.position = (0,0)              # assume placement at a Display's origin- LEGACY, NOT SURE OF NECESSITY
+      self.display = None
+      self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
+      self.layer = layer
+      self.parental = parental
+
+      printNow(filename)
+      self.icon = gui.ImageIO.read(File(filename))
+      iconWidth = self.icon.getWidth(None)
+      iconHeight = self.icon.getHeight(None)
+
+      # keep a deep copy of the image (useful for repeated scalings - we always scale from original
+      # for higher quality)- LEGACY, NOT SURE OF NECESSITY
+      self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
+      self.originalIcon.setData( self.icon.getData() )
+
+
+
+
+
+
+      # adds the sprite to the display. If the sprite already exists,
+      # moves the sprite to the self.coords location
+
+  def spawnSprite(self):
+        WorldData.display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
+
+      # adds the sprite to the display in the foreground (closest to the user)
+
+  def spawnSpriteFront(self):
+      self.layer = 3
+      self.spawnSprite()
+
+
+      # adds the sprite to the display in the background (closest to the map, just in front of it)
+      # order number of 3 spawns behind the background
+
+  def spawnSpriteBack(self):
+      self.layer = 5
+      self.spawnSprite()
+
+      # removes the sprite from the display
+
+  def removeSprite(self):
+        WorldData.display.remove(self)
 
 
 
@@ -1233,6 +207,588 @@ class CustomDisplay(gui.Display):
 
 
 
+
+
+
+
+
+  # inherits from Sprite. Separated to give
+  # ownership to sub-sprites (e.g., weapon)
+  #   See sprite for function exacts.
+
+class BeingSprite(Sprite):
+  def __init__(self, filename, parental, layer = 4):
+      gui.JPanel.__init__(self)
+      gui.Widget.__init__(self)
+      filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM - LEGACY, UNUSED FOR NOW
+      self.fileName = filename
+      self.offset = (0,0)                # How much to compensate - LEGACY, UNUSED FOR NOW
+      self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
+      self.display = None
+      self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
+      self.icon = gui.ImageIO.read(File(filename))
+      self.parental = parental
+      self.layer = layer
+      iconWidth = self.icon.getWidth(None)
+      iconHeight = self.icon.getHeight(None)
+
+      # keep a deep copy of the image (useful for repeated scalings - we always scale from original
+      # for higher quality) - LEGACY, UNUSED FOR NOW
+      self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
+      self.originalIcon.setData( self.icon.getData() )
+
+
+
+
+
+
+      # adds the sprite to the display. If the sprite already exists,
+      # moves the sprite to the self.coords location
+
+  def spawnSprite(self):
+        WorldData.display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
+
+
+
+
+
+
+      # removes the sprite
+
+  def removeSprite(self):
+        WorldData.display.remove(self)
+
+
+
+
+
+      # not a huge fan of the weaponOut flag, but it works for now.
+      # without the check in putAwayWeap, JES complains
+
+  def displayWeapon(self, sprite, coords):
+    WorldData.display.add(sprite, coords.x, coords.y)
+
+
+
+
+
+
+      # hides the weapon. may be unnecessary if we get
+      # animations figured out
+
+  def hideWeapon(self):
+      WorldData.display.remove(self.weap)
+
+
+
+
+
+
+      #moves sprite to location given
+
+  def moveTo(self, x, y):
+      self.parental.coords.x = x
+      self.parental.coords.y = y
+      WorldData.display.addOrder(self, 4, x, y)
+
+
+
+
+
+    # Class used when an ownerless sprite is needed
+    # Acts as a sprite with Coords
+
+class RawSprite():
+    def __init__(self, filename, x, y, layer = 4):
+        self.coords = Coords(x, y)
+        self.sprite = Sprite(filename, self, layer)
+    def spawnSprite(self):
+        self.sprite.spawnSprite()
+    def spawnSpriteFront(self):
+        self.sprite.spawnSpriteFront()
+    def spawnSpriteBack(self):
+        self.sprite.spawnSpriteBack()
+    def removeSprite(self):
+        self.sprite.removeSprite()
+
+
+
+
+
+class WorldData():
+  BITS = 32
+  WIDTH_TILES = 32
+  HEIGHT_TILES = 18
+  backWidth = BITS * WIDTH_TILES
+  backHeight = BITS * HEIGHT_TILES
+  PIXEL_WIDTH = WorldData.WIDTH_TILES * WorldData.BITS
+  PIXEL_HEIGHT = WorldData.HEIGHT_TILES * WorldData.BITS
+  MAX_BEINGS = 6
+  MAX_INVENTORY = 10
+  CURRENT_AREA = None
+  CURRENT_BG = None
+  bot1 = None
+  menu = None
+  layer0 = None
+  layer1 = None
+  layer2 = None
+  layer3 = None
+  layer4 = None
+  layer5 = None
+  layer6 = None
+  currentMap = None
+  try:
+           path #test to see if WorldData.path exists
+  except NameError: #if WorldData.path does not exist make new WorldData.path
+           printNow("Please select your game install folder")
+           path = pickAFolder()
+  else: printNow("Welcome Back") #welcome the player back to the game
+  display = None
+  loading = None
+  title = None
+  startScreen = None
+  dirt = None
+  dirtWall = None
+  grass = None
+  stone = None
+  stoneWall = None
+  hole = None
+  lavaRock = None
+  water = None
+  lava = None
+  fence = None
+  chest = None
+  door = None
+  blank = None
+  shopKeeper = None
+  friendlyOrange = None
+  friendlyGreen = None
+  boss = None
+
+  # Currently acts as the "controller" to read inputs
+
+  # text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
+  # setting "function" to a different function will alter controls. Make sure to pass a function
+  # that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
+  # so for example:
+  #
+  # def randomFunction(key)
+  #   if key == "h":
+  #       doSomething
+  #
+  # text.onKeyType(randomFunction)
+  #
+  # would activate doSomething if "h" was pressed.
+  text = gui.TextField("", 1)
+  structPath = None
+  counter = TurnCounter()
+  #beings
+  currentBeingList = []
+  #interactable objects
+  objectList = []
+  #gore pieces
+  gibList = []
+  #animated sprites
+  animatedSpriteList = []
+  #light sources
+  lightSources = []
+  
+
+class ListData():
+  
+  
+  # Dictionaries for items
+  # Numbers correspond to stats
+  
+  
+  # Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range, currencyValue]
+  # weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
+  # first right frame, repeat for frames two and three]
+  weaponStatsList = {
+      "Stick": [1, [WorldData.path + "WeaponSprites/Stick/stickUp1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickDown1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickLeft1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickRight1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickUp2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickDown2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickLeft2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickRight2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickUp3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickDown3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickLeft3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickRight3.gif",], true, [WorldData.path + "WeaponSprites/Stick/stickFireUp1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireDown1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireLeft1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireRight1.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireUp2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireDown2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireLeft2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireRight2.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireUp3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireDown3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireLeft3.gif",
+                    WorldData.path + "WeaponSprites/Stick/stickFireRight3.gif"], 1, 0],
+      "Rock": [2, [WorldData.path + "WeaponSprites/Rock/rockUp1.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockDown1.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockLeft1.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockRight1.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockUp2.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockDown2.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockLeft2.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockRight2.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockUp3.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockDown3.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockLeft3.gif",
+                    WorldData.path + "WeaponSprites/Rock/rockRight3.gif",], false, None, 1, 200],
+      "Sword": [5, [WorldData.path + "WeaponSprites/Sword/swordUp1.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordDown1.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordLeft1.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordRight1.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordUp2.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordDown2.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordLeft2.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordRight2.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordUp3.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordDown3.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordLeft3.gif",
+                    WorldData.path + "WeaponSprites/Sword/swordRight3.gif"], false, None, 1, 1000],
+      "Botsmasher": [12, [WorldData.path + "WeaponSprites/Botsmasher/botsmasherUp1.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherDown1.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherLeft1.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherRight1.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherUp2.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherDown2.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherLeft2.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherRight2.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherUp3.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherDown3.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
+                    WorldData.path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1, 10000]
+     }
+  
+  # Helmet dict. Array in form [def power, spritePath(currently Unused)]
+  helmStatsList = {
+      "Hair": [0, "spritePath"],
+      "Leaf": [1, "spritePath"]
+      }
+  
+  # Helmet dict. Array in form [def power, spritePath(currently Unused)]
+  chestStatsList = {
+      "BDaySuit": [0, "spritePath"],
+      "Fur Coat": [1, "spritePath"]
+      }
+  
+  # Helmet dict. Array in form [def power, spritePath(currently Unused)]
+  legsStatsList = {
+      "Shame": [0, "spritePath"],
+      "Fur Pants": [1, "spritePath"]
+      }
+  
+  # Helmet dict. Array in form [def power, spritePath(currently Unused)]
+  feetStatsList = {
+      "Toes": [0, "spritePath"],
+      "Fur Boots": [1, "spritePath"]
+      }
+  
+  # Helmet dict. Array in form [def power, spritePath(currently Unused)]
+  handStatsList = {
+      "Digits": [0, "spritePath"],
+      "Fur Gloves": [1, "spritePath"]
+      }
+  
+  #item array. (currently unused)
+  itemsList = {}  #potions, etc.
+  
+  #loot table (currently unused)
+  lootTable = {}
+  
+  
+  # Direction dict for reference with arrays
+  directionList = {
+      "up": 0,
+      "down": 1,
+      "left": 2,
+      "right": 3
+      }
+  
+  mapNameList = ["town", "dungeon", "WorldData.path"]
+  
+  
+
+
+class SpriteData():
+
+  # Sprite paths for beings. Arrays in form [back, front, left, right,
+  # moving left, moving right, moving front, moving back]
+  
+  userSpritePaths = [WorldData.path + "RobotSprites/botBlueBack.gif",
+                 WorldData.path + "RobotSprites/botBlueFront.gif",
+                 WorldData.path + "RobotSprites/botBlueSideLeft.gif",
+                 WorldData.path + "RobotSprites/botBlueSideRight.gif",
+                 WorldData.path + "RobotSprites/botBlueMovingLeft.gif",
+                 WorldData.path + "RobotSprites/botBlueMovingRight.gif",
+                 WorldData.path + "RobotSprites/botBlueMovingFront.gif",
+                 WorldData.path + "RobotSprites/botBlueMovingBack.gif",]
+  friendlyGreenSpritePaths = [WorldData.path + "RobotSprites/botGreenBack.gif",
+                 WorldData.path + "RobotSprites/botGreenFront.gif",
+                 WorldData.path + "RobotSprites/botGreenSideLeft.gif",
+                 WorldData.path + "RobotSprites/botGreenSideRight.gif",
+                 WorldData.path + "RobotSprites/botGreenMovingLeft.gif",
+                 WorldData.path + "RobotSprites/botGreenMovingRight.gif",
+                 WorldData.path + "RobotSprites/botGreenMovingFront.gif",
+                 WorldData.path + "RobotSprites/botGreenMovingBack.gif",]
+  friendlyOrangeSpritePaths = [WorldData.path + "RobotSprites/botOrangeBack.gif",
+                 WorldData.path + "RobotSprites/botOrangeFront.gif",
+                 WorldData.path + "RobotSprites/botOrangeSideLeft.gif",
+                 WorldData.path + "RobotSprites/botOrangeSideRight.gif",
+                 WorldData.path + "RobotSprites/botOrangeMovingLeft.gif",
+                 WorldData.path + "RobotSprites/botOrangeMovingRight.gif",
+                 WorldData.path + "RobotSprites/botOrangeFront.gif",
+                 WorldData.path + "RobotSprites/botOrangeBack.gif",]
+  friendlyPinkSpritePaths = [WorldData.path + "RobotSprites/botPinkBack.gif",
+                 WorldData.path + "RobotSprites/botPinkFront.gif",
+                 WorldData.path + "RobotSprites/botPinkSideLeft.gif",
+                 WorldData.path + "RobotSprites/botPinkSideRight.gif",
+                 WorldData.path + "RobotSprites/botPinkMovingLeft.gif",
+                 WorldData.path + "RobotSprites/botPinkMovingRight.gif",
+                 WorldData.path + "RobotSprites/botPinkFront.gif",
+                 WorldData.path + "RobotSprites/botPinkBack.gif",]
+  friendlyYellowSpritePaths = [WorldData.path + "RobotSprites/botYellowBack.gif",
+                 WorldData.path + "RobotSprites/botYellowFront.gif",
+                 WorldData.path + "RobotSprites/botYellowSideLeft.gif",
+                 WorldData.path + "RobotSprites/botYellowSideRight.gif",
+                 WorldData.path + "RobotSprites/botYellowMovingLeft.gif",
+                 WorldData.path + "RobotSprites/botYellowMovingRight.gif",
+                 WorldData.path + "RobotSprites/botYellowFront.gif",
+                 WorldData.path + "RobotSprites/botYellowBack.gif",]
+  blueEnemySpritePaths = [WorldData.path + "RobotSprites/blueRobotBack.gif",
+                 WorldData.path + "RobotSprites/blueRobotFront.gif",
+                 WorldData.path + "RobotSprites/BlueRobotSideLeft.gif",
+                 WorldData.path + "RobotSprites/BlueRobotSideRight.gif",
+                 WorldData.path + "RobotSprites/BlueRobotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/BlueRobotMovingRight.gif",
+                 WorldData.path + "RobotSprites/BlueRobotMovingFront.gif",
+                 WorldData.path + "RobotSprites/BlueRobotMovingBack.gif",]
+  greenEnemySpritePaths = [WorldData.path + "RobotSprites/GreenRobotBack.gif",
+                 WorldData.path + "RobotSprites/GreenRobotFront.gif",
+                 WorldData.path + "RobotSprites/GreenRobotSideLeft.gif",
+                 WorldData.path + "RobotSprites/GreenRobotSideRight.gif",
+                 WorldData.path + "RobotSprites/GreenRobotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/GreenRobotMovingRight.gif",
+                 WorldData.path + "RobotSprites/GreenRobotFront.gif",
+                 WorldData.path + "RobotSprites/GreenRobotBack.gif",]
+  redEnemySpritePaths = [WorldData.path + "RobotSprites/RedRobotBack.gif",
+                 WorldData.path + "RobotSprites/RedRobotFront.gif",
+                 WorldData.path + "RobotSprites/RedRobotSideLeft.gif",
+                 WorldData.path + "RobotSprites/RedRobotSideRight.gif",
+                 WorldData.path + "RobotSprites/RedRobotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/RedRobotMovingRight.gif",
+                 WorldData.path + "RobotSprites/RedRobotFront.gif",
+                 WorldData.path + "RobotSprites/RedRobotBack.gif",]
+  purpleEnemySpritePaths = [WorldData.path + "RobotSprites/PurpleRobotBack.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotFront.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotSideLeft.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotSideRight.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotMovingRight.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotFront.gif",
+                 WorldData.path + "RobotSprites/PurpleRobotBack.gif",]
+  yellowEnemySpritePaths = [WorldData.path + "RobotSprites/YellowRobotBack.gif",
+                 WorldData.path + "RobotSprites/YellowRobotFront.gif",
+                 WorldData.path + "RobotSprites/YellowRobotSideLeft.gif",
+                 WorldData.path + "RobotSprites/YellowRobotSideRight.gif",
+                 WorldData.path + "RobotSprites/YellowRobotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/YellowRobotMovingRight.gif",
+                 WorldData.path + "RobotSprites/YellowRobotFront.gif",
+                 WorldData.path + "RobotSprites/YellowRobotBack.gif",]
+  shopKeeperSpritePaths = [WorldData.path + "RobotSprites/ShopkeeperbotBack.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotFront.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotLeft.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotRight.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotMovingLeft.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotMovingRight.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotMovingFront.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotMovingBack.gif",
+                 WorldData.path + "RobotSprites/ShopkeeperbotCloseup.gif",]
+  bossDragonHeadSpritePaths = [WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
+                               WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png"]
+  bossRightHandSpritePaths = [WorldData.path + "dungeon/boss/AttackRightHand.png",
+                              WorldData.path + "dungeon/boss/AttackRightHand.png"]
+  bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
+                             WorldData.path + "dungeon/boss/AttackLeftHand.png"]
+  
+
+  
+  # Sprites for light sources.  Arrays in form [off, on, bright]
+  lightpostSpritePaths = [WorldData.path + "ObjectSprites/lampOff.gif",
+                          WorldData.path + "ObjectSprites/lampOn.gif",
+                          WorldData.path + "ObjectSprites/lampBright.gif"]
+  torchSpritePaths = [WorldData.path + "ObjectSprites/metalTorchOff.gif",
+                          WorldData.path + "ObjectSprites/metalTorchOn1.gif.gif",
+                          WorldData.path + "ObjectSprites/metalTorchOn2.gif.gif"]
+  
+  bigTorchSpritePaths = [WorldData.path + "ObjectSprites/metalBigTorchOff.gif",
+                          WorldData.path + "ObjectSprites/metalBigTorchOn1.gif",
+                          WorldData.path + "ObjectSprites/metalBigTorchOn2.gif"]
+  healingStationSpritePaths = [WorldData.path + "ObjectSprites/rechargeStation1.gif",
+                          WorldData.path + "ObjectSprites/rechargeStation2.gif",
+                          WorldData.path + "ObjectSprites/rechargeStation3.gif",
+                          WorldData.path + "ObjectSprites/rechargeStation4.gif"]
+  
+
+
+
+
+
+  
+class StationaryAnimatedSprite():
+    def __init__(self, filename1, filename2, x, y, layer = 3):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, self, layer),
+                           Sprite(filename2, self, layer)]
+        self.sprite = self.spriteList[0]
+        self.coords = Coords(x, y)
+        self.sprite.layer = layer
+        self.isAnimating = false
+
+
+
+        # Initiates the animation by creating a new thread.
+    def animate(self):
+        WorldData.animatedSpriteList.append(self)
+        self.isAnimating = true
+        thread.start_new_thread(self.threadAnimate, (None,))
+    def stopAnimating(self):
+        WorldData.animatedSpriteList.remove(self)
+
+        # Sprite creation/removal
+    def spawnSprite(self):
+        self.sprite.spawnSprite()
+    def removeSprite(self):
+        WorldData.display.remove(self.sprite)
+
+        # Actual animation logic. Meant for use in thread.start_new_thread().
+        # Flickers between two sprites at random intervals. Animation is stopped when
+        # the object is removed from the animatedSpriteList
+    def threadAnimate(self, container):
+        while self in WorldData.animatedSpriteList:
+            time.sleep(random.randint(0, 2)/10.0)
+            placeHolderSprite = self.spriteList[0]
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            else:
+                self.sprite = self.spriteList[0]
+                self.spawnSprite()
+        if self not in WorldData.animatedSpriteList:
+            self.removeSprite()
+            del self
+
+
+
+
+
+
+        # Custom 3-stage animated sprite that animates 3 frames in cycles (1, 2, 3, 1, 2, 3...)
+        # Constructor Parameters:
+        #    filename1            - filepath for first sprite image
+        #    filename2            - filepath for second sprite image
+        #    filename3            - filepath for third sprite image
+        #    x                    - x coord in pixels
+        #    y                    - y coord in pixels
+        #    secondsBetween       - seconds each frame is displayed for (floats supported)
+        #    layer                - on-screen layer
+        #
+        # Members:
+        #    coords               - Coords object indicating location
+        #    spriteList           - list of Sprite objects to be cycled
+        #    sprite               - current Sprite
+        #    sprite.layer         - on-screen layer
+        #    isAnimating          - boolean animation status
+        #    secondsBetween       - seconds each frame is displayed for (floats supported)
+
+class ThreeStageAnimationCycle():
+    def __init__(self, filename1, filename2, filename3, x, y, secondsBetween, layer = 3):
+        self.coords = Coords(x, y)
+        self.spriteList = [Sprite(filename1, self, layer),
+                           Sprite(filename2, self, layer),
+                           Sprite(filename3, self, layer)]
+        self.sprite = self.spriteList[0]
+        self.sprite.layer = layer
+        self.isAnimating = false
+        self.secondsBetween = secondsBetween
+
+
+
+        # Initiates animation and adds to current animatedSpriteList
+
+    def animate(self):
+        WorldData.animatedSpriteList.append(self)
+        self.isAnimating = true
+        thread.start_new_thread(self.threadAnimate, (None,))
+
+    def stopAnimating(self):
+        WorldData.animatedSpriteList.remove(self)
+
+        # shortcut to object's sprite functions
+    def spawnSprite(self):
+        self.sprite.spawnSprite()
+    def removeSprite(self):
+        WorldData.display.remove(self.sprite)
+
+        # core animation, cycles through the sprites repeatedly at set intervals
+    def threadAnimate(self, x):
+        self.sprite = self.spriteList[2]
+        time.sleep(self.secondsBetween)
+        while self in WorldData.animatedSpriteList:
+            placeHolderSprite = self.spriteList[0]
+            self.removeSprite()
+            if self.sprite == self.spriteList[0]:
+                self.removeSprite()
+                self.sprite = self.spriteList[1]
+                self.spawnSprite()
+            elif self.sprite == self.spriteList[1]:
+                self.removeSprite()
+                self.sprite = self.spriteList[2]
+                self.spawnSprite()
+            else:
+              try:
+                self.removeSprite()
+              except:
+                None
+              self.sprite = self.spriteList[0]
+              self.spawnSprite()
+            time.sleep(self.secondsBetween)
+        if self not in WorldData.animatedSpriteList:
+            self.removeSprite()
+            self.sprite = self.spriteList[2]
+            del self
+
+        # Runs one 3-stage animation cycle by creating a new thread
+    def animateOnce(self):
+        WorldData.animatedSpriteList.append(self)
+        self.isAnimating = true
+        thread.start_new_thread(self.threadAnimateOnce, (None,))
+
+    def threadAnimateOnce(self, x):
+        try:
+          self.removeSprite()
+        except:
+          None
+        for i in range (0, 3):
+          self.sprite = self.spriteList[i]
+          self.spawnSprite()
+          time.sleep(self.secondsBetween)
+          self.removeSprite()
+        self.isAnimating = false
+        WorldData.animatedSpriteList.remove(self)
 
 
     # The following class holds area-specific information for use in tracking
@@ -1305,10 +861,57 @@ class Area():
 
 
 
+class AreaData():
+  TOWN_AREA = Area(RawSprite(WorldData.path + "newBack.png", 0, 0, 6), None, [StationaryAnimatedSprite(WorldData.path + "/EffectSprites/blankWater.gif", WorldData.path + "/EffectSprites/waterMoving.gif", 256, 352),
+                  ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
+                  ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)])
+  E_FIELD_AREA = Area(RawSprite(WorldData.path + "Efield.png", 0, 0, 6), None, [ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
+                    ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 864, 384, .2),
+                    ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 832, 288, .2)])
+  NE_FIELD_AREA = Area(RawSprite(WorldData.path + "NEfield.png", 0, 0, 6), None)
+  N_FIELD_AREA = Area(RawSprite(WorldData.path + "Nfield.png", 0, 0, 6), None, [ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 480, 192, .3)])
+  dungeonPath = WorldData.path + "dungeon/"
+  DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), None)
+  DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), None)
+  DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), None)
+  DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), None)
+  DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), None)
+  DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), None)
+  DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), None)
+
+
+
+
+class SoundData():
+  move = Music(WorldData.path+"Audio/footstep.wav")
+  move1 = Music(WorldData.path+"Audio/footstep.wav")
+  move2 = Music(WorldData.path+"Audio/footstep.wav")
+  move3 = Music(WorldData.path+"Audio/footstep.wav")
+  move4 = Music(WorldData.path+"Audio/footstep.wav")
+  dead_sound = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound2 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound3 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound4  = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound5 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  hit_sound  = Music(WorldData.path+"Audio/Metal_Bang.wav")
+  talk_sound = Music(WorldData.path+"Audio/Robot_blip.wav")
+  background_Music = Music(WorldData.path+"Audio/Still-of-Night_Looping.wav")
+  dungeon_sound = Music(WorldData.path+"Audio/Night-Stalker.wav")
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Menu():
   def __init__(self, player):
-    global bot1
     self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
     self.invItems = []
     for item in player.inv:
@@ -1317,22 +920,21 @@ class Menu():
     self.player = player
     self.coords = Coords(230, 0)
     self.animationHoldList = []
-    self.sprites = [Sprite(path +"Menu/menuDefault.png", self, 1),
-                    Sprite(path + "Menu/menuItem.png", self, 1),
-                    Sprite(path + "Menu/menuStatus.png", self, 1),
-                    Sprite (path + "Menu/shopMenu.png", self, 1)
+    self.sprites = [Sprite(WorldData.path +"Menu/menuDefault.png", self, 1),
+                    Sprite(WorldData.path + "Menu/menuItem.png", self, 1),
+                    Sprite(WorldData.path + "Menu/menuStatus.png", self, 1),
+                    Sprite (WorldData.path + "Menu/shopMenu.png", self, 1)
                     ]
     self.sprite = self.sprites[0]
 
 
   def openMenu(self):
-    global CURRENT_AREA
     self.updateStats()
-    for light in CURRENT_AREA.lightSources:
+    for light in WorldData.CURRENT_AREA.lightSources:
       if light.isOn:
         light.turnOff()
-        CURRENT_AREA.wasOn.append(light)
-    for animation in CURRENT_AREA.persistentAnimations:
+        WorldData.CURRENT_AREA.wasOn.append(light)
+    for animation in WorldData.CURRENT_AREA.persistentAnimations:
       if animation not in self.animationHoldList:
         self.animationHoldList.append(animation)
       try:
@@ -1378,9 +980,9 @@ class Menu():
     except:
       None
     self.sprite.removeSprite()
-    for light in CURRENT_AREA.wasOn:
+    for light in WorldData.CURRENT_AREA.wasOn:
       light.turnOn()
-      CURRENT_AREA.wasOn.remove(light)
+      WorldData.CURRENT_AREA.wasOn.remove(light)
     for animation in self.animationHoldList:
       animation.animate()
     self.animationHoldList = []
@@ -1395,7 +997,7 @@ class Menu():
     x = startX
     y = startY
     for item in labelsToShow:
-      display.addOrder(item, 0, x, y)
+      WorldData.display.addOrder(item, 0, x, y)
       y +=lineJump
   
   def removeMenuLabels (self):
@@ -1411,12 +1013,6 @@ class Menu():
 
 
 # universal coordinates object. Coords in pixels.
-
-class Coords():
-  def __init__(self, x, y):
-    self.x = x
-    self.y = y
-
 
 
 
@@ -1484,43 +1080,30 @@ class Map():
 
 
     def placeStruct(self, struct, spot, desc):
-        startx = (spot * BITS) % backWidth
-        starty = ((spot * BITS) / backWidth) * BITS
+        startx = (spot * WorldData.BITS) % WorldData.backWidth
+        starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS
         if desc == "tree":
             printNow("Tree at: " + str(startx) + " " + str(starty))
 
 
     def updateMap(self, tiles):
-        global dirt
-        global dirtWall
-        global grass
-        global stone
-        global stoneWall
-        global hole
-        global lavaRock
-        global water
-        global lava
-        global fence
-        global chest
-        global door
-        global blank
         for spot in range(0, len(tiles)):
-            if tiles[spot] == "g": self.placeTex(grass, spot)
-            elif tiles[spot] == "l": self.placeTex(lavaRock, spot)
-            elif tiles[spot] == "s": self.placeTex(stone, spot)
-            elif tiles[spot] == "S": self.placeTex(stoneWall, spot)
-            elif tiles[spot] == "d": self.placeTex(dirt, spot)
-            elif tiles[spot] == "D": self.placeTex(dirtWall, spot)
-            elif tiles[spot] == "w": self.placeTex(water, spot)
-            elif tiles[spot] == "f": self.placeTex(fence, spot)
-            elif tiles[spot] == "L": self.placeTex(lava, spot)
-            elif tiles[spot] == "H": self.placeTex(hole, spot)
-            elif tiles[spot] == ".": self.placeTex(blank, spot)
-            elif tiles[spot] == ",": self.placeTex(blank, spot)
-            elif tiles[spot] == "o": self.placeTex(door, spot)
-            elif tiles[spot] == "h": self.placeStruct(makePicture(structPath + "house.png"), spot, "house")
-            elif tiles[spot] == "t": self.placeStruct(makePicture(structPath + "tree1.png"), spot, "tree")
-            elif tiles[spot] == "c": self.placeStruct(chest, spot, "chest")
+            if tiles[spot] == "g": self.placeTex(WorldData.grass, spot)
+            elif tiles[spot] == "l": self.placeTex(WorldData.lavaRock, spot)
+            elif tiles[spot] == "s": self.placeTex(WorldData.stone, spot)
+            elif tiles[spot] == "S": self.placeTex(WorldData.stoneWall, spot)
+            elif tiles[spot] == "d": self.placeTex(WorldData.dirt, spot)
+            elif tiles[spot] == "D": self.placeTex(WorldData.dirtWall, spot)
+            elif tiles[spot] == "w": self.placeTex(WorldData.water, spot)
+            elif tiles[spot] == "f": self.placeTex(WorldData.fence, spot)
+            elif tiles[spot] == "L": self.placeTex(WorldData.lava, spot)
+            elif tiles[spot] == "H": self.placeTex(WorldData.hole, spot)
+            elif tiles[spot] == ".": self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == ",": self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == "o": self.placeTex(WorldData.door, spot)
+            elif tiles[spot] == "h": self.placeStruct(makePicture(WorldData.structPath + "house.png"), spot, "house")
+            elif tiles[spot] == "t": self.placeStruct(makePicture(WorldData.structPath + "tree1.png"), spot, "tree")
+            elif tiles[spot] == "c": self.placeStruct(WorldData.chest, spot, "chest")
 
 
     def isTraversable(self, spot):
@@ -1561,7 +1144,7 @@ class Doodad():
         self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
         self.sprite.spawnSprite()
         self.type = "doodad"
-        objectList.append(self)
+        WorldData.objectList.append(self)
 
 
 class Activatable(Doodad):
@@ -1635,7 +1218,7 @@ class Door(Doodad):
       Doodad.__init__(self, filepaths, x, y, passable = false)
       self.isLocked = locked
       self.coords = Coords(x, y)
-      self.sprite = Sprite(path + "tempDoorSprite.gif", self, 3)
+      self.sprite = Sprite(WorldData.path + "tempDoorSprite.gif", self, 3)
 
 
       # allows a being to pass through the door's coords and removes the sprite
@@ -1679,7 +1262,7 @@ class LightSource(Doodad):
         self.isOn = false
         self.type = "light"
         self.isBurnable = burnable
-        lightSources.append(self)
+        WorldData.lightSources.append(self)
 
 
         # turns the light on or off. Activated by a user's activateTarget()
@@ -1696,10 +1279,10 @@ class LightSource(Doodad):
             self.isOn = true
             self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
             self.animatedSprite.animate()
-            for being in currentBeingList:
+            for being in WorldData.currentBeingList:
                 distanceX = abs(being.coords.x - self.coords.x)
                 distanceY = abs(being.coords.y - self.coords.y)
-                if distanceX <= BITS*3 and distanceY <= range:
+                if distanceX <= WorldData.BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
         # turns the light off and runs a non-trivial check for nearby beings.
@@ -1707,11 +1290,11 @@ class LightSource(Doodad):
     def turnOff(self):
         if self.isOn == true:
             self.isOn = false
-            animatedSpriteList.remove(self.animatedSprite)
-            for being in currentBeingList:
+            WorldData.animatedSpriteList.remove(self.animatedSprite)
+            for being in WorldData.currentBeingList:
                 distanceX = abs(being.coords.x - self.coords.x)
                 distanceY = abs(being.coords.y - self.coords.y)
-                if distanceX <= BITS*3 and distanceY <= range:
+                if distanceX <= WorldData.BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
 
@@ -1735,15 +1318,14 @@ class LightSource(Doodad):
 
 class Transaction():
     def __init__(self, buyer, seller):
-      global bot1
       self.buyer = buyer
       self.seller = seller
       #self.buyingWindowSprite = Sprite()
       #self.sellingWindowSprite = Sprite()
-      if seller is bot1:
+      if seller is WorldData.bot1:
         self.sellingMode()
       else:
-        if len(bot1.inv) < MAX_INVENTORY:
+        if len(WorldData.bot1.inv) < MAX_INVENTORY:
           self.buyingMode()
         else:
           inventoryFull()
@@ -1769,9 +1351,8 @@ class Transaction():
         # from buyer, item is removed from seller inv, currency is added to seller
         # runs a check to make sure the buyer has room in the inv
     def buy(self, item):
-      global bot1
       cost = item.value * (1)
-      if buyer is bot1:
+      if buyer is WorldData.bot1:
         cost = int(item.value * (1.5))
       if len(self.buyer.inv) < MAX_INVENTORY:
         self.buyer.changeWallet(cost* (-1))
@@ -1809,10 +1390,10 @@ class UserWallet(Wallet):
     def __init__(self, parental, amount):
       Wallet.__init__(self, parental, amount)
       self.coords = Coords(960, 16)
-      self.sprite = Sprite(path + r"EffectSprites/walletSprite.gif", self, 1)
+      self.sprite = Sprite(WorldData.path + r"EffectSprites/walletSprite.gif", self, 1)
       self.label = gui.Label(str(self.value), gui.RIGHT)
       self.sprite.spawnSprite()
-      display.add(self.label, 1000, 24)
+      WorldData.display.add(self.label, 1000, 24)
 
 
       # updates the currency display to the wallet's current value
@@ -1824,7 +1405,7 @@ class UserWallet(Wallet):
       except:
         None
       self.label = gui.Label(str(self.value), gui.RIGHT)
-      display.add(self.label, 1000, 24)
+      WorldData.display.add(self.label, 1000, 24)
 
 
 
@@ -1852,11 +1433,11 @@ class Lootbag():
         self.isPassable = true
         self.contents = itemList
         self.coords = coords
-        self.spriteList = [Sprite(path + r"EffectSprites/lootBag.gif", self),
-                           Sprite(path + r"EffectSprites/lootBag2.gif", self)]
+        self.spriteList = [Sprite(WorldData.path + r"EffectSprites/lootBag.gif", self),
+                           Sprite(WorldData.path + r"EffectSprites/lootBag2.gif", self)]
         self.sprite = self.spriteList[0]
         self.type = "lootbag"
-        objectList.append(self)
+        WorldData.objectList.append(self)
 
         self.spawnSprite()
         x = None
@@ -1868,16 +1449,16 @@ class Lootbag():
 
         # quick access to sprite functions
     def spawnSprite(self):
-        display.place(self.sprite, self.coords.x, self.coords.y, 1)
+        WorldData.display.place(self.sprite, self.coords.x, self.coords.y, 1)
     def removeSprite(self):
-        display.remove(self.sprite)
+        WorldData.display.remove(self.sprite)
 
 
         # meant for use with thread.start_new_thread.
         # alternates between the object's sprites at half-second intervals.
         # Stops animation once the lootBag is removed from the CURRENT_AREA.objectList
     def threadAnimate(self, x):
-        while self in objectList:
+        while self in WorldData.objectList:
             time.sleep(.5)
             self.removeSprite()
             if self.sprite == self.spriteList[0]:
@@ -1886,7 +1467,7 @@ class Lootbag():
             else:
                 self.sprite = self.spriteList[0]
                 self.spawnSprite()
-        if self not in objectList:
+        if self not in WorldData.objectList:
             self.removeSprite()
             del self
 
@@ -1899,184 +1480,11 @@ class Lootbag():
 
 
 
-    # Class used when an ownerless sprite is needed
-    # Acts as a sprite with Coords
 
-class RawSprite():
-    def __init__(self, filename, x, y, layer = 4):
-        self.coords = Coords(x, y)
-        self.sprite = Sprite(filename, self, layer)
-    def spawnSprite(self):
-        self.sprite.spawnSprite()
-    def spawnSpriteFront(self):
-        self.sprite.spawnSpriteFront()
-    def spawnSpriteBack(self):
-        self.sprite.spawnSpriteBack()
-    def removeSprite(self):
-        self.sprite.removeSprite()
 
 
 
 
-
-
-
-
-
-
-
-
-    # general class for sprites.
-    # to display on the main screen.
-    # parameters:
-    #   filename    - filename in string format
-    #   parental      - object that owns this instance. must have it's own coords
-    #   layer       - screen layer of sprite, 0 closest to front
-    # Members inherited from gui.icon
-
-class Sprite(gui.Icon):
-
-  def __init__(self, filename, parental, layer = 4):
-      gui.JPanel.__init__(self)
-      gui.Widget.__init__(self)
-      filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM- LEGACY, NOT SURE OF NECESSITY
-      self.fileName = filename
-      self.offset = (0,0)                # How much to compensate - LEGACY, NOT SURE OF NECESSITY
-      self.position = (0,0)              # assume placement at a Display's origin- LEGACY, NOT SURE OF NECESSITY
-      self.display = None
-      self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
-      self.layer = layer
-      self.parental = parental
-
-      printNow(filename)
-      self.icon = gui.ImageIO.read(File(filename))
-      iconWidth = self.icon.getWidth(None)
-      iconHeight = self.icon.getHeight(None)
-
-      # keep a deep copy of the image (useful for repeated scalings - we always scale from original
-      # for higher quality)- LEGACY, NOT SURE OF NECESSITY
-      self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
-      self.originalIcon.setData( self.icon.getData() )
-
-
-
-
-
-
-      # adds the sprite to the display. If the sprite already exists,
-      # moves the sprite to the self.coords location
-
-  def spawnSprite(self):
-        display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
-
-      # adds the sprite to the display in the foreground (closest to the user)
-
-  def spawnSpriteFront(self):
-      self.layer = 3
-      self.spawnSprite()
-
-
-      # adds the sprite to the display in the background (closest to the map, just in front of it)
-      # order number of 3 spawns behind the background
-
-  def spawnSpriteBack(self):
-      self.layer = 5
-      self.spawnSprite()
-
-      # removes the sprite from the display
-
-  def removeSprite(self):
-        display.remove(self)
-
-
-
-
-
-
-
-
-
-
-
-
-  # inherits from Sprite. Separated to give
-  # ownership to sub-sprites (e.g., weapon)
-  #   See sprite for function exacts.
-
-class BeingSprite(Sprite):
-  def __init__(self, filename, parental, layer = 4):
-      gui.JPanel.__init__(self)
-      gui.Widget.__init__(self)
-      filename = gui.fixWorkingDirForJEM( filename )   # does nothing if not in JEM - LEGACY, UNUSED FOR NOW
-      self.fileName = filename
-      self.offset = (0,0)                # How much to compensate - LEGACY, UNUSED FOR NOW
-      self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
-      self.display = None
-      self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
-      self.icon = gui.ImageIO.read(File(filename))
-      self.parental = parental
-      self.layer = layer
-      iconWidth = self.icon.getWidth(None)
-      iconHeight = self.icon.getHeight(None)
-
-      # keep a deep copy of the image (useful for repeated scalings - we always scale from original
-      # for higher quality) - LEGACY, UNUSED FOR NOW
-      self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
-      self.originalIcon.setData( self.icon.getData() )
-
-
-
-
-
-
-      # adds the sprite to the display. If the sprite already exists,
-      # moves the sprite to the self.coords location
-
-  def spawnSprite(self):
-        display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
-
-
-
-
-
-
-      # removes the sprite
-
-  def removeSprite(self):
-        display.remove(self)
-
-
-
-
-
-      # not a huge fan of the weaponOut flag, but it works for now.
-      # without the check in putAwayWeap, JES complains
-
-  def displayWeapon(self, sprite, coords):
-    display.add(sprite, coords.x, coords.y)
-
-
-
-
-
-
-      # hides the weapon. may be unnecessary if we get
-      # animations figured out
-
-  def hideWeapon(self):
-      display.remove(self.weap)
-
-
-
-
-
-
-      #moves sprite to location given
-
-  def moveTo(self, x, y):
-      self.parental.coords.x = x
-      self.parental.coords.y = y
-      display.addOrder(self, 4, x, y)
 
 
 
@@ -2116,16 +1524,16 @@ class Weapon():
     def __init__(self, weapName):
         self.name = weapName
         if self.name != None:
-          self.power = weaponStatsList[self.name][0]
-          self.originalSprites = weaponStatsList[self.name][1]
-          self.isBurnable = weaponStatsList[self.name][2]
-          self.burningSprites = weaponStatsList[self.name][3]
-          self.range = weaponStatsList[self.name][4]
+          self.power = ListData.weaponStatsList[self.name][0]
+          self.originalSprites = ListData.weaponStatsList[self.name][1]
+          self.isBurnable = ListData.weaponStatsList[self.name][2]
+          self.burningSprites = ListData.weaponStatsList[self.name][3]
+          self.range = ListData.weaponStatsList[self.name][4]
           self.coords = Coords(0, 0)
           self.sprites = self.originalSprites
           self.sprite = Sprite(self.sprites[3], self)
           self.onFire = false
-          self.value = weaponStatsList[self.name][5]
+          self.value = ListData.weaponStatsList[self.name][5]
           self.displayed = false
           self.currentAnimation = None
           self.animationDelay = .15
@@ -2157,10 +1565,9 @@ class Weapon():
       # meant for use with thread.start_new_thread. Sets onFire to false after 15 turns
       # and reverts the weapon's sprites to the original sprites
     def threadFireCountdown(self, x):
-        global counter
-        start = counter.turn
+        start = WorldData.counter.turn
         finish = start + 15
-        while counter.turn < finish:
+        while WorldData.counter.turn < finish:
             None
         self.onFire = false
         self.sprites = self.originalSprites
@@ -2225,7 +1632,7 @@ class Weapon():
         # removes the weapon from the display
 
     def hide(self):
-        display.remove(self.sprite)
+        WorldData.display.remove(self.sprite)
         self.displayed = false
 
 
@@ -2292,13 +1699,13 @@ class Being():
         self.active = true
         self.inv = []
         self.coords = Coords(xSpawn, ySpawn)
-        self.forwardCoords = Coords(self.coords.x + BITS, self.coords.y)
+        self.forwardCoords = Coords(self.coords.x + WorldData.BITS, self.coords.y)
         self.unchangedSpritePaths = spritePaths
         self.spritePaths = spritePaths
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.weapon = Weapon(weapName)
         self.wallet = Wallet(self, self.lootValue)
-        self.facing = directionList["down"]
+        self.facing = ListData.directionList["down"]
         self.isMoving = false
         self.talkingLines = ["Hello!",
                              "Yes?",
@@ -2310,7 +1717,7 @@ class Being():
         if itemList != None:
             self.inv += itemList
         if not name or not "Boss" in name:
-            currentBeingList.append(self)
+            WorldData.currentBeingList.append(self)
 
 
 
@@ -2320,11 +1727,10 @@ class Being():
     def stun(self):
         thread.start_new_thread(self.threadStun, (None,))
     def threadStun(self, x):
-        global counter
-        start = counter.turn
+        start = WorldData.counter.turn
         self.active = false
         finish = start + 3
-        while counter.turn < finish:
+        while WorldData.counter.turn < finish:
           None
         self.active = true
         
@@ -2534,26 +1940,26 @@ class Being():
         # the player is directly in front.
 
     def simpleHostileAI(self):
-        distanceX = self.coords.x - bot1.coords.x
-        distanceY = self.coords.y - bot1.coords.y
-        closeProximity = BITS * 3
-        if self.forwardCoords.x == bot1.coords.x and self.forwardCoords.y == bot1.coords.y:
+        distanceX = self.coords.x - WorldData.bot1.coords.x
+        distanceY = self.coords.y - WorldData.bot1.coords.y
+        closeProximity = WorldData.BITS * 3
+        if self.forwardCoords.x == WorldData.bot1.coords.x and self.forwardCoords.y == WorldData.bot1.coords.y:
             self.meleeAtk()
-        elif self.coords.x-BITS == bot1.coords.x and self.coords.y == bot1.coords.y:
+        elif self.coords.x-WorldData.BITS == WorldData.bot1.coords.x and self.coords.y == WorldData.bot1.coords.y:
             self.faceLeft()
             self.meleeAtk()
-        elif self.coords.x+BITS == bot1.coords.x and self.coords.y == bot1.coords.y:
+        elif self.coords.x+WorldData.BITS == WorldData.bot1.coords.x and self.coords.y == WorldData.bot1.coords.y:
             self.faceRight()
             self.meleeAtk()
-        elif self.coords.x == bot1.coords.x and self.coords.y+BITS == bot1.coords.y:
+        elif self.coords.x == WorldData.bot1.coords.x and self.coords.y+WorldData.BITS == WorldData.bot1.coords.y:
             self.faceDown()
             self.meleeAtk()
-        elif self.coords.x == bot1.coords.x and self.coords.y-BITS == bot1.coords.y:
+        elif self.coords.x == WorldData.bot1.coords.x and self.coords.y-WorldData.BITS == WorldData.bot1.coords.y:
             self.faceUp()
             self.meleeAtk()
-        elif abs(self.coords.x - bot1.coords.x) < BITS and abs(self.coords.y - bot1.coords.y) < BITS:
+        elif abs(self.coords.x - WorldData.bot1.coords.x) < WorldData.BITS and abs(self.coords.y - WorldData.bot1.coords.y) < WorldData.BITS:
             self.moveRandom()
-        elif abs(self.coords.x - bot1.coords.x) <= closeProximity and abs(self.coords.y - bot1.coords.y) <= closeProximity:
+        elif abs(self.coords.x - WorldData.bot1.coords.x) <= closeProximity and abs(self.coords.y - WorldData.bot1.coords.y) <= closeProximity:
             self.moveTowardsPlayer(distanceX, distanceY)
         else:
             self.moveRandom()
@@ -2639,8 +2045,7 @@ class Being():
             os.remove(files)
         currentBeingList.remove(self)
         del self
-        global dead_sound
-        thread.start_new_thread(Music.Play, (dead_sound,))
+        thread.start_new_thread(Music.Play, (SoundData.dead_sound,))
 
         # Handles lighting of sprites. If a valid light object is within the range
         # currently set to BITS * 3, a new set of sprites will be created and applied
@@ -2648,15 +2053,14 @@ class Being():
         # Starts a new thread.
 
     def lightenDarken(self):
-        bright = self.lightWithinRange(BITS * 3)
+        bright = self.lightWithinRange(WorldData.BITS * 3)
         if self.spritePaths != self.lightSprites and bright:
             self.lightenPixels()
         elif self.spritePaths == self.lightSprites and not bright:
             self.resumePixels()
-            deletePath = path + "RobotSprites"
-            deleteKey = self.name + str(currentBeingList.index(self)) + "lightSprite"
-            x = None
-            thread.start_new_thread(self.threadDeleteLightSprites, (x,))
+            deletePath = WorldData.path + "RobotSprites"
+            deleteKey = self.name + str(WorldData.currentBeingList.index(self)) + "lightSprite"
+            thread.start_new_thread(self.threadDeleteLightSprites, (None,))
 
 
 
@@ -2665,7 +2069,7 @@ class Being():
         # a valid light source is within the range passed
 
     def lightWithinRange(self, range):
-        for light in lightSources:
+        for light in WorldData.lightSources:
             distanceX = abs(self.coords.x - light.coords.x)
             distanceY = abs(self.coords.y - light.coords.y)
             if distanceX <= range and distanceY <= range and light.isOn:
@@ -2699,7 +2103,7 @@ class Being():
                     color = getColor(p)
                     if color != makeColor(0, 0, 0):
                         setColor(p, makeColor(getRed(p)*1.5, getGreen(p)*1.5, getBlue(p)*1.5))
-            newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
+            newPicPath = WorldData.path + "RobotSprites/" + self.name + str(WorldData.currentBeingList.index(self)) + "lightSprite" + str(spriteNum) + ".gif"
             writePictureTo(pic, newPicPath)
             self.lightSprites.append(newPicPath)
             spriteNum += 1
@@ -2713,9 +2117,8 @@ class Being():
         # and setting the beings spriteList to a list containing the new sprites.
         # Note ** controls are intentionally locked during this logic
     def bloodify(self):
-        global text
         if isinstance(self, User):
-          text.onKeyType(blockKeys) 
+          WorldData.text.onKeyType(blockKeys) 
         try:
           spriteNum = 0
           for files in self.bloodySprites:
@@ -2731,7 +2134,7 @@ class Being():
                             setRed(p, (getRed(p)+228)/3)
                             setGreen(p, (getGreen(p)+174)/3)
                             setBlue(p, (getBlue(p)+14)/3)
-              newPicPath = path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
+              newPicPath = WorldData.path + "RobotSprites/" + self.name + str(currentBeingList.index(self)) + "bloodySprite" + str(spriteNum) + ".gif"
               writePictureTo(pic, newPicPath)
               self.bloodySprites.append(newPicPath)
               spriteNum += 1
@@ -2742,7 +2145,7 @@ class Being():
         except: 
           None
         if isinstance(self, User):
-          text.onKeyType(keyAction)
+          WorldData.text.onKeyType(keyAction)
 
 
 
@@ -2750,7 +2153,7 @@ class Being():
         # For use with actions that can target more than one target (e.g., attacks)
         # Returns a list of objects and beings that are directly in front of the being
     def getFrontTargetList(self):
-        bigList = currentBeingList + objectList
+        bigList = WorldData.currentBeingList + WorldData.objectList
         targetList = []
         for target in bigList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
@@ -2766,7 +2169,7 @@ class Being():
         #for use with actions that can only target one target (e.g., talking)
         # Returns one object or being directly in front of the target
     def getFrontTarget(self):
-        bigList = currentBeingList + objectList
+        bigList = WorldData.currentBeingList + WorldData.objectList
         for target in bigList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
                 return target
@@ -2789,12 +2192,11 @@ class Being():
         # display animation activates
 
     def meleeAtk(self):
-        global hit_sound
-        thread.start_new_thread(Music.Play, (hit_sound,))
+        thread.start_new_thread(Music.Play, (SoundData.hit_sound,))
         self.displayWeapon()
         x = None
         thread.start_new_thread(self.threadHideWeapon, (None,))
-        if CURRENT_AREA.mapObject.getTileDesc(tileCoordToSpot(coordToTileCoord(self.forwardCoords))) == "lava":# SORRY ABOUT THIS MESS
+        if WorldData.CURRENT_AREA.mapObject.getTileDesc(tileCoordToSpot(coordToTileCoord(self.forwardCoords))) == "lava":# SORRY ABOUT THIS MESS
           self.weapon.burn()
         for target in self.getFrontTargetList():
             if isinstance(target, LightSource):
@@ -2817,8 +2219,8 @@ class Being():
         # the given location. Uses multithreading.
 
     def displayDamage(self):
-        damage = Sprite(path + r"EffectSprites/damage.gif", self)
-        display.add(damage, self.coords.x, self.coords.y)
+        damage = Sprite(WorldData.path + r"EffectSprites/damage.gif", self)
+        WorldData.display.add(damage, self.coords.x, self.coords.y)
         thread.start_new_thread(threadRemoveSprite, (.25, damage))
 
 
@@ -2843,11 +2245,11 @@ class Being():
         # note that the weapon sprite is not despawned
 
     def displayWeapon(self):
-        if self.facing == directionList["up"]:
+        if self.facing == ListData.directionList["up"]:
             self.weapon.displayUp(self.forwardCoords.x, self.forwardCoords.y)
-        elif self.facing == directionList["down"]:
+        elif self.facing == ListData.directionList["down"]:
             self.weapon.displayDown(self.forwardCoords.x, self.forwardCoords.y)
-        elif self.facing == directionList["left"]:
+        elif self.facing == ListData.directionList["left"]:
             self.weapon.displayLeft(self.forwardCoords.x, self.forwardCoords.y)
         else:  #right
             self.weapon.displayRight(self.forwardCoords.x, self.forwardCoords.y)
@@ -2856,11 +2258,11 @@ class Being():
         # picks up any LootBag objects at the coords given
 
     def pickUpLoot(self, coords):
-        for item in objectList:
+        for item in WorldData.objectList:
             if item.type == "lootbag" and item.coords.x == coords.x and item.coords.y == coords.y:
-                if len(self.inv) + len(item.contents) < MAX_INVENTORY:
+                if len(self.inv) + len(item.contents) < WorldData.MAX_INVENTORY:
                   self.inv += item.contents
-                  objectList.remove(item)
+                  WorldData.objectList.remove(item)
                   try:
                     item.removeSprite()
                   except:
@@ -2891,32 +2293,31 @@ class Being():
 
 
     def moveUp(self):
-        global move
         self.isMoving = true
         self.faceUp()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.y >= 0 and CURRENT_AREA.isTraversable(self, targetSpot):
-            self.coords.y -= BITS/2
+        if self.coords.y >= 0 and WorldData.CURRENT_AREA.isTraversable(self, targetSpot):
+            self.coords.y -= WorldData.BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[7], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
             x = None
             thread.start_new_thread(self.threadMoveUp, (x,))
-            if self.facing == directionList["up"]:
-              self.forwardCoords.y = self.coords.y - BITS - BITS/2
+            if self.facing == ListData.directionList["up"]:
+              self.forwardCoords.y = self.coords.y - WorldData.BITS - WorldData.BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(Music.Play, (move,))
+              thread.start_new_thread(Music.Play, (SoundData.move,))
 
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (move,))
+            thread.start_new_thread(Music.Stop, (SoundData.move,))
 
 
     def threadMoveUp(self, x):
         time.sleep(.15)
-        self.coords.y -= BITS/2
+        self.coords.y -= WorldData.BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[0], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -2931,32 +2332,30 @@ class Being():
 
 
     def moveDown(self):
-        global move2
         self.isMoving = true
         self.faceDown()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.y += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.y < backHeight and CURRENT_AREA.isTraversable(self, targetSpot):
-            self.coords.y += BITS/2
+        if self.coords.y < WorldData.backHeight and WorldData.CURRENT_AREA.isTraversable(self, targetSpot):
+            self.coords.y += WorldData.BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[6], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
-            x = None
-            thread.start_new_thread(self.threadMoveDown, (x,))
+            thread.start_new_thread(self.threadMoveDown, (None,))
             self.sprite.moveTo(self.coords.x, self.coords.y)
-            if self.facing == directionList["down"]:
-              self.forwardCoords.y = self.coords.y + BITS + BITS/2
+            if self.facing == ListData.directionList["down"]:
+              self.forwardCoords.y = self.coords.y + WorldData.BITS + WorldData.BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(Music.Play, (move2,))
+              thread.start_new_thread(Music.Play, (SoundData.move2,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (move2,))
+            thread.start_new_thread(Music.Stop, (SoundData.move2,))
 
 
     def threadMoveDown(self, x):
         time.sleep(.15)
-        self.coords.y += BITS/2
+        self.coords.y += WorldData.BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -2971,30 +2370,28 @@ class Being():
 
 
     def moveLeft(self):
-        global move3
         self.isMoving = true
         self.faceLeft()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x -= 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x >= 0 and CURRENT_AREA.isTraversable(self, targetSpot):
-            self.coords.x -= BITS/2
+        if self.coords.x >= 0 and WorldData.CURRENT_AREA.isTraversable(self, targetSpot):
+            self.coords.x -= WorldData.BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[4], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
-            x = None
-            thread.start_new_thread(self.threadMoveLeft, (x,))
-            if self.facing == directionList["left"]:
+            thread.start_new_thread(self.threadMoveLeft, (None,))
+            if self.facing == ListData.directionList["left"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x - BITS - BITS/2
-              thread.start_new_thread(Music.Play, (move3,))
+              self.forwardCoords.x = self.coords.x - WorldData.BITS - WorldData.BITS/2
+              thread.start_new_thread(Music.Play, (SoundData.move3,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (move3,))
+            thread.start_new_thread(Music.Stop, (SoundData.move3,))
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
-        self.coords.x -= BITS/2
+        self.coords.x -= WorldData.BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[2], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -3008,31 +2405,29 @@ class Being():
         self.isMoving = false
 
     def moveRight(self):
-        global move
         self.isMoving = true
         self.faceRight()
         targetCoord = coordToTileCoord(self.coords)
         targetCoord.x += 1
         targetSpot = tileCoordToSpot(targetCoord)
-        if self.coords.x < backWidth and CURRENT_AREA.isTraversable(self, targetSpot):
-            self.coords.x += BITS/2
+        if self.coords.x < WorldData.backWidth and WorldData.CURRENT_AREA.isTraversable(self, targetSpot):
+            self.coords.x += WorldData.BITS/2
             self.sprite.removeSprite()
             self.sprite = BeingSprite(self.spritePaths[5], self)
             self.sprite.moveTo(self.coords.x, self.coords.y)
-            x = None
-            thread.start_new_thread(self.threadMoveRight, (x,))
-            if self.facing == directionList["right"]:
+            thread.start_new_thread(self.threadMoveRight, (None,))
+            if self.facing == ListData.directionList["right"]:
               self.forwardCoords.y = self.coords.y
-              self.forwardCoords.x = self.coords.x + BITS+ BITS/2
-              thread.start_new_thread(Music.Play, (move4,))
+              self.forwardCoords.x = self.coords.x + WorldData.BITS+ WorldData.BITS/2
+              thread.start_new_thread(Music.Play, (SoundData.move4,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (move4,))
+            thread.start_new_thread(Music.Stop, (SoudData.move4,))
 
 
     def threadMoveRight(self, x):
         time.sleep(.1)
-        self.coords.x += BITS/2
+        self.coords.x += WorldData.BITS/2
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[3], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
@@ -3054,48 +2449,48 @@ class Being():
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != directionList["up"]:
-          self.facing = directionList["up"]
+        if self.facing != ListData.directionList["up"]:
+          self.facing = ListData.directionList["up"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[0], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.y = self.coords.y - BITS
+          self.forwardCoords.y = self.coords.y - WorldData.BITS
           self.forwardCoords.x = self.coords.x
 
     def faceDown(self):
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != directionList["down"]:
-          self.facing = directionList["down"]
+        if self.facing != ListData.directionList["down"]:
+          self.facing = ListData.directionList["down"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[1], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.y = self.coords.y + BITS
+          self.forwardCoords.y = self.coords.y + WorldData.BITS
           self.forwardCoords.x = self.coords.x
 
     def faceLeft(self):
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != directionList["left"]:
-          self.facing = directionList["left"]
+        if self.facing != ListData.directionList["left"]:
+          self.facing = ListData.directionList["left"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[2], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.x = self.coords.x - BITS
+          self.forwardCoords.x = self.coords.x - WorldData.BITS
           self.forwardCoords.y = self.coords.y
 
     def faceRight(self):
         #playAnimation
         if self.weapon.displayed == true:
           self.weapon.hide()
-        if self.facing != directionList["right"]:
-          self.facing = directionList["right"]
+        if self.facing != ListData.directionList["right"]:
+          self.facing = ListData.directionList["right"]
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.spritePaths[3], self)
           self.sprite.spawnSprite()
-          self.forwardCoords.x = self.coords.x + BITS
+          self.forwardCoords.x = self.coords.x + WorldData.BITS
           self.forwardCoords.y = self.coords.y
 
 
@@ -3104,7 +2499,7 @@ class Being():
 class Hitbox(Being):
   def __init__(self, parent, xSpawn, ySpawn, itemList = None):
     name = parent.getName() + "Hitbox"
-    Being.__init__(self, name, None, bossDragonHeadSpritePaths, xSpawn, ySpawn, itemList = None)
+    Being.__init__(self, name, None, SpriteData.bossDragonHeadSpritePaths, xSpawn, ySpawn, itemList = None)
     self.parent = parent
 
     #if hitbox hit parent
@@ -3125,7 +2520,7 @@ def makeHitbox(parent, width, height):
         for y in range(0, height):
             if x == 0 and y == 0:
                 continue
-            tempBox = Hitbox(parent, startx + width*BITS, starty + height*BITS)
+            tempBox = Hitbox(parent, startx + width*WorldData.BITS, starty + height*WorldData.BITS)
             boxes.append(tempBox)
     return boxes
 
@@ -3139,34 +2534,33 @@ def makeHitbox(parent, width, height):
 class Friendly(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
-        self.gibSpriteList = [RawSprite(path + r"RobotSprites/friendlyBigGib1.gif", self.coords.x, self.coords.y),
-                              RawSprite(path + r"RobotSprites/friendlyBigGib2.gif", self.coords.x, self.coords.y),
-                              RawSprite(path + r"RobotSprites/friendlyHead.gif", self.coords.x, self.coords.y),
+        self.gibSpriteList = [RawSprite(WorldData.path + r"RobotSprites/friendlyBigGib1.gif", self.coords.x, self.coords.y),
+                              RawSprite(WorldData.path + r"RobotSprites/friendlyBigGib2.gif", self.coords.x, self.coords.y),
+                              RawSprite(WorldData.path + r"RobotSprites/friendlyHead.gif", self.coords.x, self.coords.y),
                               ]
 
 
     def gibSpawn(self, gibSprite, x, y):
-        gibList.append(gibSprite.sprite)
-        display.add(gibSprite.sprite, x, y)
+        WorldData.gibList.append(gibSprite.sprite)
+        WorldData.display.add(gibSprite.sprite, x, y)
 
     def giblets(self):
-        x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
-        y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
+        x = random.randint(self.coords.x - WorldData.BITS, self.coords.x + WorldData.BITS)
+        y = random.randint(self.coords.y - WorldData.BITS, self.coords.y + WorldData.BITS)
         if isTraversable(x, y):
-          animatedGib = AnimatedGiblets(path + r"RobotSprites/friendlyBigGib1.gif", path + r"RobotSprites/friendlyBigGib2.gif", x, y)
+          animatedGib = AnimatedGiblets(WorldData.path + r"RobotSprites/friendlyBigGib1.gif", WorldData.path + r"RobotSprites/friendlyBigGib2.gif", x, y)
           animatedGib.animate()
         possibilities = random.randint(0, 3)
         if possibilities == 3:
           for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
-            y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
+            x = random.randint(self.coords.x - WorldData.BITS, self.coords.x + WorldData.BITS)
+            y = random.randint(self.coords.y - WorldData.BITS, self.coords.y + WorldData.BITS)
             if isTraversable(x, y):
               self.gibSpawn(self.gibSpriteList[2], x, y)
 
         # Actions to be taken on hp <= 0
 
     def dead(self):
-        global dead_sound2
         self.giblets()
         self.inventoryAdd(self.weapon)
         self.dropLoot()
@@ -3176,9 +2570,9 @@ class Friendly(Being):
             os.remove(files)
           except:
             None
-        currentBeingList.remove(self)
+        WorldData.currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (dead_sound2,))
+        thread.start_new_thread(Music.Play, (SoundData.dead_sound2,))
 
 
 
@@ -3197,8 +2591,8 @@ class Friendly(Being):
 class ShopKeeper(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None)
-        self.gibSpriteList = [Sprite(path + r"RobotSprites/shopKeeperGib1.gif", self),
-                              Sprite(path + r"RobotSprites/shopKeeperGib2.gif", self)
+        self.gibSpriteList = [Sprite(WorldData.path + r"RobotSprites/shopKeeperGib1.gif", self),
+                              Sprite(WorldData.path + r"RobotSprites/shopKeeperGib2.gif", self)
                               ]
 
 
@@ -3209,10 +2603,10 @@ class ShopKeeper(Being):
         # Displays gore effects
 
     def giblets(self):
-        x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
-        y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
+        x = random.randint(self.coords.x - WorldData.BITS, self.coords.x + WorldData.BITS)
+        y = random.randint(self.coords.y - WorldData.BITS, self.coords.y + WorldData.BITS)
         if isTraversable(x, y):
-          animatedGib = AnimatedGiblets(path + r"RobotSprites/shopKeeperGib1.gif", path + r"RobotSprites/shopKeeperGib2.gif", x, y)
+          animatedGib = AnimatedGiblets(WorldData.path + r"RobotSprites/shopKeeperGib1.gif", WorldData.path + r"RobotSprites/shopKeeperGib2.gif", x, y)
           animatedGib.animate()
 
 
@@ -3220,16 +2614,15 @@ class ShopKeeper(Being):
     def dead(self):
         #play animation
         #delete coordinate data from grid
-        global dead_sound4
         self.giblets()
         self.inventoryAdd(self.weapon)
         self.dropLoot();
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        currentBeingList.remove(self)
+        WorldData.currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (dead_sound4,))
+        thread.start_new_thread(Music.Play, (SoundData.dead_sound4,))
 
 
 
@@ -3245,11 +2638,11 @@ class Enemy(Being):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn)
         for num in range(0, level):
             self.levelUp()
-        self.gibSpriteList = [Sprite(path + r"RobotSprites/enemyArmGib.gif", self),
-                              Sprite(path + r"RobotSprites/enemyLegGib.gif", self),
-                              Sprite(path + r"RobotSprites/enemyLegGib2.gif", self),
-                              Sprite(path + r"RobotSprites/enemyBodyGib.gif", self),
-                              Sprite(path + r"RobotSprites/enemyHeadGib.gif", self),
+        self.gibSpriteList = [Sprite(WorldData.path + r"RobotSprites/enemyArmGib.gif", self),
+                              Sprite(WorldData.path + r"RobotSprites/enemyLegGib.gif", self),
+                              Sprite(WorldData.path + r"RobotSprites/enemyLegGib2.gif", self),
+                              Sprite(WorldData.path + r"RobotSprites/enemyBodyGib.gif", self),
+                              Sprite(WorldData.path + r"RobotSprites/enemyHeadGib.gif", self),
                               ]
         self.hostile = true
 
@@ -3272,16 +2665,16 @@ class Enemy(Being):
         # adds a sprite to the gibList and display at the pixel coords given
 
     def gibSpawn(self, gibSprite, x, y):
-        gibList.append(gibSprite)
-        display.add(gibSprite, x, y)
+        WorldData.gibList.append(gibSprite)
+        WorldData.display.add(gibSprite, x, y)
 
         # Gore effect for enemies
 
     def giblets(self):
         gibIndex = 0
         for i in range(0, random.randint(0, len(self.gibSpriteList))):
-            x = random.randint(self.coords.x - BITS, self.coords.x + BITS)
-            y = random.randint(self.coords.y - BITS, self.coords.y + BITS)
+            x = random.randint(self.coords.x - WorldData.BITS, self.coords.x + WorldData.BITS)
+            y = random.randint(self.coords.y - WorldData.BITS, self.coords.y + WorldData.BITS)
             if isTraversable(x, y):
                 self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
                 print(gibIndex)
@@ -3300,10 +2693,9 @@ class Enemy(Being):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
           os.remove(files)
-        currentBeingList.remove(self)
+        WorldData.currentBeingList.remove(self)
         del self
-        Music.Play(dead_sound3)
-        thread.start_new_thread(Music.Play, (dead_sound3,))
+        thread.start_new_thread(Music.Play, (SoundData.dead_sound3,))
 
 
 
@@ -3325,24 +2717,24 @@ class Enemy(Being):
 
 class Threat2Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
-      Enemy.__init__(self, name, "Rock", greenEnemySpritePaths, xSpawn, ySpawn, 10)
+      Enemy.__init__(self, name, "Rock", SpriteData.greenEnemySpritePaths, xSpawn, ySpawn, 10)
 
 class Threat3Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
-      Enemy.__init__(self, name, "Rock", yellowEnemySpritePaths, xSpawn, ySpawn, 20)
+      Enemy.__init__(self, name, "Rock", SpriteData.yellowEnemySpritePaths, xSpawn, ySpawn, 20)
 
 class Threat4Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
-      Enemy.__init__(self, name, "Sword", purpleEnemySpritePaths, xSpawn, ySpawn, 30)
+      Enemy.__init__(self, name, "Sword", SpriteData.purpleEnemySpritePaths, xSpawn, ySpawn, 30)
 
 class Threat5Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
-      Enemy.__init__(self, name, "Botsmasher", redEnemySpritePaths, xSpawn, ySpawn, 50)
+      Enemy.__init__(self, name, "Botsmasher", SpriteData.redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 #Main Class for the first Boss
 class Boss1(Enemy):
     def __init__(self):
-        Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 14*BITS, 4*BITS, 50)
+        Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
         self.leftHand = false
         self.rightHand = false
         self.leftHandStunned = true
@@ -3399,7 +2791,7 @@ class AnimatedGiblets():
         self.spriteList = [Sprite(filename1, self),
                            Sprite(filename2, self)]
         self.sprite = self.spriteList[0]
-        gibList.append(self.spriteList[0])
+        WorldData.gibList.append(self.spriteList[0])
 
 
 
@@ -3418,9 +2810,9 @@ class AnimatedGiblets():
         # sprite addition and removal to and from display
 
     def spawnSprite(self):
-        display.place(self.sprite, self.coords.x, self.coords.y, 5)
+        WorldData.display.place(self.sprite, self.coords.x, self.coords.y, 5)
     def removeSprite(self):
-        display.remove(self.sprite)
+        WorldData.display.remove(self.sprite)
 
 
 
@@ -3462,10 +2854,10 @@ class Potion():
 
 class HpBar():
     def __init__(self, parental):
-      self.sprites = [Sprite(path + "/EffectSprites/hpBarSpriteEmpty.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteCritical.gif", self, 1),
-                      Sprite(path + "/EffectSprites/hpBarSpriteLow.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteHalf.gif", self, 1),
-                      Sprite(path + "/EffectSprites/hpBarSpriteHigh.gif", self, 1), Sprite(path + "/EffectSprites/hpBarSpriteMost.gif", self, 1),
-                      Sprite(path + "/EffectSprites/hpBarSpriteFull.gif", self, 1)]
+      self.sprites = [Sprite(WorldData.path + "/EffectSprites/hpBarSpriteEmpty.gif", self, 1), Sprite(WorldData.path + "/EffectSprites/hpBarSpriteCritical.gif", self, 1),
+                      Sprite(WorldData.path + "/EffectSprites/hpBarSpriteLow.gif", self, 1), Sprite(WorldData.path + "/EffectSprites/hpBarSpriteHalf.gif", self, 1),
+                      Sprite(WorldData.path + "/EffectSprites/hpBarSpriteHigh.gif", self, 1), Sprite(WorldData.path + "/EffectSprites/hpBarSpriteMost.gif", self, 1),
+                      Sprite(WorldData.path + "/EffectSprites/hpBarSpriteFull.gif", self, 1)]
       self.sprite = self.sprites[6]
       self.parental = parental
       self.coords = Coords(0, 0)
@@ -3517,154 +2909,6 @@ class HpBar():
         #    isAnimating          - animation status
 
 
-class StationaryAnimatedSprite():
-    def __init__(self, filename1, filename2, x, y, layer = 3):
-        self.coords = Coords(x, y)
-        self.spriteList = [Sprite(filename1, self, layer),
-                           Sprite(filename2, self, layer)]
-        self.sprite = self.spriteList[0]
-        self.coords = Coords(x, y)
-        self.sprite.layer = layer
-        self.isAnimating = false
-
-
-
-        # Initiates the animation by creating a new thread.
-    def animate(self):
-        animatedSpriteList.append(self)
-        self.isAnimating = true
-        thread.start_new_thread(self.threadAnimate, (None,))
-    def stopAnimating(self):
-        global animatedSpriteList
-        animatedSpriteList.remove(self)
-
-        # Sprite creation/removal
-    def spawnSprite(self):
-        self.sprite.spawnSprite()
-    def removeSprite(self):
-        display.remove(self.sprite)
-
-        # Actual animation logic. Meant for use in thread.start_new_thread().
-        # Flickers between two sprites at random intervals. Animation is stopped when
-        # the object is removed from the animatedSpriteList
-    def threadAnimate(self, container):
-        while self in animatedSpriteList:
-            time.sleep(random.randint(0, 2)/10.0)
-            placeHolderSprite = self.spriteList[0]
-            self.removeSprite()
-            if self.sprite == self.spriteList[0]:
-                self.sprite = self.spriteList[1]
-                self.spawnSprite()
-            else:
-                self.sprite = self.spriteList[0]
-                self.spawnSprite()
-        if self not in animatedSpriteList:
-            self.removeSprite()
-            del self
-
-
-
-
-
-
-        # Custom 3-stage animated sprite that animates 3 frames in cycles (1, 2, 3, 1, 2, 3...)
-        # Constructor Parameters:
-        #    filename1            - filepath for first sprite image
-        #    filename2            - filepath for second sprite image
-        #    filename3            - filepath for third sprite image
-        #    x                    - x coord in pixels
-        #    y                    - y coord in pixels
-        #    secondsBetween       - seconds each frame is displayed for (floats supported)
-        #    layer                - on-screen layer
-        #
-        # Members:
-        #    coords               - Coords object indicating location
-        #    spriteList           - list of Sprite objects to be cycled
-        #    sprite               - current Sprite
-        #    sprite.layer         - on-screen layer
-        #    isAnimating          - boolean animation status
-        #    secondsBetween       - seconds each frame is displayed for (floats supported)
-
-class ThreeStageAnimationCycle():
-    def __init__(self, filename1, filename2, filename3, x, y, secondsBetween, layer = 3):
-        self.coords = Coords(x, y)
-        self.spriteList = [Sprite(filename1, self, layer),
-                           Sprite(filename2, self, layer),
-                           Sprite(filename3, self, layer)]
-        self.sprite = self.spriteList[0]
-        self.sprite.layer = layer
-        self.isAnimating = false
-        self.secondsBetween = secondsBetween
-
-
-
-        # Initiates animation and adds to current animatedSpriteList
-
-    def animate(self):
-        global animatedSpriteList
-        animatedSpriteList.append(self)
-        self.isAnimating = true
-        thread.start_new_thread(self.threadAnimate, (None,))
-
-    def stopAnimating(self):
-        global animatedSpriteList
-        animatedSpriteList.remove(self)
-
-        # shortcut to object's sprite functions
-    def spawnSprite(self):
-        self.sprite.spawnSprite()
-    def removeSprite(self):
-        display.remove(self.sprite)
-
-        # core animation, cycles through the sprites repeatedly at set intervals
-    def threadAnimate(self, x):
-        global animatedSpriteList
-        self.sprite = self.spriteList[2]
-        time.sleep(self.secondsBetween)
-        while self in animatedSpriteList:
-            placeHolderSprite = self.spriteList[0]
-            self.removeSprite()
-            if self.sprite == self.spriteList[0]:
-                self.removeSprite()
-                self.sprite = self.spriteList[1]
-                self.spawnSprite()
-            elif self.sprite == self.spriteList[1]:
-                self.removeSprite()
-                self.sprite = self.spriteList[2]
-                self.spawnSprite()
-            else:
-              try:
-                self.removeSprite()
-              except:
-                None
-              self.sprite = self.spriteList[0]
-              self.spawnSprite()
-            time.sleep(self.secondsBetween)
-        if self not in animatedSpriteList:
-            self.removeSprite()
-            self.sprite = self.spriteList[2]
-            del self
-
-        # Runs one 3-stage animation cycle by creating a new thread
-    def animateOnce(self):
-        global animatedSpriteList
-        animatedSpriteList.append(self)
-        self.isAnimating = true
-        thread.start_new_thread(self.threadAnimateOnce, (None,))
-
-    def threadAnimateOnce(self, x):
-        global animatedSpriteList
-        try:
-          self.removeSprite()
-        except:
-          None
-        for i in range (0, 3):
-          self.sprite = self.spriteList[i]
-          self.spawnSprite()
-          time.sleep(self.secondsBetween)
-          self.removeSprite()
-        self.isAnimating = false
-        animatedSpriteList.remove(self)
 
 
 
@@ -3690,13 +2934,13 @@ class User(Being):
         self.legs = "Shame"
         self.boots = "Toes"
         self.gloves = "Digits"
-        self.specialSprites1 = [ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Up.gif", path + "EffectSprites/lv1Stun2Up.gif", path + "EffectSprites/lv1Stun3Up.gif", self.coords.x, self.coords.y-32, .1),
-                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Down.gif", path + "EffectSprites/lv1Stun2Down.gif", path + "EffectSprites/lv1Stun3Down.gif", self.coords.x, self.coords.y+32, .1),
-                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Left.gif", path + "EffectSprites/lv1Stun2Left.gif", path + "EffectSprites/lv1Stun3Left.gif", self.coords.x, self.coords.x-32, .1),
-                                ThreeStageAnimationCycle(path + "EffectSprites/lv1Stun1Right.gif", path + "EffectSprites/lv1Stun2Right.gif", path + "EffectSprites/lv1Stun3Right.gif", self.coords.x, self.coords.x+32, .1),]
-        self.specialSprite2 = ThreeStageAnimationCycle(path + "EffectSprites/lv2Stun1.gif", path + "EffectSprites/lv2Stun2.gif", path + "EffectSprites/lv2Stun3.gif", self.coords.x, self.coords.x+32, .1)
-        self.specialSprite3 = ThreeStageAnimationCycle(path + "EffectSprites/lv3Stun1.gif", path + "EffectSprites/lv3Stun2.gif", path + "EffectSprites/lv3Stun3.gif", self.coords.x, self.coords.x+32, .1)
-        self.area = CURRENT_AREA
+        self.specialSprites1 = [ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv1Stun1Up.gif", WorldData.path + "EffectSprites/lv1Stun2Up.gif", WorldData.path + "EffectSprites/lv1Stun3Up.gif", self.coords.x, self.coords.y-32, .1),
+                                ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv1Stun1Down.gif", WorldData.path + "EffectSprites/lv1Stun2Down.gif", WorldData.path + "EffectSprites/lv1Stun3Down.gif", self.coords.x, self.coords.y+32, .1),
+                                ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv1Stun1Left.gif", WorldData.path + "EffectSprites/lv1Stun2Left.gif", WorldData.path + "EffectSprites/lv1Stun3Left.gif", self.coords.x, self.coords.x-32, .1),
+                                ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv1Stun1Right.gif", WorldData.path + "EffectSprites/lv1Stun2Right.gif", WorldData.path + "EffectSprites/lv1Stun3Right.gif", self.coords.x, self.coords.x+32, .1),]
+        self.specialSprite2 = ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv2Stun1.gif", WorldData.path + "EffectSprites/lv2Stun2.gif", WorldData.path + "EffectSprites/lv2Stun3.gif", self.coords.x, self.coords.x+32, .1)
+        self.specialSprite3 = ThreeStageAnimationCycle(WorldData.path + "EffectSprites/lv3Stun1.gif", WorldData.path + "EffectSprites/lv3Stun2.gif", WorldData.path + "EffectSprites/lv3Stun3.gif", self.coords.x, self.coords.x+32, .1)
+        self.area = WorldData.CURRENT_AREA
         self.hpBar = HpBar(self)
         self.wallet = UserWallet(self, 0)
         self.sprite.spawnSprite()
@@ -3732,21 +2976,21 @@ class User(Being):
           target.hostile = true
           target.stun()
     def stunLv1Animate(self):
-      if self.facing == directionList["up"]:
-        self.specialSprites1[0].coords.x = bot1.coords.x 
-        self.specialSprites1[0].coords.y = bot1.coords.y - 32
+      if self.facing == ListData.directionList["up"]:
+        self.specialSprites1[0].coords.x = self.coords.x 
+        self.specialSprites1[0].coords.y = self.coords.y - 32
         self.specialSprites1[0].animateOnce()
-      elif self.facing == directionList["down"]:
-        self.specialSprites1[1].coords.x = bot1.coords.x 
-        self.specialSprites1[1].coords.y = bot1.coords.y + 32
+      elif self.facing == ListData.directionList["down"]:
+        self.specialSprites1[1].coords.x = self.coords.x 
+        self.specialSprites1[1].coords.y = self.coords.y + 32
         self.specialSprites1[1].animateOnce()
-      elif self.facing == directionList["left"]:
-        self.specialSprites1[2].coords.x = bot1.coords.x - 32
-        self.specialSprites1[2].coords.y = bot1.coords.y 
+      elif self.facing == ListData.directionList["left"]:
+        self.specialSprites1[2].coords.x = self.coords.x - 32
+        self.specialSprites1[2].coords.y = self.coords.y 
         self.specialSprites1[2].animateOnce()
       else:
-        self.specialSprites1[3].coords.x = bot1.coords.x + 32
-        self.specialSprites1[3].coords.y = bot1.coords.y 
+        self.specialSprites1[3].coords.x = self.coords.x + 32
+        self.specialSprites1[3].coords.y = self.coords.y 
         self.specialSprites1[3].animateOnce()
     
 
@@ -3758,12 +3002,11 @@ class User(Being):
         # calls stunLevel1
         # hp is reduced through the stunLevel1 call
     def stunLevel2(self):
-      global CURRENT_AREA
       self.stunLevel1()
       self.specialSprite2.coords.x = self.coords.x - 64
       self.specialSprite2.coords.y = self.coords.y - 64
       self.specialSprite2.animateOnce()
-      for being in CURRENT_AREA.beingList:
+      for being in WorldData.CURRENT_AREA.beingList:
         if self.stun2InRange(being) and being is not self:
           being.hostile = true
           being.stun()
@@ -3781,14 +3024,13 @@ class User(Being):
         # Targets within 2 tiles will be stunned for 3 turns,
         # hostile after, and will take damage scaled with bot1's atk
     def stunLevel3(self, damage = (-10)):
-      global CURRENT_AREA
       self.changeHp((self.hp/(-4.0)))
       self.specialSprite3.coords.x = self.coords.x - 64
       self.specialSprite3.coords.y = self.coords.y - 64
       self.specialSprite3.animateOnce()
       damage = self.atk/(-4)
       beingsToDamage = []
-      for being in CURRENT_AREA.beingList:
+      for being in WorldData.CURRENT_AREA.beingList:
         if self.stun3InRange(being) and being is not self:
           beingsToDamage.append(being)
       for being in beingsToDamage:
@@ -3815,17 +3057,16 @@ class User(Being):
       # Combination cleanup/money creation.
       # Too many giblets on screen causes issues, so
       # This was implemented to give the user a reason to cleanup
-      # Removes giblets within BITS pixels of the player
+      # Removes giblets within WorldData.BITS pixels of the player
       # and converts them to money for the player's wallet
     def suckUpGiblets(self):
-      global CURRENT_AREA
-      for gib in CURRENT_AREA.gibList:
+      for gib in WorldData.CURRENT_AREA.gibList:
         distanceX = abs(self.coords.x - gib.parental.coords.x)
         distanceY = abs(self.coords.y - gib.parental.coords.y)
-        if distanceX + distanceY<= BITS:
+        if distanceX + distanceY<= WorldData.BITS:
           gib.removeSprite()
-          CURRENT_AREA.gibList.remove(gib)
-          if gib.fileName == path + r"RobotSprites/friendlyHead.gif" or gib.fileName == path + r"RobotSprites/enemyHeadGib.gif":
+          WorldData.CURRENT_AREA.gibList.remove(gib)
+          if gib.fileName == WorldData.path + r"RobotSprites/friendlyHead.gif" or gib.fileName == WorldData.path + r"RobotSprites/enemyHeadGib.gif":
             self.changeWallet(5)
           else:
             self.changeWallet(1)
@@ -3844,21 +3085,21 @@ class User(Being):
 
     def setWeapon(self, weapon):
         self.inventoryAdd(self.weapon)
-        self.atk -= weaponStatsList[self.weapon.name][0]
+        self.atk -= ListData.weaponStatsList[self.weapon.name][0]
         if weapon in self.inv:
           self.inventoryRemove(weapon)
         self.weapon = weapon
-        self.atk += weaponStatsList[self.weapon.name][0]
+        self.atk += ListData.weaponStatsList[self.weapon.name][0]
 
 
     def setHelm(self, helm):
         if self.helm != "Hair":
             self.inventoryAdd(self.helm)
-        self.df -= helmStatsList(self.helm)
+        self.df -= ListData.helmStatsList(self.helm)
         if helm in self.inv:
           self.inventoryRemove(helm)
         self.helm = helm
-        self.df += helmStatsList(self.helm)
+        self.df += ListData.helmStatsList(self.helm)
 
 
     def setChest(self, chest):
@@ -3909,15 +3150,15 @@ class User(Being):
         # equipment "set" functions
         # item should be passed as it's key as it appears
         # in the item lists
-
+        # NOT USED YET
     def equip(self, item):
-        if indexName == weaponStatsList:
-            if item in weaponStatsList:
+        if indexName == ListData.weaponStatsList:
+            if item in ListData.weaponStatsList:
                 self.setWeapon(item)
-        elif indexName == helmStatsList:
-            if item in helmStatsList:
+        elif indexName == ListData.helmStatsList:
+            if item in ListData.helmStatsList:
                 self.setHelm(item)
-        elif indexName == legsStatsList:
+        elif indexName == ListData.legsStatsList:
             if item in legsStatsList:
                 self.setLegs(item)
         elif indexName == chestStatsList:
@@ -3940,7 +3181,7 @@ class User(Being):
             # Attempt will not initiate if the inventory is full
 
     def steal(self, target):
-      if len(self.inv) < MAX_INVENTORY:
+      if len(self.inv) < WorldData.MAX_INVENTORY:
         possibilities = len(target.inv)
         if possibilities>0:
             if random.randint(0, 10)%10 == 0:
@@ -3960,8 +3201,7 @@ class User(Being):
             # Talks to the being directly in front
 
     def talk(self):
-        global talk_sound
-        thread.start_new_thread(Music.Play, (talk_sound,))
+        thread.start_new_thread(Music.Play, (SoundData.talk_sound,))
         target = self.getFrontTarget()
         if target.coords.x < self.coords.x:
           target.faceRight()
@@ -3983,8 +3223,7 @@ class User(Being):
     def dead(self):
         self.sprite.removeSprite()
         self.dropLoot()
-        global currentBeingList
-        currentBeingList.remove(self)
+        WorldData.currentBeingList.remove(self)
         for files in self.bloodySprites:
           try:
             os.remove(files)
@@ -3997,9 +3236,717 @@ class User(Being):
         self.wallet.value = 0
         self.wallet.sprite.removeSprite()
         removeLabel(self.wallet.label)
-        self.__init__("bot1", "Stick", userSpritePaths, self.area)
-        global dead_sound5
-        thread.start_new_thread(Music.Play, (dead_sound5,))
+        self.__init__("bot1", "Stick", SpriteData.userSpritePaths, self.area)
+        thread.start_new_thread(Music.Play, (SoundData.dead_sound5,))
+
+
+
+
+
+
+
+        ####################
+        #                  #
+        #    FUNCTIONS     #
+        #                  #
+        ####################
+
+
+                     
+
+
+
+
+# Removes the passed object from the display
+
+def removeLabel(label):
+    WorldData.display.remove(label)
+
+
+
+
+# All actions that depend on the turn counter go here. All actions/functions within
+# will occur with the passing of each turn (e.g., attack, player-directed movement)
+
+def turnPass():
+    WorldData.counter.turn += 1
+    if  WorldData.CURRENT_AREA != AreaData.TOWN_AREA and len(WorldData.currentBeingList)< WorldData.MAX_BEINGS:
+      if WorldData.counter.turn % 100 == 0 and bot1.level > 40:
+        spawnThreat5()
+      elif WorldData.counter.turn % 80 == 0 and bot1.level >= 28:
+        spawnThreat4()
+      elif WorldData.counter.turn % 40 == 0 and bot1.level >= 19:
+        if bot1.level >= 19:
+          spawnThreat3()
+        elif bot1.level >= 10:
+          spawnThreat2()
+      elif WorldData.counter.turn % 20 == 0:
+        spawnEnemy()
+
+    for person in WorldData.currentBeingList:
+      if person.active: #separated to leave room for friendly AIs in the future
+        if person.hostile:
+            person.simpleHostileAI()
+    if WorldData.bot1.hp <= 0:
+        WorldData.bot1.coords.x = 0
+        WorldData.bot1.coords.y = 0
+        WorldData.bot1.sprite.spawnSprite()
+    clearBadSprites()
+
+    #total action counter to affect shop/store stock
+
+
+def inventoryFull():
+    label = gui.Label("Not enough inventory space!")
+#    showLabel(label)
+ #   delayRemoveObject(label, 2)
+
+
+# slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
+# parameters:
+# object        - object to be moved (must have a sprite)
+# targetXBig    - x coord target (must be greater than object.coords.x)
+
+def slideRight(toBeMoved, targetXBig):
+    time.sleep(.005)
+    toBeMoved.coords.x += 1
+    toBeMoved.forwardCoords.x += 1
+    WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.x < targetXBig:
+        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
+
+# Slide-down logic identical to the above, but for vertical sliding
+def slideSpriteDown(toBeMoved, targetYBig):
+    time.sleep(.005)
+    toBeMoved.coords.y += 1
+    WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.y < targetYBig:
+        thread.start_new_thread(slideSpriteDown, (toBeMoved, targetYBig))
+
+
+
+
+# Checks player coords to determine if a load is necessary.
+# may call loadNewArea
+# double calls for garbage sprite cleanup
+
+def loadAreaCheck(player):
+    maxAceptableWidth = 960
+    maxAceptableHeight = 512
+    if WorldData.CURRENT_AREA.otherAreas:
+        currCoord = coordToTileCoord(WorldData.bot1.coords)
+        currSpot = tileCoordToSpot(currCoord)
+        if WorldData.currentMap.getTileDesc(currSpot) == "hole":
+            #enter the dungeon!
+            coordY = (HEIGHT_TILES/2) * WorldData.BITS
+            coordX = (WIDTH_TILES/2) * WorldData.BITS
+            WorldData.bot1.coords.y = coordY
+            WorldData.bot1.coords.x = coordX
+            loadNewArea(WorldData.CURRENT_AREA.otherAreas[0])
+            WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+        elif WorldData.currentMap.getTileDesc(currSpot) == "door":
+            coordY = (HEIGHT_TILES/2) * WorldData.BITS
+            coordX = (WIDTH_TILES/2) * WorldData.BITS
+            WorldData.bot1.coords.y = coordY
+            WorldData.bot1.coords.x = coordX
+            loadNewArea(WorldData.CURRENT_AREA.otherAreas[0])
+            WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+    if player.coords.y <= 0:
+        WorldData.bot1.coords.y = maxAceptableHeight
+        loadNewArea(WorldData.CURRENT_AREA.northArea)
+        WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+
+    elif player.coords.y > maxAceptableHeight:
+        WorldData.bot1.coords.y = WorldData.BITS #place user one in from the edge
+        loadNewArea(WorldData.CURRENT_AREA.southArea)
+        WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+    elif player.coords.x <= 0:
+        WorldData.bot1.coords.x = maxAceptableWidth
+        loadNewArea(WorldData.CURRENT_AREA.westArea)
+        WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+    elif player.coords.x > maxAceptableWidth:
+        WorldData.bot1.coords.x = WorldData.BITS #place user one in from the edge
+        loadNewArea(WorldData.CURRENT_AREA.eastArea)
+        WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
+
+
+
+
+
+# Joins area objects by placing both in the opposite area's opposite
+# area attribute.  Used when loading new areas. Arguments should be passed
+# as parameters are described (e.g., northArea should be the area to the north).
+
+def joinNorthSouthAreas(northArea, southArea):
+    northArea.southArea = southArea
+    southArea.northArea = northArea
+def joinEastWestAreas(eastArea, westArea):
+    eastArea.westArea = westArea
+    westArea.eastArea = eastArea
+def joinOtherAreas(target, area):
+    target.otherAreas.append(area)
+
+
+
+
+# Spawns the passed enemy object. If none is passed, the default spawned enemy is a blue enemy, lv 1,
+# with a stick as a weapon
+
+def spawnEnemy(toSpawn = None):
+    if toSpawn == None:
+      toSpawn = Enemy(None, "Stick", SpriteData.blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, 1)
+    if toSpawn.name == None:
+      toSpawn.name = ("EnemyBorn" + str(WorldData.counter.turn)+str(len(WorldData.CURRENT_AREA.beingList)))
+    if len(WorldData.CURRENT_AREA.beingList) < WorldData.MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+
+
+      # Quick spawn commands for higher level enemies
+def spawnThreat2():
+    toSpawn = Threat2Enemy("EnemyBorn" + str(WorldData.counter.turn)+str(len(WorldData.CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(WorldData.CURRENT_AREA.beingList) < WorldData.MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat3():
+    toSpawn = Threat3Enemy("EnemyBorn" + str(WorldData.counter.turn)+str(len(WorldData.CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(WorldData.CURRENT_AREA.beingList) < WorldData.MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat4():
+    toSpawn = Threat4Enemy("EnemyBorn" + str(WorldData.counter.turn)+str(len(WorldData.CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(WorldData.CURRENT_AREA.beingList) < WorldData.MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+def spawnThreat5():
+    toSpawn = Threat5Enemy("EnemyBorn" + str(WorldData.counter.turn)+str(len(WorldData.CURRENT_AREA.beingList)), random.randint(0, 10)*32, random.randint(0, 10)*32)
+    if len(WorldData.CURRENT_AREA.beingList) < WorldData.MAX_BEINGS:
+      while not isTraversable(toSpawn.coords.x, toSpawn.coords.y):
+          toSpawn.coords.x = random.randint(0, 10)*32
+          toSpawn.coords.y =  random.randint(0, 10)*32
+      toSpawn.sprite.spawnSprite()
+
+
+
+
+# Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
+
+def spawnFriendly(name = None, weap = "Stick", spritePaths = SpriteData.friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
+    if name == None:
+      name = ("FriendlyBorn" + str(WorldData.counter.turn))
+    while not isTraversable(x, y):
+        x = random.randint(0, 10)*32
+        y =  random.randint(0, 10)*32
+    friendly = Friendly(name, weap, spritePaths, x, y)
+    friendly.sprite.spawnSprite()
+
+
+# Used to remove objects (labels, sprites, etc.) from the display after a delay.
+# only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
+# directly.
+# Parameters:
+#   object          - An object on the displays self.items list
+#   delay           - the amount of time in seconds to delay the removal
+
+def delayRemoveObject(object, delay):
+    thread.start_new_thread(threadDelayRemoveObject, (object, delay))
+def threadDelayRemoveObject(object, delay):
+    time.sleep(delay)
+    WorldData.display.remove(object)
+
+
+
+
+
+
+# cleanup for duplicate sprites created when input is given
+# too quickly
+
+def clearBadSprites():
+    goodSprites = []
+    for being in WorldData.currentBeingList:
+        goodSprites.append(being.sprite)
+    stop = time.time() + .5
+    for sprite in WorldData.display.items:
+      if sprite not in goodSprites and type(sprite) == BeingSprite :
+          WorldData.display.remove(sprite)
+      if time.time() >= stop:
+          break
+
+
+
+
+
+
+
+# clears giblets from the display()
+
+def clearGibList():
+    for sprite in gibList:
+        WorldData.display.remove(sprite)
+        gibList.remove(sprite)
+        del sprite
+
+
+
+
+
+
+# used with thread.start_new_thread(threadRemoveSprite, (timeToWait, sprite))
+# in order to despawn a sprite after a delay. For use with animations.
+# parameters:
+#   timeToWait      - time in seconds to delay the sprite removal
+#   sprite          - sprite to be removed
+
+def threadRemoveSprite(timeToWait, sprite):
+    time.sleep(timeToWait)
+    WorldData.display.remove(sprite)
+
+
+
+
+
+
+#helper Functions
+def spotToCoord(spot):
+    #if low set to 0d
+    if spot < 0: spot = 0
+    #if high set to max (should probably just throw error
+    if spot > WorldData.WIDTH_TILES * WorldData.HEIGHT_TILES: spot = WorldData.WIDTH_TILES * WorldData.HEIGHT_TILES - 1
+    return Coords(spot % WWorldData.IDTH_TILES, spot / WorldData.WIDTH_TILES)
+
+
+#given tile Coords give tile Spot in 1d array
+def tileCoordToSpot(coord):
+    return coord.x + coord.y * WorldData.WIDTH_TILES
+
+
+#Goes from pixel coords to tile Coords
+def coordToTileCoord(coord):
+    return Coords(coord.x/WorldData.BITS, coord.y/WorldData.BITS)
+
+#Goes from tile spot to pixel coords
+def tileSpotToCoord(spot):
+    return Coords((spot * WorldData.BITS)% WorldData.PIXEL_WIDTH, (spot / WorldData.WIDTH_TILES)*WorldData.BITS)
+
+#probably bad?
+def coordToTile(coord):
+    return coord.x/WorldData.BITS + (coord.y/WorldData.BITS) * WorldData.WIDTH_TILES
+
+#takes pixel coordanates and returns if the tile at that location is
+def isTraversable(x, y):
+    spot = coordToTile(Coords(x,y))
+    return WorldData.currentMap.isTraversable(spot)
+
+
+#depricated can Delete
+def placeTex(tex, spot, back):
+    startx = (spot * WorldData.BITS) % WorldData.backWidth;
+    starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS;
+    for x in range(0, WorldData.BITS):
+        for y in range(0, WorldData.BITS):
+            setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
+
+
+
+# Converts pixel coordinates to "spot" coordinates
+def textCoordToSpot(x, y):
+  col = texWidth/32
+  row = texHeight/32
+  return x + y*col
+
+#LEGACY can delete
+def getTexture(spot):
+    texture = makeEmptyPicture(WorldData.BITS,WorldData.BITS)
+    #spot to coord conversion
+    startx = (spot * WorldData.BITS) % texWidth;
+    starty = ((spot * WorldData.BITS) / texWidth) * WorldData.BITS;
+    for x in range(0, WorldData.BITS):
+        for y in range(0, WorldData.BITS):
+            setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
+    return texture
+
+
+
+
+
+
+# intro credits, adjust to add fade, etc.
+
+def loadIntro():
+    WorldData.startScreen = RawSprite(WorldData.path + "Fullscreens/startScreen.png", 0, 0, 2)
+    WorldData.title = RawSprite(WorldData.path + "EffectSprites/Title.gif", 286, -64, 1)
+    WorldData.loading.spawnSprite()
+    WorldData.title.spawnSprite()
+    WorldData.loading.spawnSprite()
+    time.sleep(1.5)
+    WorldData.startScreen.spawnSprite()
+    WorldData.loading.removeSprite()
+    WorldData.title.spawnSprite()
+    slideSpriteDown(WorldData.title, 104)
+    time.sleep(1.5)
+    WorldData.text.onKeyType(mainMenuAction)
+    WorldData.text.grabFocus()
+    #thread.start_new_thread(Music.play, (SoundData.dungeon_sound,))
+
+
+# Clears the display, sets up layers for use, and displays
+# the SAGA logo
+
+def loadingScreen():
+    WorldData.display.removeAll()
+    setUpLayers()
+    WorldData.loading.spawnSprite()
+
+
+
+
+
+# Compacts and stores information about the current area and
+# loads the next. The player will be spawned on the opposite side
+# of the screen they exited from.
+# Parameters:
+#     Area      - The area to be loaded
+
+def loadNewArea(area):
+    loadingScreen()
+    setUpLayers()
+
+    #thread.start_new_thread(Music.loop2, (SoundData.background_Music,))
+    #SoundData.background_Music = false
+    #thread.start_new_thread(Music.Stop, (SoundData.background_Music,))
+    for light in WorldData.lightSources:
+      if light.isOn:
+        light.turnOff()
+        WorldData.CURRENT_AREA.wasOn.append(light)
+    WorldData.currentMap = area.mapObject
+    WorldData.CURRENT_BG = area.mapSprite
+    WorldData.CURRENT_AREA = area
+    WorldData.CURRENT_BG.spawnSprite()
+    WorldData.display.add(WorldData.text)
+    try:
+      WorldData.currentBeingList.remove(WorldData.bot1)
+    except:
+      None
+    WorldData.currentBeingList = area.beingList
+    WorldData.currentBeingList.append(WorldData.bot1)
+    WorldData.bot1.area = WorldData.CURRENT_AREA
+    WorldData.objectList = area.objectList
+    WorldData.gibList = area.gibList
+    WorldData.animatedSpriteList = area.animatedSpriteList
+    WorldData.lightSources = area.lightSources
+    for being in WorldData.currentBeingList:
+      being.sprite.spawnSprite()
+    for thing in area.objectList:
+        thing.sprite.spawnSprite()
+    for gib in WorldData.gibList:
+        WorldData.display.add(gib)
+    WorldData.loading.removeSprite()
+    for light in WorldData.CURRENT_AREA.wasOn:
+        light.turnOn()
+    for sprite in WorldData.CURRENT_AREA.persistentAnimations:
+        sprite.animate()
+    WorldData.text.grabFocus()
+    WorldData.bot1.hpBar.updateBar()
+    WorldData.bot1.wallet.updateWalletDisplay()
+    turnPass()
+
+
+
+
+ # Adds 7 sprites as placeholders to create layers
+ # for use with future sprites
+
+def setUpLayers():
+    try:
+      WorldData.layer0.removeSprite()
+      WorldData.layer1.removeSprite()
+      WorldData.layer2.removeSprite()
+      WorldData.layer3.removeSprite()
+      WorldData.layer4.removeSprite()
+      WorldData.layer5.removeSprite()
+      WorldData.layer6.removeSprite()
+      WorldData.layer0.spawnSprite()
+      WorldData.layer1.spawnSprite()
+      WorldData.layer2.spawnSprite()
+      WorldData.layer3.spawnSprite()
+      WorldData.layer4.spawnSprite()
+      WorldData.layer5.spawnSprite()
+      WorldData.layer6.spawnSprite()
+    except:
+      WorldData.layer0 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 0)
+      WorldData.layer1 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 1)
+      WorldData.layer2 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 2)
+      WorldData.layer3 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 3)
+      WorldData.layer4 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 4)
+      WorldData.layer5 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 5)
+      WorldData.layer6 = RawSprite(WorldData.path + "EffectSprites/blankSprite.gif", 0, 0, 6)
+      WorldData.layer0.spawnSprite()
+      WorldData.layer1.spawnSprite()
+      WorldData.layer2.spawnSprite()
+      WorldData.layer3.spawnSprite()
+      WorldData.layer4.spawnSprite()
+      WorldData.layer5.spawnSprite()
+      WorldData.layer6.spawnSprite()
+
+
+
+
+
+
+
+# Default keybindings/controls
+
+def keyAction(a):
+  bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
+  if a == "w":
+    if bot1Ready:
+        WorldData.bot1.moveUp()
+        turnPass()
+  elif a == "s":
+    if bot1Ready:
+        WorldData.bot1.moveDown()
+        turnPass()
+  elif a == "a":
+    if bot1Ready:
+        WorldData.bot1.moveLeft()
+        turnPass()
+  elif a == "d":
+    if bot1Ready:
+        WorldData.bot1.moveRight()
+        turnPass()
+  elif a == "W":
+        WorldData.bot1.faceUp()
+  elif a == "A":
+        WorldData.bot1.faceLeft()
+  elif a == "S":
+        WorldData.bot1.faceDown()
+  elif a == "D":
+        WorldData.bot1.faceRight()
+
+  elif a == "f": #attack
+    if bot1Ready:
+        WorldData.bot1.meleeAtk()
+        turnPass()
+  elif a == "z": #attack
+    if bot1Ready:
+        WorldData.bot1.specialAtk()
+        turnPass()
+  elif a == "g": #steal
+    if bot1Ready:
+        WorldData.bot1.steal(WorldData.bot1.getFrontTarget())
+        turnPass()
+  elif a == "q":
+    print("NotImplementedAtAll")
+  elif a == "t":
+    print("not implemented")
+  elif a == "v":
+    WorldData.bot1.talk()
+  elif a == " ":
+      WorldData.bot1.activateTarget()
+
+     #Menu Logic
+
+  elif a == "m": #Activates menu, switches to menu controls
+    if bot1Ready:
+      WorldData.menu.openMenu()
+      WorldData.text.onKeyType(menuAction)
+
+
+
+
+
+    # Keybindings/controls for menus
+
+def menuAction(menuInput):
+
+  bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
+
+  if menuInput == "u":
+    if bot1Ready:
+      WorldData.menu.openStatusMenu()
+
+
+  elif menuInput == "i":
+    if bot1Ready:
+        WorldData.menu.openItemMenu()
+
+
+  elif menuInput == "q":
+    if bot1Ready:
+      try:
+        Music.Stop(SoundData.dungeon_sound)
+      except:
+        None
+      try:
+        Music.Stop(SoundData.quieter_Music)
+      except:
+        None
+      try:
+        Music.Stop(SoundData.background_Music)
+      except:
+        None
+      saveBot()
+      WorldData.display.hide()
+   #   sys.exit()
+      print "When this works, it will quit game."
+
+  elif menuInput == "m":
+    if bot1Ready:
+      WorldData.menu.closeMenu()
+      WorldData.text.onKeyType(keyAction)
+
+
+
+
+    # Default controls for main menu
+def mainMenuAction(inp):
+  WorldData.text.onKeyType(blockKeys)
+  WorldData.title.removeSprite()
+  WorldData.startScreen.removeSprite()
+  if inp == "1":
+    loadBot()
+  else:
+    newBot()
+  startGame()
+
+
+
+
+
+
+
+# To pass to getKeyTyped in order to block inputs
+# (e.g., during animations or delays)
+
+def blockKeys(a):
+    None
+
+
+
+
+
+# Damage calculation logic for combat. Note:
+# Certain friendlies will be obliterated on defeat
+# Currently meant to be called with thread.start_new_thread
+# to line up damage with animations
+
+def threadDamageCalculation(self, target, damage, delay):
+  time.sleep(delay)
+  if target != WorldData.bot1:
+    target.hostile = true
+  target.changeHp(damage*(-1))
+  target.displayDamage()
+  if target.hp <= 0:
+    self.changeXp(target.xpValue)
+    if target == WorldData.friendlyGreen:
+      del WorldData.friendlyGreen
+    elif target == WorldData.friendlyOrange:
+      del WorldData.friendlyOrange
+    elif target == WorldData.shopKeeper:
+      del WorldData.shopKeeper
+
+
+
+  # Game startup/bootup logic
+def startGame():
+  WorldData.loading.spawnSprite()
+  WorldData.CURRENT_AREA = AreaData.TOWN_AREA
+  WorldData.CURRENT_BG = AreaData.TOWN_AREA.mapSprite
+  WorldData.CURRENT_BG.spawnSprite()
+  WorldData.currentBeingList = AreaData.TOWN_AREA.beingList
+  WorldData.objectList = AreaData.TOWN_AREA.objectList
+  WorldData.gibList = AreaData.TOWN_AREA.gibList
+  WorldData.animatedSpriteList = AreaData.TOWN_AREA.animatedSpriteList
+  WorldData.lightSources = AreaData.TOWN_AREA.lightSources
+  bot1Spawn = Coords(13*WorldData.BITS, 1*WorldData.BITS)
+  WorldData.shopKeeper = ShopKeeper("shopKeep", "Stick", SpriteData.shopKeeperSpritePaths, 3*WorldData.BITS, 6*WorldData.BITS)
+  WorldData.shopKeeper.sprite.spawnSprite()
+  WorldData.friendlyOrange = Friendly("orange", "Stick", SpriteData.friendlyOrangeSpritePaths, 8*WorldData.BITS, 10*WorldData.BITS)
+  WorldData.friendlyGreen = Friendly("green", "Stick", SpriteData.friendlyGreenSpritePaths, 10*WorldData.BITS, 10*WorldData.BITS)
+  WorldData.friendlyOrange.sprite.spawnSprite()
+  WorldData.friendlyGreen.sprite.spawnSprite()
+  #should be spawning boss in the dungeon?
+  AreaData.DUNGEON_BOSSROOM_AREA.beingList.append(WorldData.boss)
+  loadNewArea(AreaData.TOWN_AREA)#refresh screen, start animations
+  WorldData.loading.removeSprite()
+  WorldData.menu = Menu(WorldData.bot1)
+  WorldData.text.grabFocus()
+  time.sleep(.2) #gives sliding title time to finish
+  WorldData.text.onKeyType(keyAction)
+
+
+  # Logic for starting a new character.  Bot1/User will have starting stats
+def newBot():
+  WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, AreaData.TOWN_AREA)
+  WorldData.bot1.area = WorldData.CURRENT_AREA
+
+
+  # Logic for loading a character. If data exists, bot1 will be loaded from it.
+  # Otherwise, the starting screen will replay with a message warning the user
+def loadBot():
+  WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, TOWN_AREA)
+  try:
+    fin = open(WorldData.path + "SaveData.txt")
+    for line in fin:
+      if "CharName:" in line:
+        WorldData.bot1.name = line[len("Name:"):line.index('\n')]
+      elif "Weapon:" in line:
+        WorldData.bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
+      elif "Level:" in line:
+        WorldData.bot1.level = int(line[len("Level:"):line.index('\n')])
+      elif "MaxHp:" in line:
+        WorldData.bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
+      elif "CurrentHp:" in line:
+        WorldData.bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
+      elif "Xp:" in line:
+        WorldData.bot1.xp = int(line[len("Xp:"):line.index('\n')])
+      elif "Atk:" in line:
+        WorldData.bot1.atk = int(line[len("Atk:"):line.index('\n')])
+      elif "Def" in line:
+        WorldData.bot1.df = int(line[len("Def:"):line.index('\n')])
+      elif "Wallet" in line:
+        WorldData.bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
+    fin.close()
+  except:
+    loadIntro()
+    warning = gui.Label("No Save found!")
+    WorldData.display.add(warning, 330, 100)
+    threadRemoveSprite(2, warning)
+
+
+
+
+
+    # Saves the user's stats to a file for future loading
+def saveBot():
+  fout = open(WorldData.path + "SaveData.txt", 'w')
+  fout.write("CharName:"+str(WorldData.bot1.name)+"\n")
+  fout.write("Weapon:"+str(WorldData.bot1.weapon.name)+"\n")
+  fout.write("Level:"+str(WorldData.bot1.level)+"\n")
+  fout.write("MaxHp:"+str(WorldData.bot1.maxHp)+"\n")
+  fout.write("CurrentHp:"+str(WorldData.bot1.hp)+"\n")
+  fout.write("Xp:"+str(WorldData.bot1.xp)+"\n")
+  fout.write("Atk:"+str(WorldData.bot1.atk)+"\n")
+  fout.write("Def:"+str(WorldData.bot1.df)+"\n")
+  fout.write("Wallet:"+str(WorldData.bot1.wallet.value)+"\n")
+  fout.close()
+
+
+
+
+
+
+
+
 
 
 
@@ -4018,71 +3965,30 @@ class User(Being):
 
 
 def areaSetup():
-  global TOWN_AREA
-  global DUNGEON_ENTRANCE_AREA
-  global DUNGEON_EASTROOM_AREA
-  global DUNGEON_WESTROOM_AREA
-  global DUNGEON_KEYROOM_AREA
-  global DUNGEON_MINIBOSS_AREA
-  global DUNGEON_BOSSROOM_AREA
-  global DUNGEON_BOSSKEY_AREA
-  global E_FIELD_AREA
-  global NE_FIELD_AREA
-  global N_FIELD_AREA
-  global currentMap
-  global dirt
-  global dirtWall
-  global grass
-  global stone
-  global stoneWall
-  global hole
-  global lavaRock
-  global water
-  global lava
-  global fence
-  global chest
-  global door
-  global blank
-  global structPath
-  global loading
-  loading = RawSprite(path + "Fullscreens/LogoOmega.png", 0, 0, 0)
   
   #initailize background image
   
-  tilesPath = path + "Tiles/LPC/tiles/"
+  tilesPath = WorldData.path + "Tiles/LPC/tiles/"
   #Old, probably dont need textureMap anymore
-  #textureMap = makePicture(path + "Tiles/hyptosis_tile-art-batch-1.png")
+  #textureMap = makePicture(WorldData.path + "Tiles/hyptosis_tile-art-batch-1.png")
   
   #initailize textures
   #  Tile(isTraversable, isPassable, isTough, desc)
   #add Dirt
-  dirt = Tile(true, true, false, "dirt")
-  #add DirtWall
-  dirtWall = Tile(false, true, false, "dirtWall")
-  #add Grass
-  grass = Tile(true, true, false, "grass")
-  #add stone
-  stone = Tile(true, true, false, "stone")
-  #add stoneWall
-  stoneWall = Tile(false, true, false, "stoneWall")
-  #add hole
-  hole = Tile(true, true, false, "hole")
-  #add lavaRock
-  lavaRock = Tile(true, true, false, "lavaRock")
-  #add Water
-  water = Tile(false, true, false, "water")
-  #add Lava
-  lava = Tile(false, true, false, "lava")
-  #add Fence
-  fence = Tile(false, true, false, "fence")
-  #add Chest
-  chest = Tile(false, true, false, "chest")
-  #add Door tile
-  door = Tile(true, false, false, "door")
-  #add Blank
-  blank = Tile(false, false, false, "Filler for structure class")
-  #structures
-  structPath = path + "Tiles/LPC/structures/"
+  WorldData.dirt = Tile(true, true, false, "dirt")
+  WorldData.dirtWall = Tile(false, true, false, "dirtWall")
+  WorldData.grass = Tile(true, true, false, "grass")
+  WorldData.stone = Tile(true, true, false, "stone") 
+  WorldData.stoneWall = Tile(false, true, false, "stoneWall")
+  WorldData.hole = Tile(true, true, false, "hole")
+  WorldData.lavaRock = Tile(true, true, false, "lavaRock")
+  WorldData.water = Tile(false, true, false, "water")
+  WorldData.lava = Tile(false, true, false, "lava")
+  WorldData.fence = Tile(false, true, false, "fence")
+  WorldData.chest = Tile(false, true, false, "chest")
+  WorldData.door = Tile(true, false, false, "door")
+  WorldData.blank = Tile(false, false, false, "Filler for structure class")
+  WorldData.structPath = WorldData.path + "Tiles/LPC/structures/"
   
   #get width and height
   #texWidth = getWidth(textureMap)
@@ -4110,8 +4016,8 @@ def areaSetup():
   home += "fggddddddgggggggddddddddddddgdgf"
   home += "ffffffffffffffffffffffffffffffff"
   townMap = Map(home)
-  
-  currentMap = townMap
+  AreaData.TOWN_AREA.mapObject = townMap
+  WorldData.currentMap = townMap
   
   nfield  = "ffffffffffffffffffffffffffffffff"
   nfield += "fggggggggggggggggggggggggggggggf"
@@ -4132,7 +4038,8 @@ def areaSetup():
   nfield += "fggggggggddddddddddddddddddggggf"
   nfield += "fffffffffffffddddfffffffffffffff"
   nfieldMap = Map(nfield)
-  
+  AreaData.N_FIELD_AREA.mapObject = nfieldMap
+
   efield  = "fffffffffffffddddfffffffffffffff"
   efield += "fggggggggggggddddggggggggggggggf"
   efield += "fggggggggggggdddgggggwwwwwwwgggf"
@@ -4152,6 +4059,7 @@ def areaSetup():
   efield += "fggggggggggggggggggggggggggggggf"
   efield += "ffffffffffffffffffffffffffffffff"
   efieldMap = Map(efield)
+  AreaData.E_FIELD_AREA.mapObject = efieldMap
   
   nefield  = "ffffffffffffffffffffffffffffffff"
   nefield += "fggggggggggggggggggggggggggggggf"
@@ -4172,6 +4080,7 @@ def areaSetup():
   nefield += "fggggggggggggddddggggggggggggggf"
   nefield += "fffffffffffffddddfffffffffffffff"
   nefieldMap = Map(nefield)
+  AreaData.NE_FIELD_AREA.mapObject = nefieldMap
   
   #old field no longer in use
   field  = "ffffffffffffffffffffffffffffffff"
@@ -4213,7 +4122,8 @@ def areaSetup():
   entrance += "SllllllllllllllllllllllllllllllS"
   entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   entranceMap = Map(entrance)
-  
+  AreaData.DUNGEON_ENTRANCE_AREA.mapObject = entranceMap
+
   westRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   westRoom += "SllllllllllllllllllllllllllllllS"
   westRoom += "SllllllllllllllllllllllllllllllS"
@@ -4233,6 +4143,7 @@ def areaSetup():
   westRoom += "SllllllllllllllllllllllllllllllS"
   westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   westRoomMap = Map(westRoom)
+  AreaData.DUNGEON_WESTROOM_AREA.mapObject = westRoomMap
   
   eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   eastRoom += "SllllllllllllllllllllllllllllllS"
@@ -4253,6 +4164,7 @@ def areaSetup():
   eastRoom += "SllllllllllllllllllllllllllllllS"
   eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   eastRoomMap = Map(eastRoom)
+  AreaData.DUNGEON_EASTROOM_AREA.mapObject = eastRoomMap
   
   keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4273,6 +4185,7 @@ def areaSetup():
   keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
   keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   keyRoomMap = Map(keyRoom)
+  AreaData.DUNGEON_KEYROOM_AREA.mapObject = keyRoomMap
   
   miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4293,6 +4206,7 @@ def areaSetup():
   miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
   miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   miniBossMap = Map(miniBoss)
+  AreaData.DUNGEON_MINIBOSS_AREA.mapObject = miniBossMap
   
   bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
@@ -4313,6 +4227,7 @@ def areaSetup():
   bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
   bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   bossKeyMap = Map(bossKey)
+  AreaData.DUNGEON_BOSSKEY_AREA.mapObject = bossKeyMap
   
   bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4333,82 +4248,45 @@ def areaSetup():
   bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
   bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   bossRoomMap = Map(bossRoom)
+  AreaData.DUNGEON_BOSSROOM_AREA.mapObject = bossRoomMap
   
-  dungeonPath = path + "dungeon/"
-  TOWN_AREA = Area(RawSprite(path + "newBack.png", 0, 0, 6), townMap, [StationaryAnimatedSprite(path + "/EffectSprites/blankWater.gif", path + "/EffectSprites/waterMoving.gif", 256, 352),
-                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
-                  ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)])
-  TOWN_AREA.spawnCoords = Coords(13*BITS, 1*BITS)
-  TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 416, 288, 1))
-  TOWN_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 384, 288, 1))
-  TOWN_AREA.lightSources.append(LightSource(lightpostSpritePaths, 128, 192, 1))
-  TOWN_AREA.objectList.append(HealingStation(healingStationSpritePaths, 896, 64))
-  for i in TOWN_AREA.lightSources:
-    TOWN_AREA.objectList.append(i)
-  E_FIELD_AREA = Area(RawSprite(path + "Efield.png", 0, 0, 6), efieldMap, [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
-                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 864, 384, .2),
-                    ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 832, 288, .2)])
-  NE_FIELD_AREA = Area(RawSprite(path + "NEfield.png", 0, 0, 6), nefieldMap)
-  N_FIELD_AREA = Area(RawSprite(path + "Nfield.png", 0, 0, 6), nfieldMap, [ThreeStageAnimationCycle(path + "/EffectSprites/sakuraMoving1.gif", path + "/EffectSprites/sakuraMoving2.gif", path + "/EffectSprites/sakuraMoving3.gif", 480, 192, .3)])
-  DUNGEON_ENTRANCE_AREA = Area(RawSprite(dungeonPath + "entrance.png", 0, 0, 6), entranceMap)
-  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 32, 1))
-  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 32, 1))
-  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 32, 512, 1))
-  DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(bigTorchSpritePaths, 960, 512, 1))
-  for i in DUNGEON_ENTRANCE_AREA.lightSources:
-    DUNGEON_ENTRANCE_AREA.objectList.append(i)
-  DUNGEON_EASTROOM_AREA = Area(RawSprite(dungeonPath + "eastRoom.png", 0, 0, 6), eastRoomMap)
-  DUNGEON_WESTROOM_AREA = Area(RawSprite(dungeonPath + "westRoom.png", 0, 0, 6), westRoomMap)
-  DUNGEON_KEYROOM_AREA = Area(RawSprite(dungeonPath + "keyRoom.png", 0, 0, 6), keyRoomMap)
-  DUNGEON_MINIBOSS_AREA = Area(RawSprite(dungeonPath + "miniBoss.png", 0, 0, 6), miniBossMap)
-  DUNGEON_BOSSKEY_AREA = Area(RawSprite(dungeonPath + "bossKey.png", 0, 0, 6), bossKeyMap)
-  DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), bossRoomMap)
+
+  AreaData.TOWN_AREA.spawnCoords = Coords(13*WorldData.BITS, 1*WorldData.BITS)
+  AreaData.TOWN_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 416, 288, 1))
+  AreaData.TOWN_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 384, 288, 1))
+  AreaData.TOWN_AREA.lightSources.append(LightSource(SpriteData.lightpostSpritePaths, 128, 192, 1))
+  AreaData.TOWN_AREA.objectList.append(HealingStation(SpriteData.healingStationSpritePaths, 896, 64))
+  for i in AreaData.TOWN_AREA.lightSources:
+    AreaData.TOWN_AREA.objectList.append(i)
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 32, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 32, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 512, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 512, 1))
+  for i in AreaData.DUNGEON_ENTRANCE_AREA.lightSources:
+    AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(i)
   
   #OverWorld connections
-  joinNorthSouthAreas(N_FIELD_AREA, TOWN_AREA)
-  joinNorthSouthAreas(NE_FIELD_AREA, E_FIELD_AREA)
-  joinEastWestAreas(NE_FIELD_AREA, N_FIELD_AREA)
-  joinEastWestAreas(E_FIELD_AREA, TOWN_AREA)
-  joinOtherAreas(NE_FIELD_AREA, DUNGEON_ENTRANCE_AREA)
+  joinNorthSouthAreas(AreaData.N_FIELD_AREA, AreaData.TOWN_AREA)
+  joinNorthSouthAreas(AreaData.NE_FIELD_AREA, AreaData.E_FIELD_AREA)
+  joinEastWestAreas(AreaData.NE_FIELD_AREA, AreaData.N_FIELD_AREA)
+  joinEastWestAreas(AreaData.E_FIELD_AREA, AreaData.TOWN_AREA)
+  joinOtherAreas(AreaData.NE_FIELD_AREA, AreaData.DUNGEON_ENTRANCE_AREA)
   #Dungeon Connections
-  joinOtherAreas(DUNGEON_ENTRANCE_AREA, NE_FIELD_AREA)
-  joinEastWestAreas(DUNGEON_ENTRANCE_AREA, DUNGEON_WESTROOM_AREA)
-  joinEastWestAreas(DUNGEON_EASTROOM_AREA, DUNGEON_ENTRANCE_AREA)
-  joinNorthSouthAreas(DUNGEON_KEYROOM_AREA, DUNGEON_WESTROOM_AREA)
-  joinNorthSouthAreas(DUNGEON_BOSSROOM_AREA, DUNGEON_ENTRANCE_AREA)
-  joinNorthSouthAreas(DUNGEON_EASTROOM_AREA, DUNGEON_BOSSKEY_AREA)
-  joinNorthSouthAreas(DUNGEON_MINIBOSS_AREA, DUNGEON_EASTROOM_AREA)
+  joinOtherAreas(AreaData.DUNGEON_ENTRANCE_AREA, AreaData.NE_FIELD_AREA)
+  joinEastWestAreas(AreaData.DUNGEON_ENTRANCE_AREA, AreaData.DUNGEON_WESTROOM_AREA)
+  joinEastWestAreas(AreaData.DUNGEON_EASTROOM_AREA, AreaData.DUNGEON_ENTRANCE_AREA)
+  joinNorthSouthAreas(AreaData.DUNGEON_KEYROOM_AREA, AreaData.DUNGEON_WESTROOM_AREA)
+  joinNorthSouthAreas(AreaData.DUNGEON_BOSSROOM_AREA, AreaData.DUNGEON_ENTRANCE_AREA)
+  joinNorthSouthAreas(AreaData.DUNGEON_EASTROOM_AREA, AreaData.DUNGEON_BOSSKEY_AREA)
+  joinNorthSouthAreas(AreaData.DUNGEON_MINIBOSS_AREA, AreaData.DUNGEON_EASTROOM_AREA)
 
 
 
 
 
 def displaySetup():
-  global display
-  global text
-  display = CustomDisplay("Robot Saga", backWidth, backHeight)
   setUpLayers()
-
-  # Currently acts as the "controller" to read inputs
-  text = gui.TextField("", 1)
-
-  # text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
-  # setting "function" to a different function will alter controls. Make sure to pass a function
-  # that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
-  # so for example:
-  #
-  # def randomFunction(key)
-  #   if key == "h":
-  #       doSomething
-  #
-  # text.onKeyType(randomFunction)
-  #
-  # would activate doSomething if "h" was pressed.
-  display.add(text, -32, -32)
-
-
-
-#loadIntro()  - Intro credits for production build. see loadIntro() definition for details
+  WorldData.display.add(WorldData.text, -32, -32)
 
 
 
@@ -4417,49 +4295,22 @@ def displaySetup():
 
 #Music
 def soundSetup():
-  global move
-  global move1
-  global move2
-  global move3
-  global move4
-  global dead_sound
-  global dead_sound2
-  global dead_sound3
-  global dead_sound4
-  global dead_sound5
-  global hit_sound
-  global talk_sound
-  global background_Music
-  global dungeon_sound
-  
-  move = Music(path+"Audio/footstep.wav")
-  thread.start_new_thread(Music.volume, (move, .08,))
-  move1 = Music(path+"Audio/footstep.wav")
-  thread.start_new_thread(Music.volume, (move, .08,))
-  move2 = Music(path+"Audio/footstep.wav")
-  thread.start_new_thread(Music.volume, (move, .08,))
-  move3 = Music(path+"Audio/footstep.wav")
-  thread.start_new_thread(Music.volume, (move, .08,))
-  move4 = Music(path+"Audio/footstep.wav")
-  thread.start_new_thread(Music.volume, (move, .08,))
-  
-  dead_sound = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound2 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound3 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound4  = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound5 = Music(path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  
-  hit_sound  = Music(path+"Audio/Metal_Bang.wav")
-  
-  talk_sound = Music(path+"Audio/Robot_blip.wav")
-  
-  
-  #background Music altered
-  background_Music = Music(path+"Audio/Still-of-Night_Looping.wav")
-  thread.start_new_thread(Music.volume, (background_Music, .07,))
-  dungeon_sound = Music(path+"Audio/Night-Stalker.wav")
+  thread.start_new_thread(Music.volume, (SoundData.move, .08,))
+  thread.start_new_thread(Music.volume, (SoundData.move1, .08,))
+  thread.start_new_thread(Music.volume, (SoundData.move2, .08,))
+  thread.start_new_thread(Music.volume, (SoundData.move3, .08,))
+  thread.start_new_thread(Music.volume, (SoundData.move4, .08,))
+  thread.start_new_thread(Music.volume, (SoundData.background_Music, .07,))
+
+
+
+
 
 def main():
+  
+  WorldData.display = CustomDisplay("Robot Saga", WorldData.backWidth, WorldData.backHeight)
+  WorldData.loading = RawSprite(WorldData.path + "Fullscreens/LogoOmega.png", 0, 0, 0)
+  WorldData.boss = Boss1()
   displaySetup()
   areaSetup()
   soundSetup()
