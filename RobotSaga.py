@@ -282,14 +282,14 @@ shopKeeperSpritePaths = [path + "RobotSprites/ShopkeeperbotBack.gif",
                path + "RobotSprites/ShopkeeperbotMovingFront.gif",
                path + "RobotSprites/ShopkeeperbotMovingBack.gif",
                path + "RobotSprites/ShopkeeperbotCloseup.gif",]
-bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png",
-                             path + "dungeon/boss/SkullDragonHead.png"]
+bossDragonHeadSpritePaths = [path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png",
+                             path + "dungeon/boss/SkullDragonHeadLarge.png"]
 bossRightHandSpritePaths = [path + "dungeon/boss/AttackRightHand.png",
                             path + "dungeon/boss/AttackRightHand.png"]
 bossLeftHandSpritePaths = [path + "dungeon/boss/AttackLeftHand.png",
@@ -2279,7 +2279,6 @@ class Weapon():
 
 class Being():
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
-        printNow("Spawning Creature?")
         self.name = name
         self.level = 0
         self.hp = 10
@@ -2303,17 +2302,15 @@ class Being():
         self.isMoving = false
         self.talkingLines = ["Hello!",
                              "Yes?",
-                             "Can I Help you?"]
+                             "Can I Help you?",
+                             "Something weird in the NE Field"]
         self.bloodySprites = []
         self.lightSprites = []
         self.darkSprites = []
         if itemList != None:
             self.inv += itemList
-        printNow(name)
         if not name or not "Boss" in name:
             currentBeingList.append(self)
-        else:
-            printNow("Don't append Boss")
 
 
 
@@ -3318,10 +3315,10 @@ class Threat5Enemy(Enemy):
 
 class Boss1(Enemy):
     def __init__(self):
-        Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 18*BITS, 5*BITS, 50)
-    #def simpleHostileAI(self):
+        Enemy.__init__(self, "DragonHeadBoss", "Rock", bossDragonHeadSpritePaths, 14*BITS, 4*BITS, 50)
+    def simpleHostileAI(self):
         #DoNothingSucessfully
-        #return
+        return
 
 
 
