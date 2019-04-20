@@ -471,12 +471,14 @@ def loadAreaCheck(player):
             bot1.coords.y = coordY
             bot1.coords.x = coordX
             loadNewArea(CURRENT_AREA.otherAreas[0])
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
         elif currentMap.getTileDesc(currSpot) == "door":
             coordY = (HEIGHT_TILES/2) * BITS
             coordX = (WIDTH_TILES/2) * BITS
             bot1.coords.y = coordY
             bot1.coords.x = coordX
             loadNewArea(CURRENT_AREA.otherAreas[0])
+        CURRENT_AREA.spawnCoords = Coords(bot1.coords.x, bot1.coords.y)
     if player.coords.y <= 0:
         bot1.coords.y = maxAceptableHeight
         loadNewArea(CURRENT_AREA.northArea)
@@ -767,7 +769,7 @@ def loadNewArea(area):
     global bot1
     global background_music
 
-    thread.start_new_thread(music.loop2, (background_music,))
+    #thread.start_new_thread(music.loop2, (background_music,))
     #background_music = false
     #thread.start_new_thread(music.Stop, (background_music,))
     for light in lightSources:
