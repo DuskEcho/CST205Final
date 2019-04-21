@@ -119,7 +119,7 @@ class Coords():
 
 
 
-    # A custom class created to override gui.Display's default destructor. 
+    # A custom class created to override gui.Display's default destructor.
     # Though not useful for Python, this will be useful when converting to a new language
 
 class CustomDisplay(gui.Display):
@@ -392,15 +392,15 @@ class WorldData():
   animatedSpriteList = []
   #light sources
   lightSources = []
-  
+
 
 class ListData():
-  
-  
+
+
   # Dictionaries for items
   # Numbers correspond to stats
-  
-  
+
+
   # Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range, currencyValue]
   # weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
   # first right frame, repeat for frames two and three]
@@ -465,44 +465,44 @@ class ListData():
                     WorldData.path + "WeaponSprites/Botsmasher/botsmasherLeft3.gif",
                     WorldData.path + "WeaponSprites/Botsmasher/botsmasherRight3.gif"], false, None, 1, 10000]
      }
-  
+
   # Helmet dict. Array in form [def power, spritePath(currently Unused)]
   helmStatsList = {
       "Hair": [0, "spritePath"],
       "Leaf": [1, "spritePath"]
       }
-  
+
   # Helmet dict. Array in form [def power, spritePath(currently Unused)]
   chestStatsList = {
       "BDaySuit": [0, "spritePath"],
       "Fur Coat": [1, "spritePath"]
       }
-  
+
   # Helmet dict. Array in form [def power, spritePath(currently Unused)]
   legsStatsList = {
       "Shame": [0, "spritePath"],
       "Fur Pants": [1, "spritePath"]
       }
-  
+
   # Helmet dict. Array in form [def power, spritePath(currently Unused)]
   feetStatsList = {
       "Toes": [0, "spritePath"],
       "Fur Boots": [1, "spritePath"]
       }
-  
+
   # Helmet dict. Array in form [def power, spritePath(currently Unused)]
   handStatsList = {
       "Digits": [0, "spritePath"],
       "Fur Gloves": [1, "spritePath"]
       }
-  
+
   #item array. (currently unused)
   itemsList = {}  #potions, etc.
-  
+
   #loot table (currently unused)
   lootTable = {}
-  
-  
+
+
   # Direction dict for reference with arrays
   directionList = {
       "up": 0,
@@ -510,17 +510,17 @@ class ListData():
       "left": 2,
       "right": 3
       }
-  
+
   mapNameList = ["town", "dungeon", "WorldData.path"]
-  
-  
+
+
 
 
 class SpriteData():
 
   # Sprite paths for beings. Arrays in form [back, front, left, right,
   # moving left, moving right, moving front, moving back]
-  
+
   userSpritePaths = [WorldData.path + "RobotSprites/botBlueBack.gif",
                  WorldData.path + "RobotSprites/botBlueFront.gif",
                  WorldData.path + "RobotSprites/botBlueSideLeft.gif",
@@ -622,9 +622,9 @@ class SpriteData():
                               WorldData.path + "dungeon/boss/AttackRightHand.png"]
   bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
                              WorldData.path + "dungeon/boss/AttackLeftHand.png"]
-  
 
-  
+
+
   # Sprites for light sources.  Arrays in form [off, on, bright]
   lightpostSpritePaths = [WorldData.path + "ObjectSprites/lampOff.gif",
                           WorldData.path + "ObjectSprites/lampOn.gif",
@@ -632,7 +632,7 @@ class SpriteData():
   torchSpritePaths = [WorldData.path + "ObjectSprites/metalTorchOff.gif",
                           WorldData.path + "ObjectSprites/metalTorchOn1.gif.gif",
                           WorldData.path + "ObjectSprites/metalTorchOn2.gif.gif"]
-  
+
   bigTorchSpritePaths = [WorldData.path + "ObjectSprites/metalBigTorchOff.gif",
                           WorldData.path + "ObjectSprites/metalBigTorchOn1.gif",
                           WorldData.path + "ObjectSprites/metalBigTorchOn2.gif"]
@@ -640,13 +640,13 @@ class SpriteData():
                           WorldData.path + "ObjectSprites/rechargeStation2.gif",
                           WorldData.path + "ObjectSprites/rechargeStation3.gif",
                           WorldData.path + "ObjectSprites/rechargeStation4.gif"]
-  
 
 
 
 
 
-  
+
+
 class StationaryAnimatedSprite():
     def __init__(self, filename1, filename2, x, y, layer = 3):
         self.coords = Coords(x, y)
@@ -942,21 +942,21 @@ class Menu():
       except:
         None
     self.sprite.spawnSprite()
-  
+
   def openItemMenu(self):
     self.updateStats()
     self.switchToMenu(self.sprites[1], self.invItems)
-  
+
   def openStatusMenu(self):
     self.updateStats()
     self.switchToMenu(self.sprites[2], self.statusItems)
-   
+
   def openShopMenu(self):
     self.updateStats()
     self.switchToMenu(self.sprites[3])
-  
-  
-  
+
+
+
   def switchToMenu(self, newSprite, labelsToShow):
     self.updateStats()
     self.sprite.removeSprite()
@@ -970,9 +970,9 @@ class Menu():
     self.labelList = labelsToShow
     self.showLabels(self.labelList)
     self.sprite.spawnSprite
-  
-  
-  
+
+
+
   def closeMenu(self):
     try:
       for label in self.labelList:
@@ -986,12 +986,13 @@ class Menu():
     for animation in self.animationHoldList:
       animation.animate()
     self.animationHoldList = []
-  
+
   def updateStats(self):
-    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level))]
+    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
+    gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
     self.invItems = self.player.inv
-  
-  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 100):
+
+  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 50):
     #x = 625 - old measurements, might be better for items
     self.updateStats()
     x = startX
@@ -999,7 +1000,7 @@ class Menu():
     for item in labelsToShow:
       WorldData.display.addOrder(item, 0, x, y)
       y +=lineJump
-  
+
   def removeMenuLabels (self):
      for item in self.labelList:
          label = item
@@ -1733,7 +1734,7 @@ class Being():
         while WorldData.counter.turn < finish:
           None
         self.active = true
-        
+
 
 
     def moveTo(self, x, y):
@@ -2118,11 +2119,11 @@ class Being():
         # Note ** controls are intentionally locked during this logic
     def bloodify(self):
         if isinstance(self, User):
-          WorldData.text.onKeyType(blockKeys) 
+          WorldData.text.onKeyType(blockKeys)
         try:
           spriteNum = 0
           for files in self.bloodySprites:
-              os.remove(files)  
+              os.remove(files)
           self.bloodySprites = []
           for sprites in range(0, len(self.unchangedSpritePaths)):
               pic = makePicture(self.unchangedSpritePaths[sprites])
@@ -2142,7 +2143,7 @@ class Being():
           self.sprite.removeSprite()
           self.sprite = BeingSprite(self.bloodySprites[self.facing], self)
           self.sprite.spawnSprite()
-        except: 
+        except:
           None
         if isinstance(self, User):
           WorldData.text.onKeyType(keyAction)
@@ -2964,7 +2965,7 @@ class User(Being):
         self.stunLevel3()
 
 
-        # Level 1 stun logic.  
+        # Level 1 stun logic.
         # Handles targeting.
         # The target directly ahead of bot1 will be stunned
         # for 3 turns and hostile thereafter
@@ -2977,22 +2978,22 @@ class User(Being):
           target.stun()
     def stunLv1Animate(self):
       if self.facing == ListData.directionList["up"]:
-        self.specialSprites1[0].coords.x = self.coords.x 
+        self.specialSprites1[0].coords.x = self.coords.x
         self.specialSprites1[0].coords.y = self.coords.y - 32
         self.specialSprites1[0].animateOnce()
       elif self.facing == ListData.directionList["down"]:
-        self.specialSprites1[1].coords.x = self.coords.x 
+        self.specialSprites1[1].coords.x = self.coords.x
         self.specialSprites1[1].coords.y = self.coords.y + 32
         self.specialSprites1[1].animateOnce()
       elif self.facing == ListData.directionList["left"]:
         self.specialSprites1[2].coords.x = self.coords.x - 32
-        self.specialSprites1[2].coords.y = self.coords.y 
+        self.specialSprites1[2].coords.y = self.coords.y
         self.specialSprites1[2].animateOnce()
       else:
         self.specialSprites1[3].coords.x = self.coords.x + 32
-        self.specialSprites1[3].coords.y = self.coords.y 
+        self.specialSprites1[3].coords.y = self.coords.y
         self.specialSprites1[3].animateOnce()
-    
+
 
         # Level 2 stun logic.
         # Handles targeting.
@@ -3013,7 +3014,7 @@ class User(Being):
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # For use with stunLevel2()
-    def stun2InRange(self, being):   
+    def stun2InRange(self, being):
       distanceX = abs(self.coords.x - being.coords.x)
       distanceY = abs(self.coords.y - being.coords.y)
       return (distanceX + distanceY > 32 and distanceX + distanceY <= 64)
@@ -3042,7 +3043,7 @@ class User(Being):
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # for use with stunLevel3()
-    def stun3InRange(self, being):   
+    def stun3InRange(self, being):
       distanceX = abs(self.coords.x - being.coords.x)
       distanceY = abs(self.coords.y - being.coords.y)
       return distanceX + distanceY <= 64
@@ -3252,7 +3253,7 @@ class User(Being):
         ####################
 
 
-                     
+
 
 
 
@@ -3965,20 +3966,20 @@ def saveBot():
 
 
 def areaSetup():
-  
+
   #initailize background image
-  
+
   tilesPath = WorldData.path + "Tiles/LPC/tiles/"
   #Old, probably dont need textureMap anymore
   #textureMap = makePicture(WorldData.path + "Tiles/hyptosis_tile-art-batch-1.png")
-  
+
   #initailize textures
   #  Tile(isTraversable, isPassable, isTough, desc)
   #add Dirt
   WorldData.dirt = Tile(true, true, false, "dirt")
   WorldData.dirtWall = Tile(false, true, false, "dirtWall")
   WorldData.grass = Tile(true, true, false, "grass")
-  WorldData.stone = Tile(true, true, false, "stone") 
+  WorldData.stone = Tile(true, true, false, "stone")
   WorldData.stoneWall = Tile(false, true, false, "stoneWall")
   WorldData.hole = Tile(true, true, false, "hole")
   WorldData.lavaRock = Tile(true, true, false, "lavaRock")
@@ -3989,12 +3990,12 @@ def areaSetup():
   WorldData.door = Tile(true, false, false, "door")
   WorldData.blank = Tile(false, false, false, "Filler for structure class")
   WorldData.structPath = WorldData.path + "Tiles/LPC/structures/"
-  
+
   #get width and height
   #texWidth = getWidth(textureMap)
   #texHeight = getHeight(textureMap)
-  
-  
+
+
   paths = ["d", "s", "h", ".", "o"]
   #create empty grass field will clean up later
   home  = "fffffffffffffddddfffffffffffffff"
@@ -4018,7 +4019,7 @@ def areaSetup():
   townMap = Map(home)
   AreaData.TOWN_AREA.mapObject = townMap
   WorldData.currentMap = townMap
-  
+
   nfield  = "ffffffffffffffffffffffffffffffff"
   nfield += "fggggggggggggggggggggggggggggggf"
   nfield += "fggggggggggggggggggggggggggggggf"
@@ -4060,7 +4061,7 @@ def areaSetup():
   efield += "ffffffffffffffffffffffffffffffff"
   efieldMap = Map(efield)
   AreaData.E_FIELD_AREA.mapObject = efieldMap
-  
+
   nefield  = "ffffffffffffffffffffffffffffffff"
   nefield += "fggggggggggggggggggggggggggggggf"
   nefield += "fggggggggggggggggggggwwwwwwwgggf"
@@ -4081,7 +4082,7 @@ def areaSetup():
   nefield += "fffffffffffffddddfffffffffffffff"
   nefieldMap = Map(nefield)
   AreaData.NE_FIELD_AREA.mapObject = nefieldMap
-  
+
   #old field no longer in use
   field  = "ffffffffffffffffffffffffffffffff"
   field += "fggggggggggggggggggggggggggggggf"
@@ -4102,7 +4103,7 @@ def areaSetup():
   field += "fggggggggggggggggggggggggggggggf"
   field += "fffffffffffffggggfffffffffffffff"
   fieldMap = Map(field)
-  
+
   entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   entrance += "SllllllllllllllllllllllllllllllS"
   entrance += "SllllllllllllllllllllllllllllllS"
@@ -4144,7 +4145,7 @@ def areaSetup():
   westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   westRoomMap = Map(westRoom)
   AreaData.DUNGEON_WESTROOM_AREA.mapObject = westRoomMap
-  
+
   eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   eastRoom += "SllllllllllllllllllllllllllllllS"
   eastRoom += "SllllllllllllllllllllllllllllllS"
@@ -4165,7 +4166,7 @@ def areaSetup():
   eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   eastRoomMap = Map(eastRoom)
   AreaData.DUNGEON_EASTROOM_AREA.mapObject = eastRoomMap
-  
+
   keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
   keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4186,7 +4187,7 @@ def areaSetup():
   keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   keyRoomMap = Map(keyRoom)
   AreaData.DUNGEON_KEYROOM_AREA.mapObject = keyRoomMap
-  
+
   miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
   miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4207,7 +4208,7 @@ def areaSetup():
   miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   miniBossMap = Map(miniBoss)
   AreaData.DUNGEON_MINIBOSS_AREA.mapObject = miniBossMap
-  
+
   bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
   bossKey += "SLLLLLLLLLLLllllllllLLLLLLLLLLLS"
@@ -4228,7 +4229,7 @@ def areaSetup():
   bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   bossKeyMap = Map(bossKey)
   AreaData.DUNGEON_BOSSKEY_AREA.mapObject = bossKeyMap
-  
+
   bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
   bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
   bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -4249,7 +4250,7 @@ def areaSetup():
   bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   bossRoomMap = Map(bossRoom)
   AreaData.DUNGEON_BOSSROOM_AREA.mapObject = bossRoomMap
-  
+
 
   AreaData.TOWN_AREA.spawnCoords = Coords(13*WorldData.BITS, 1*WorldData.BITS)
   AreaData.TOWN_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 416, 288, 1))
@@ -4264,7 +4265,7 @@ def areaSetup():
   AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 512, 1))
   for i in AreaData.DUNGEON_ENTRANCE_AREA.lightSources:
     AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(i)
-  
+
   #OverWorld connections
   joinNorthSouthAreas(AreaData.N_FIELD_AREA, AreaData.TOWN_AREA)
   joinNorthSouthAreas(AreaData.NE_FIELD_AREA, AreaData.E_FIELD_AREA)
@@ -4307,7 +4308,7 @@ def soundSetup():
 
 
 def main():
-  
+
   WorldData.display = CustomDisplay("Robot Saga", WorldData.backWidth, WorldData.backHeight)
   WorldData.loading = RawSprite(WorldData.path + "Fullscreens/LogoOmega.png", 0, 0, 0)
   WorldData.boss = Boss1()
