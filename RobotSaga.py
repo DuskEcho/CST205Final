@@ -2792,7 +2792,7 @@ class Bomb(Being):
         if self.tick == 2:
             printNow("Boom")
             for being in WorldData.CURRENT_AREA.beingList:
-                if being.coords == self.coords:
+                if not being.name == "Bomb" and being.coords == self.coords:
                     being.changeHp(self.damage)
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
         self.tick += 1
