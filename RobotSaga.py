@@ -936,20 +936,21 @@ class SoundData():
 
 
 class Menu():
-  def __init__(self, player):
+  def __init__(self, player, popText = "", x=230, y=0):
     self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
     self.invItems = []
     for item in player.inv:
       self.invItems.append(gui.Label(item.name))
     self.labelList = []
     self.player = player
-    self.coords = Coords(230, 0)
+    self.text = gui.Label(str("test test test test test test test"))
+    self.coords = Coords(x, y)
     self.animationHoldList = []
     self.sprites = [Sprite(WorldData.path +"Menu/menuDefault.png", self, 1),
                     Sprite(WorldData.path + "Menu/menuItem.png", self, 1),
                     Sprite(WorldData.path + "Menu/menuStatus.png", self, 1),
-                    Sprite (WorldData.path + "Menu/shopMenu.png", self, 1),
-                    #Sprite (WorldData.path + "Menu/popUp.png", self, 1)
+                    Sprite(WorldData.path + "Menu/shopMenu.png", self, 1),
+                    Sprite(WorldData.path + "Menu/popUp.png", self, 1)
                     ]
     self.sprite = self.sprites[0]
 
@@ -969,6 +970,13 @@ class Menu():
       except:
         None
     self.sprite.spawnSprite()
+
+
+  def openPopMenu(self):
+    self.updateStats()
+    self.switchToMenu(self.sprites[4], self.text)
+
+
 
 
 
@@ -1030,6 +1038,7 @@ class Menu():
     self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
     gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
     self.invItems = self.player.inv
+
 
 
 
@@ -3675,6 +3684,15 @@ def buyTransactionKeyAction(inp):
 
 
     # Keybindings/controls for menus
+"""
+def popAction(menuInput):
+  bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
+  if menuInput == "m":
+      if bot1Ready:
+          WorldData.menu.closeMenu()
+          WorldData.text.onKeyType(keyAction)
+"""
+
 def menuAction(menuInput):
 
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
@@ -3682,6 +3700,10 @@ def menuAction(menuInput):
   if menuInput == "u":
     if bot1Ready:
       WorldData.menu.openStatusMenu()
+
+  elif menuInput == "x": #testing
+    if bot1Ready:
+        WorldData.menu.openPopMenu()
 
   elif menuInput == "i":
     if bot1Ready:
