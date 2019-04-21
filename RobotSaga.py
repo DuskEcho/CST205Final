@@ -969,7 +969,9 @@ class Menu():
         removeLabel(label)
     except:
       None
-    self.showLabels(labelsToShow)
+    for label in labelsToShow:
+      self.labelList.append(label)
+    self.showLabels(self.labelList)
     self.sprite.spawnSprite
   
   
@@ -3790,7 +3792,7 @@ def keyAction(a):
 
   elif a == "m": #Activates menu, switches to menu controls
     if bot1Ready:
-      WorldData.menu.openMenu()
+      WorldData.menu.openStatusMenu()
       WorldData.text.onKeyType(menuAction)
 
 
@@ -3802,8 +3804,6 @@ def buyTransactionKeyAction(inp):
     if inp == "3":
       ShopData.transaction.buy(ShopData.transaction.seller.inv[2])
     elif inp == "m":
-      if bot1Ready:
-        WorldData.menu.openStatusMenu()
         WorldData.menu.closeMenu()
         WorldData.text.onKeyType(keyAction)
 
