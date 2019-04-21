@@ -43,7 +43,7 @@ import sys
 
 
 
-class Music():
+class music():
 
     def __init__(self, Music_file):
       self.sound = makeSound(Music_file)
@@ -831,7 +831,7 @@ class Area():
         self.eastArea = None
         self.westArea = None
         self.otherAreas = []
-
+        self.music = SoundData.music(None)
 
 
     def isTraversable(self, being, spot):
