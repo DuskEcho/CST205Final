@@ -1037,7 +1037,9 @@ class Menu():
   def updateStats(self):
     self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
     gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
-    self.invItems = self.player.inv
+    self.invItems = []
+    for item in self.player.inv:
+      self.invItems.append(gui.Label(item.name))
 
 
 

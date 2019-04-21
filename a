@@ -943,8 +943,7 @@ class Menu():
       self.invItems.append(gui.Label(item.name))
     self.labelList = []
     self.player = player
-    self.info
-    self.text = gui.Label("test")
+    self.text = [gui.Label("test test test test test test test")]
     self.coords = Coords(x, y)
     self.animationHoldList = []
     self.sprites = [Sprite(WorldData.path +"Menu/menuDefault.png", self, 1),
@@ -1038,7 +1037,9 @@ class Menu():
   def updateStats(self):
     self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
     gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
-    self.invItems = self.player.inv
+    self.invItems = []
+    for item in self.player.inv:
+      self.invItems.append(gui.Label(item.name))
 
 
 
@@ -1389,7 +1390,7 @@ class Transaction():
       self.buyer = buyer
       self.seller = seller
       self.itemLabels = []
-      ShopData.transaction = self
+      MenuData.transaction = self
       #self.buyingWindowSprite = Sprite()
       #self.sellingWindowSprite = Sprite()
       if seller is WorldData.bot1:
@@ -3160,8 +3161,9 @@ class User(Being):
 
 
 
-class ShopData():
+class MenuData():
     transaction = None
+    popupCoords = None
 
 
 
@@ -3680,11 +3682,11 @@ def keyAction(a):
 
 def buyTransactionKeyAction(inp):
     if inp == "1":
-      ShopData.transaction.buy(ShopData.transaction.seller.inv[0])
+      MenuData.transaction.buy(MenuData.transaction.seller.inv[0])
     if inp == "2":
-      ShopData.transaction.buy(ShopData.transaction.seller.inv[1])
+      MenuData.transaction.buy(MenuData.transaction.seller.inv[1])
     if inp == "3":
-      ShopData.transaction.buy(ShopData.transaction.seller.inv[2])
+      MenuData.transaction.buy(MenuData.transaction.seller.inv[2])
     elif inp == "m":
         WorldData.menu.closeMenu()
         WorldData.text.onKeyType(keyAction)
