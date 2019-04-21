@@ -3161,6 +3161,7 @@ class User(Being):
 
 class MenuData():
     transaction = None
+    popupCoords = None
 
 
 
