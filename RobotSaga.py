@@ -989,10 +989,12 @@ class Menu():
     self.animationHoldList = []
   
   def updateStats(self):
-    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level))]
+    self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
+    gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
     self.invItems = self.player.inv
+
   
-  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 100):
+  def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 50):
     #x = 625 - old measurements, might be better for items
     self.updateStats()
     x = startX
