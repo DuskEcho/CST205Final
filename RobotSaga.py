@@ -116,6 +116,9 @@ class Coords():
     self.x = x
     self.y = y
 
+  def printCoords(self):
+      printNow(str(self.x) + "," + str(self.y))
+
 
 
 
@@ -618,6 +621,14 @@ class SpriteData():
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png"]
+  emptyStritePaths = [WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif",
+                      WorldData.path + "emptySprite.gif"]
   bossRightHandSpritePaths = [WorldData.path + "dungeon/boss/AttackRightHand.png",
                               WorldData.path + "dungeon/boss/AttackRightHand.png"]
   bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
@@ -2310,7 +2321,7 @@ class Being():
         # that interacts with direction facing
 
 
-
+#
 
     def moveUp(self):
         self.isMoving = true
@@ -2519,7 +2530,7 @@ class Being():
 class Hitbox(Being):
   def __init__(self, parent, xSpawn, ySpawn, itemList = None):
     name = parent.getName() + "Hitbox"
-    Being.__init__(self, name, None, SpriteData.bossDragonHeadSpritePaths, xSpawn, ySpawn, itemList = None)
+    Being.__init__(self, name, None, SpriteData.emptyStritePaths, xSpawn, ySpawn, itemList = None)
     self.parent = parent
 
     #if hitbox hit parent
@@ -2540,7 +2551,11 @@ def makeHitbox(parent, width, height):
         for y in range(0, height):
             if x == 0 and y == 0:
                 continue
-            tempBox = Hitbox(parent, startx + width*WorldData.BITS, starty + height*WorldData.BITS)
+            spawnx = startx + (x*WorldData.BITS)
+            spawny = starty + (y*WorldData.BITS)
+            printNow(str(spawnx) + "," + str(spawny))
+            tempBox = Hitbox(parent, spawnx, spawny)
+            tempBox.coords.printCoords()
             boxes.append(tempBox)
     return boxes
 
@@ -2755,13 +2770,17 @@ class Threat5Enemy(Enemy):
 
 #Main Class for the first Boss
 class Boss1(Enemy):
-    def __init__(self):
+    def __init__(self, area):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
+        self.area = area
         self.leftHand = false
         self.rightHand = false
         self.leftHandStunned = true
         self.rightHandStunned = true
-        hitBoxes = makeHitbox(self, 4, 4)
+        self.hitBoxes = makeHitbox(self, 4, 4)
+        for box in self.hitBoxes:
+            self.area.beingList.append(box)
+
 
     def changeHp(self, amount):
         #if healing heal
@@ -3373,19 +3392,21 @@ def loadAreaCheck(player):
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if WorldData.CURRENT_AREA.otherAreas:
+        printNow("Check area")
         currCoord = coordToTileCoord(WorldData.bot1.coords)
         currSpot = tileCoordToSpot(currCoord)
         if WorldData.currentMap.getTileDesc(currSpot) == "hole":
+            printNow("Found Hole")
             #enter the dungeon!
-            coordY = (HEIGHT_TILES/2) * WorldData.BITS
-            coordX = (WIDTH_TILES/2) * WorldData.BITS
+            coordY = (WorldData.HEIGHT_TILES/2) * WorldData.BITS
+            coordX = (WorldData.WIDTH_TILES/2) * WorldData.BITS
             WorldData.bot1.coords.y = coordY
             WorldData.bot1.coords.x = coordX
             loadNewArea(WorldData.CURRENT_AREA.otherAreas[0])
             WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
         elif WorldData.currentMap.getTileDesc(currSpot) == "door":
-            coordY = (HEIGHT_TILES/2) * WorldData.BITS
-            coordX = (WIDTH_TILES/2) * WorldData.BITS
+            coordY = (WorldData.HEIGHT_TILES/2) * WorldData.BITS
+            coordX = (WorldData.WIDTH_TILES/2) * WorldData.BITS
             WorldData.bot1.coords.y = coordY
             WorldData.bot1.coords.x = coordX
             loadNewArea(WorldData.CURRENT_AREA.otherAreas[0])
@@ -4358,7 +4379,7 @@ def main():
   
   WorldData.display = CustomDisplay("Robot Saga", WorldData.backWidth, WorldData.backHeight)
   WorldData.loading = RawSprite(WorldData.path + "Fullscreens/LogoOmega.png", 0, 0, 0)
-  WorldData.boss = Boss1()
+  WorldData.boss = Boss1(AreaData.DUNGEON_BOSSROOM_AREA)
   displaySetup()
   areaSetup()
   soundSetup()
