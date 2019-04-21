@@ -1337,22 +1337,15 @@ class Transaction():
 
 
           # pops up the selling display and adjusts the keyAction
-    def sellingMode(self):
+    def buyingMode(self):
       WorldData.text.onKeyType(buyTransactionKeyAction)
+      itemNumber = 1
       for item in self.seller.inv:
-        self.itemLabels.append(gui.Label(item.name))
+        self.itemLabels.append(gui.Label("Press " str(itemNumber) + " to buy: " + item.name +"-Cost: " str(item.value*1.5)))
+        itemNumber += 1
       WorldData.menu.openShopMenu(self)
       #self.sellingWindowSprite.spawnSprite()
       for item in self.seller.inv:
-        None
-        #Add item to display, selling price, assign selling key
-        #set selling price to item.value
-        #set keyaction
-
-        # pops up the buying display and adjusts the keyAction
-    def buyingMode(self):
-      #self.buyingWindowSprite.spawnSprite()
-      for item in self.buyer.inv:
         None
         #Add item to display, add price to display, assign a buying key
         #set buying price to int(item.value * (1.5))
@@ -1360,6 +1353,17 @@ class Transaction():
         # completes a transaction. Item is added to buyer inv, currency is removed
         # from buyer, item is removed from seller inv, currency is added to seller
         # runs a check to make sure the buyer has room in the inv
+
+        # pops up the buying display and adjusts the keyAction
+    def sellingMode(self):
+      #self.buyingWindowSprite.spawnSprite()
+      for item in self.seller.inv:
+        None
+        #Add item to display, selling price, assign selling key
+        #set selling price to item.value
+        #set keyaction
+
+
     def buy(self, item):
       cost = item.value * (1)
       if self.buyer is WorldData.bot1:
@@ -3786,6 +3790,10 @@ def keyAction(a):
 def buyTransactionKeyAction(inp):
     if inp == "1":
       ShopData.transaction.buy(ShopData.transaction.seller.inv[0])
+    if inp == "2":
+      ShopData.transaction.buy(ShopData.transaction.seller.inv[1])
+    if inp == "3":
+      ShopData.transaction.buy(ShopData.transaction.seller.inv[2])
     elif inp == "m":
       if bot1Ready:
         WorldData.menu.openStatusMenu()
