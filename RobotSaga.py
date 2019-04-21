@@ -1341,7 +1341,7 @@ class Transaction():
       WorldData.text.onKeyType(buyTransactionKeyAction)
       itemNumber = 1
       for item in self.seller.inv:
-        self.itemLabels.append(gui.Label("Press " str(itemNumber) + " to buy: " + item.name +"-Cost: " str(item.value*1.5)))
+        self.itemLabels.append(gui.Label("Press " + str(itemNumber) + " to buy: " + item.name +"-Cost: " + str(item.value*1.5)))
         itemNumber += 1
       WorldData.menu.openShopMenu(self)
       #self.sellingWindowSprite.spawnSprite()
