@@ -3295,6 +3295,15 @@ def turnPass():
           spawnThreat2()
       elif WorldData.counter.turn % 20 == 0:
         spawnEnemy()
+    if WorldData.CURRENT_AREA == AreaData.TOWN_AREA:
+      if WorldData.counter.turn < 100:
+        None
+      elif WorldData.counter.turn < 200 and WorldData.counter.turn % 25 == 0:
+        WorldData.shopKeeper.inv = [Weapon("Rock")]
+      elif WorldData.counter.turn < 500 and WorldData.counter.turn % 25 == 0:
+        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword")]
+      elif WorldData.counter.turn % 100:
+        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword"), Weapon("Botsmasher")]
 
     for person in WorldData.currentBeingList:
       if person.active: #separated to leave room for friendly AIs in the future
