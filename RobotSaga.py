@@ -1001,6 +1001,7 @@ class Menu():
         removeLabel(label)
     except:
       None
+    self.labelList = []
     for label in labelsToShow:
       self.labelList.append(label)
     self.showLabels(self.labelList)
@@ -1214,10 +1215,15 @@ class HealingStation(Doodad):
     def __init__(self, filepaths, x, y, layer = 2):
       passable = false #Change if you want to be passable
       Doodad.__init__(self, filepaths, x, y, passable, layer)
-      self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x, self.coords.y, .2, 2)
+      self.animatedSprite = ThreeStageAnimationCycle(self.spriteList[1], self.spriteList[2], self.spriteList[3], self.coords.x - 32, self.coords.y - 64, .12, 1)
       self.type = "healingStation"
+      self.sprite.spawnSprite = self.spawnSprite
+      self.sprite.layer = 1
+      self.sprite.spawnSprite()
 
 
+    def spawnSprite(self):
+      WorldData.display.place(self.sprite, self.coords.x - 32, self.coords.y - 64)
 
       # core function. Heals activator and clears out bloody sprites
     def activate(self, activator):
@@ -3526,7 +3532,7 @@ def loadNewArea(area):
     loadingScreen()
     setUpLayers()
 
-    thread.start_new_thread(music.loop2, (SoundData.background_Music,))
+#   thread.start_new_thread(music.loop2, (SoundData.background_Music,))
    
     for light in WorldData.lightSources:
       if light.isOn:
