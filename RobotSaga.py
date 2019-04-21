@@ -3565,7 +3565,9 @@ def loadNewArea(area):
     for light in WorldData.CURRENT_AREA.wasOn:
         light.turnOn()
     for sprite in WorldData.CURRENT_AREA.persistentAnimations:
-        sprite.animate()
+      if sprite in WorldData.animatedSpriteList:
+        WorldData.animatedSpriteList.remove(sprite)
+      sprite.animate()
     WorldData.text.grabFocus()
     WorldData.bot1.hpBar.updateBar()
     WorldData.bot1.wallet.updateWalletDisplay()
