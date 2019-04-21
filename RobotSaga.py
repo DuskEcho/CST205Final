@@ -1566,7 +1566,8 @@ class Weapon():
             self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, self.animationDelay)
 
 
-
+    def use(self, equipper):
+      equipper.setWeapon(self)
 
 
       # sets the weapon on fire. Starts a new thread for a count down to put out fire
@@ -1585,7 +1586,6 @@ class Weapon():
             None
         self.onFire = false
         self.sprites = self.originalSprites
-
 
 
 
@@ -2963,6 +2963,13 @@ class User(Being):
         self.held = false
 
 
+
+
+        # for use with inventory. Will be altered.  All usable items
+        # in the future will have a use() method that will be called here.
+
+    def useItem(self, item):
+      item.use(self)
 
         # Initiates bot1's special attack. The attack has three levels, based
         # on bot1's atk value. Level 1 stuns the target(s) directly ahead for 3 turns.
