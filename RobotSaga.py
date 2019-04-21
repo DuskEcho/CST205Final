@@ -633,6 +633,14 @@ class SpriteData():
                               WorldData.path + "dungeon/boss/AttackRightHand.png"]
   bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
                              WorldData.path + "dungeon/boss/AttackLeftHand.png"]
+  bombSpritePaths = [WorldData.path + "dungeon/boss/bombDrop.png",
+                     WorldData.path + "dungeon/boss/bombDrop.png",
+                     WorldData.path + "dungeon/boss/bombExplode.png",
+                     WorldData.path + "dungeon/boss/bombAfter.png",
+                     WorldData.path + "dungeon/boss/bombAfter.png",
+                     WorldData.path + "dungeon/boss/bombAfter.png",
+                     WorldData.path + "dungeon/boss/bombAfter.png",
+                     WorldData.path + "dungeon/boss/bombAfter.png"]
   
 
   
@@ -2074,7 +2082,7 @@ class Being():
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        currentBeingList.remove(self)
+        WorldData.currentBeingList.remove(self)
         del self
         thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
@@ -2553,9 +2561,7 @@ def makeHitbox(parent, width, height):
                 continue
             spawnx = startx + (x*WorldData.BITS)
             spawny = starty + (y*WorldData.BITS)
-            printNow(str(spawnx) + "," + str(spawny))
             tempBox = Hitbox(parent, spawnx, spawny)
-            tempBox.coords.printCoords()
             boxes.append(tempBox)
     return boxes
 
@@ -2768,10 +2774,40 @@ class Threat5Enemy(Enemy):
     def __init__(self, name, xSpawn, ySpawn):
       Enemy.__init__(self, name, "Botsmasher", SpriteData.redEnemySpritePaths, xSpawn, ySpawn, 50)
 
+
+class Bomb(Being):
+    def __init__(self, target):
+        Being.__init__(self, "Bomb", None, SpriteData.bombSpritePaths, target.x, target.y, itemList = None)
+        self.coords = target
+        self.tick = 1
+        self.hostile = true
+        self.damage = -10 #change this to modify bomb damage
+        return
+
+    def simpleHostileAI(self):
+        printNow("Tick")
+        if self.tick == 4:
+            WorldData.currentBeingList.remove(self)
+            del self
+        if self.tick == 2:
+            printNow("Boom")
+            for being in WorldData.CURRENT_AREA.beingList:
+                if being.coords == self.coords:
+                    being.changeHp(self.damage)
+        self.sprite = BeingSprite(self.spritePaths[self.tick], self)
+        self.tick += 1
+
+
+
+def dropBomb(coords):
+    coords.printCoords()
+    return Bomb(Coords(coords.x, coords.y))
+
 #Main Class for the first Boss
 class Boss1(Enemy):
     def __init__(self, area):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
+        self.idle = 3
         self.area = area
         self.leftHand = false
         self.rightHand = false
@@ -2802,7 +2838,11 @@ class Boss1(Enemy):
               None
 
     def simpleHostileAI(self):
-        #DoNothingSucessfully
+        printNow("Boss thinking")
+        if not WorldData.counter.turn % self.idle:
+            printNow("Dropping Bomb")
+            dropBomb(WorldData.bot1.coords)
+            #DoNothingSucessfully
         return
 
 
