@@ -2402,7 +2402,7 @@ class Being():
           self.sprite = BeingSprite(self.spritePaths[1], self)
           self.sprite.spawnSprite()
           self.forwardCoords.y = self.coords.y + WorldData.BITS
-          self.forwardCoords.x = self.coords.
+          self.forwardCoords.x = self.coords.x
     def faceLeft(self):
         if self.weapon.displayed == true:
           self.weapon.hide()
