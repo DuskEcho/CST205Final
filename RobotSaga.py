@@ -45,8 +45,8 @@ import sys
 
 class music():
 
-    def __init__(self, Music_file):
-      self.sound = makeSound(Music_file)
+    def __init__(self, music_file):
+      self.sound = makeSound(music_file)
 
     def Play(self):
       play(self.sound)
@@ -128,12 +128,12 @@ class CustomDisplay(gui.Display):
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
-    #insert stop Music logic here
-    Music.Stop(SoundData.move)
-    Music.Stop(SoundData.dead_sound)
-    Music.Stop(SoundData.quieter_Music)
-    Music.Stop(SoundData.background_Music1)
-    Music.Stop(SoundData.dungeon_sound)
+    #insert stop music logic here
+    music.Stop(SoundData.move)
+    music.Stop(SoundData.dead_sound)
+    music.Stop(SoundData.quieter_music)
+    music.Stop(SoundData.background_Music)
+    music.Stop(SoundData.dungeon_sound)
     gui.display.__del__(self)
 
 
@@ -831,7 +831,8 @@ class Area():
         self.eastArea = None
         self.westArea = None
         self.otherAreas = []
-        self.music = SoundData.music(None)
+        self.music = music(WorldData.path+"Audio/Strange-Zone.wav")
+        
 
 
     def isTraversable(self, being, spot):
@@ -883,20 +884,20 @@ class AreaData():
 
 
 class SoundData():
-  move = Music(WorldData.path+"Audio/footstep.wav")
-  move1 = Music(WorldData.path+"Audio/footstep.wav")
-  move2 = Music(WorldData.path+"Audio/footstep.wav")
-  move3 = Music(WorldData.path+"Audio/footstep.wav")
-  move4 = Music(WorldData.path+"Audio/footstep.wav")
-  dead_sound = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound2 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound3 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound4  = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  dead_sound5 = Music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
-  hit_sound  = Music(WorldData.path+"Audio/Metal_Bang.wav")
-  talk_sound = Music(WorldData.path+"Audio/Robot_blip.wav")
-  background_Music = Music(WorldData.path+"Audio/Still-of-Night_Looping.wav")
-  dungeon_sound = Music(WorldData.path+"Audio/Night-Stalker.wav")
+  move = music(WorldData.path+"Audio/footstep.wav")
+  move1 = music(WorldData.path+"Audio/footstep.wav")
+  move2 = music(WorldData.path+"Audio/footstep.wav")
+  move3 = music(WorldData.path+"Audio/footstep.wav")
+  move4 = music(WorldData.path+"Audio/footstep.wav")
+  dead_sound = music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound2 = music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound3 = music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound4  = music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  dead_sound5 = music(WorldData.path+"Audio/zapsplat_cartoon_rocket_launch_missle.wav")
+  hit_sound  = music(WorldData.path+"Audio/Metal_Bang.wav")
+  talk_sound = music(WorldData.path+"Audio/Robot_blip.wav")
+  background_Music = music(WorldData.path+"Audio/Strange-Zone.wav")
+  dungeon_sound = music(WorldData.path+"Audio/Night-Stalker.wav")
 
 
 
@@ -1065,13 +1066,16 @@ class Tile():
 
 class Map():
 
-
+   
 
     def __init__(self, tileMap):
         #self.map = back
         self.tileMap = {} #change to make map
         self.beings = {} #master holder for all of the beings
         self.updateMap(tileMap)
+       
+        
+
 
     def placeTex(self, tex, spot):
         self.tileMap.update({spot: tex})
@@ -2061,7 +2065,7 @@ class Being():
             os.remove(files)
         currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (SoundData.dead_sound,))
+        thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
         # Handles lighting of sprites. If a valid light object is within the range
         # currently set to BITS * 3, a new set of sprites will be created and applied
@@ -2208,7 +2212,7 @@ class Being():
         # display animation activates
 
     def meleeAtk(self):
-        thread.start_new_thread(Music.Play, (SoundData.hit_sound,))
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
         self.displayWeapon()
         x = None
         thread.start_new_thread(self.threadHideWeapon, (None,))
@@ -2324,11 +2328,11 @@ class Being():
             if self.facing == ListData.directionList["up"]:
               self.forwardCoords.y = self.coords.y - WorldData.BITS - WorldData.BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(Music.Play, (SoundData.move,))
+              thread.start_new_thread(music.Play, (SoundData.move,))
 
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (SoundData.move,))
+            thread.start_new_thread(music.Stop, (SoundData.move,))
 
 
     def threadMoveUp(self, x):
@@ -2363,10 +2367,10 @@ class Being():
             if self.facing == ListData.directionList["down"]:
               self.forwardCoords.y = self.coords.y + WorldData.BITS + WorldData.BITS/2
               self.forwardCoords.x = self.coords.x
-              thread.start_new_thread(Music.Play, (SoundData.move2,))
+              thread.start_new_thread(music.Play, (SoundData.move2,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (SoundData.move2,))
+            thread.start_new_thread(music.Stop, (SoundData.move2,))
 
 
     def threadMoveDown(self, x):
@@ -2400,10 +2404,10 @@ class Being():
             if self.facing == ListData.directionList["left"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x - WorldData.BITS - WorldData.BITS/2
-              thread.start_new_thread(Music.Play, (SoundData.move3,))
+              thread.start_new_thread(music.Play, (SoundData.move3,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (SoundData.move3,))
+            thread.start_new_thread(music.Stop, (SoundData.move3,))
 
     def threadMoveLeft(self, x):
         time.sleep(.15)
@@ -2435,10 +2439,10 @@ class Being():
             if self.facing == ListData.directionList["right"]:
               self.forwardCoords.y = self.coords.y
               self.forwardCoords.x = self.coords.x + WorldData.BITS+ WorldData.BITS/2
-              thread.start_new_thread(Music.Play, (SoundData.move4,))
+              thread.start_new_thread(music.Play, (SoundData.move4,))
         else:
             self.isMoving = false
-            thread.start_new_thread(Music.Stop, (SoudData.move4,))
+            thread.start_new_thread(music.Stop, (SoudData.move4,))
 
 
     def threadMoveRight(self, x):
@@ -2588,7 +2592,7 @@ class Friendly(Being):
             None
         WorldData.currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (SoundData.dead_sound2,))
+        thread.start_new_thread(music.Play, (SoundData.dead_sound2,))
 
 
 
@@ -2640,7 +2644,7 @@ class ShopKeeper(Being):
             os.remove(files)
         WorldData.currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (SoundData.dead_sound4,))
+        thread.start_new_thread(music.Play, (SoundData.dead_sound4,))
 
 
 
@@ -2713,7 +2717,7 @@ class Enemy(Being):
           os.remove(files)
         WorldData.currentBeingList.remove(self)
         del self
-        thread.start_new_thread(Music.Play, (SoundData.dead_sound3,))
+        thread.start_new_thread(music.Play, (SoundData.dead_sound3,))
 
 
 
@@ -3226,7 +3230,7 @@ class User(Being):
             # Talks to the being directly in front
 
     def talk(self):
-        thread.start_new_thread(Music.Play, (SoundData.talk_sound,))
+        thread.start_new_thread(music.Play, (SoundData.talk_sound,))
         target = self.getFrontTarget()
         if target.coords.x < self.coords.x:
           target.faceRight()
@@ -3262,7 +3266,7 @@ class User(Being):
         self.wallet.sprite.removeSprite()
         removeLabel(self.wallet.label)
         self.__init__("bot1", "Stick", SpriteData.userSpritePaths, self.area)
-        thread.start_new_thread(Music.Play, (SoundData.dead_sound5,))
+        thread.start_new_thread(music.Play, (SoundData.dead_sound5,))
 
 
 
@@ -3630,7 +3634,7 @@ def loadIntro():
     time.sleep(1.5)
     WorldData.text.onKeyType(mainMenuAction)
     WorldData.text.grabFocus()
-    #thread.start_new_thread(Music.play, (SoundData.dungeon_sound,))
+    #thread.start_new_thread(music.play, (SoundData.dungeon_sound,))
 
 
 # Clears the display, sets up layers for use, and displays
@@ -3655,9 +3659,8 @@ def loadNewArea(area):
     loadingScreen()
     setUpLayers()
 
-    #thread.start_new_thread(Music.loop2, (SoundData.background_Music,))
-    #SoundData.background_Music = false
-    #thread.start_new_thread(Music.Stop, (SoundData.background_Music,))
+    thread.start_new_thread(music.loop2, (SoundData.background_Music,))
+   
     for light in WorldData.lightSources:
       if light.isOn:
         light.turnOff()
@@ -3827,15 +3830,15 @@ def menuAction(menuInput):
   elif menuInput == "q":
     if bot1Ready:
       try:
-        Music.Stop(SoundData.dungeon_sound)
+        music.Stop(SoundData.dungeon_sound)
       except:
         None
       try:
-        Music.Stop(SoundData.quieter_Music)
+        music.Stop(SoundData.quieter_music)
       except:
         None
       try:
-        Music.Stop(SoundData.background_Music)
+        music.Stop(SoundData.background_Music)
       except:
         None
       saveBot()
@@ -4338,14 +4341,14 @@ def displaySetup():
 
 
 
-#Music
+#music
 def soundSetup():
-  thread.start_new_thread(Music.volume, (SoundData.move, .08,))
-  thread.start_new_thread(Music.volume, (SoundData.move1, .08,))
-  thread.start_new_thread(Music.volume, (SoundData.move2, .08,))
-  thread.start_new_thread(Music.volume, (SoundData.move3, .08,))
-  thread.start_new_thread(Music.volume, (SoundData.move4, .08,))
-  thread.start_new_thread(Music.volume, (SoundData.background_Music, .07,))
+  thread.start_new_thread(music.volume, (SoundData.move, .08,))
+  thread.start_new_thread(music.volume, (SoundData.move1, .08,))
+  thread.start_new_thread(music.volume, (SoundData.move2, .08,))
+  thread.start_new_thread(music.volume, (SoundData.move3, .08,))
+  thread.start_new_thread(music.volume, (SoundData.move4, .08,))
+  thread.start_new_thread(music.volume, (SoundData.background_Music, .07,))
 
 
 
