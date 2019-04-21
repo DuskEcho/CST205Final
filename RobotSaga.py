@@ -3207,11 +3207,11 @@ def turnPass():
       if WorldData.counter.turn < 100:
         None
       elif WorldData.counter.turn < 200 and WorldData.counter.turn % 25 == 0:
-        WorldData.shopKeeper.inv = [Weapon("Rock")]
+        WorldData.shopKeeper.inv = [Weapon("Rock"), Potion(), Potion(), Potion()]
       elif WorldData.counter.turn < 500 and WorldData.counter.turn % 25 == 0:
-        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword")]
+        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword"), Potion(), Potion()]
       elif WorldData.counter.turn % 100:
-        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword"), Weapon("Botsmasher")]
+        WorldData.shopKeeper.inv = [Weapon("Rock"), Weapon("Sword"), Weapon("Botsmasher"), Potion()]
 
     for person in WorldData.currentBeingList:
       if person.active: #separated to leave room for friendly AIs in the future
@@ -3687,6 +3687,8 @@ def buyTransactionKeyAction(inp):
       MenuData.transaction.buy(MenuData.transaction.seller.inv[1])
     if inp == "3":
       MenuData.transaction.buy(MenuData.transaction.seller.inv[2])
+    if inp == "4":
+      MenuData.transaction.buy(MenuData.transaction.seller.inv[3])
     elif inp == "m":
         WorldData.menu.closeMenu()
         WorldData.text.onKeyType(keyAction)
@@ -3823,6 +3825,8 @@ def startGame():
 def newBot():
   WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, AreaData.TOWN_AREA)
   WorldData.bot1.area = WorldData.CURRENT_AREA
+  WorldData.bot1.inv.append(Potion())
+  WorldData.bot1.inv.append(Potion())
 
 
 
