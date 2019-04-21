@@ -621,7 +621,7 @@ class SpriteData():
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png"]
-  emptyStritePaths = [WorldData.path + "emptySprite.gif",
+  emptySpritePaths = [WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
@@ -633,14 +633,14 @@ class SpriteData():
                               WorldData.path + "dungeon/boss/AttackRightHand.png"]
   bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
                              WorldData.path + "dungeon/boss/AttackLeftHand.png"]
-  bombSpritePaths = [WorldData.path + "dungeon/boss/bombDrop.png",
-                     WorldData.path + "dungeon/boss/bombDrop.png",
-                     WorldData.path + "dungeon/boss/bombExplode.png",
-                     WorldData.path + "dungeon/boss/bombAfter.png",
-                     WorldData.path + "dungeon/boss/bombAfter.png",
-                     WorldData.path + "dungeon/boss/bombAfter.png",
-                     WorldData.path + "dungeon/boss/bombAfter.png",
-                     WorldData.path + "dungeon/boss/bombAfter.png"]
+  bombSpritePaths = [WorldData.path + "dungeon/boss/BombDrop.png",
+                     WorldData.path + "dungeon/boss/BombDrop.png",
+                     WorldData.path + "dungeon/boss/BombExplode.png",
+                     WorldData.path + "dungeon/boss/BombAfter.png",
+                     WorldData.path + "dungeon/boss/BombAfter.png",
+                     WorldData.path + "dungeon/boss/BombAfter.png",
+                     WorldData.path + "dungeon/boss/BombAfter.png",
+                     WorldData.path + "dungeon/boss/BombAfter.png"]
   
 
   
@@ -2538,7 +2538,7 @@ class Being():
 class Hitbox(Being):
   def __init__(self, parent, xSpawn, ySpawn, itemList = None):
     name = parent.getName() + "Hitbox"
-    Being.__init__(self, name, None, SpriteData.emptyStritePaths, xSpawn, ySpawn, itemList = None)
+    Being.__init__(self, name, None, SpriteData.emptySpritePaths, xSpawn, ySpawn, itemList = None)
     self.parent = parent
 
     #if hitbox hit parent
@@ -2775,14 +2775,14 @@ class Threat5Enemy(Enemy):
       Enemy.__init__(self, name, "Botsmasher", SpriteData.redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
-class Bomb(Being):
+class Bomb(Enemy):
     def __init__(self, target):
-        Being.__init__(self, "Bomb", None, SpriteData.bombSpritePaths, target.x, target.y, itemList = None)
+        Enemy.__init__(self, "Bomb", "Rock", SpriteData.bombSpritePaths, target.x, target.y, 20)
         self.coords = target
         self.tick = 1
         self.hostile = true
+        self.sprite = BeingSprite(self.spritePaths[self.tick], self)
         self.damage = -10 #change this to modify bomb damage
-        return
 
     def simpleHostileAI(self):
         printNow("Tick")
@@ -2807,9 +2807,9 @@ def dropBomb(coords):
 class Boss1(Enemy):
     def __init__(self, area):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
-        self.idle = 3
+        self.idle = 4 #drop bombs every X turns
         self.area = area
-        self.leftHand = false
+        self.leftHand = false #need to add hands still
         self.rightHand = false
         self.leftHandStunned = true
         self.rightHandStunned = true
@@ -2824,14 +2824,14 @@ class Boss1(Enemy):
             self.hp += int(amount)
             return
         #can only take damage if both hands are stunned
-        if self.leftHandStunned and self.rightHandStunned:
+        if self.leftHandStunned and self.rightHandStunned or not self.leftHand and not self.rightHand:
             self.hp = int(self.hp + amount)
             if self.hp > self.maxHp:
                 self.hp = self.maxHp
             elif self.hp <= 0:
                 self.dead()
             else:
-                self.bloodify()
+                self.bloodify() #I don't think blodify works well with large sprites
             try:
               self.hpBar.updateBar()
             except:
