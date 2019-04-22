@@ -1,5 +1,5 @@
 # CST205Final
-Less than a week! Let's do this!!!
+One Day!!!!
 
 All rights reserved.  Not to be duplicated without explicit permission of original creators.
 
@@ -32,5 +32,7 @@ All code from DuskEcho
 All code from Shellhn
 
 All code from Anelon
+
+All code from Espresso64
 
 All other art/music property of their respective owners (to be cited)
