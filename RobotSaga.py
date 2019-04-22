@@ -2039,7 +2039,7 @@ class Being():
 
 
         # Handles lighting of sprites. If a valid light object is within the range
-        # currently set to BITS * 3, a new set of sprites will be created and applied
+        # currently set to * 3, a new set of sprites will be created and applied
         # to simulate lighting.
         # Starts a new thread.
     def lightenDarken(self):
@@ -2693,25 +2693,36 @@ class Bomb(Enemy):
     def __init__(self, target):
         Enemy.__init__(self, "Bomb", "Rock", SpriteData.bombSpritePaths, target.x, target.y, 20)
         self.coords = target
-        self.tick = 1
+        self.tick = 0
         self.hostile = true
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
         self.damage = -10 #change this to modify bomb damage
+        self.sprite.spawnSprite()
 
     def simpleHostileAI(self):
         printNow("Tick")
-        if self.tick == 4:
-            WorldData.currentBeingList.remove(self)
-            del self
+        if self.tick == 3:
+            self.dead()
         if self.tick == 2:
             printNow("Boom")
+            thread.start_new_thread(music.Play, (SoundData.dead_sound,))
             for being in WorldData.CURRENT_AREA.beingList:
-                if not being.name == "Bomb" and being.coords == self.coords:
+                if being is not self:
+                  distanceX = abs(self.coords.x - being.coords.x) 
+                  distanceY = abs(self.coords.y - being.coords.y)
+                  if distanceX + distanceY <= WorldData.BITS:
                     being.changeHp(self.damage)
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
+        self.sprite.spawnSprite()
         self.tick += 1
 
-
+        # Actions to be taken on hp <= 0
+    def dead(self):
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        WorldData.currentBeingList.remove(self)
+        del self
 
 def dropBomb(coords):
     coords.printCoords()
@@ -3867,7 +3878,6 @@ def startGame():
   WorldData.text.onKeyType(keyAction)
 
 
-
   # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
   WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, AreaData.TOWN_AREA)
@@ -4278,3 +4288,4 @@ def main():
 
 
 main()
+
