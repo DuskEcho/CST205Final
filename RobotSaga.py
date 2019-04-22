@@ -990,7 +990,13 @@ class Menu():
 
   def openItemMenu(self):
     self.updateStats()
-    self.switchToMenu(self.sprites[1], self.invItems)
+    newItemLabels = []
+    itemNumber = 1
+    for label in self.invItems:
+      newItemLabels.append(gui.Label("Press " + str(itemNumber) + " to use: " + label.text))
+      itemNumber += 1
+    self.switchToMenu(self.sprites[1], newItemLabels)
+    WorldData.text.onKeyType(inventoryAction)
 
 
 
@@ -3045,15 +3051,16 @@ class AnimatedGiblets():
     # In development class for potions
 class Potion():
     def __init__(self):
-      self.parental = None
+      self.parental = WorldData.bot1
       self.name = "Potion"
       self.restoreValue = 10
       self.value = 20
 
 
 
-    def use(self):
-      self.parental.changeHp(self.restoreValue)
+    def use(self, user):
+      user.changeHp(self.restoreValue)
+      user.inv.remove(self)
 
 
 
@@ -3867,44 +3874,195 @@ def setUpLayers():
 
 # Default keybindings/controls
 
-def potionOrEquip(listPosition)
-    if self.player.inv[listPosition].item.name == "potion"
-        #use potion
-        #remove from inventory
-    else
-        #equip
+
 
 #Inventory Control: resets closes and resets menu with each item select. If no item, reloads.
 def inventoryAction(menuInput):
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
   if menuInput == "1":
     if bot1Ready:
-      potionOrEquip()
+      try:
+        WorldData.bot1.inv[0].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
 
   elif menuInput == "2":
     if bot1Ready:
-      potionOrEquip()
+      try:
+        WorldData.bot1.inv[1].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
 
   elif menuInput == "3":
     if bot1Ready:
-      potionOrEquip()
+      try:
+        WorldData.bot1.inv[2].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
 
   elif menuInput == "4":
     if bot1Ready:
-      potionOrEquip()
+      try:
+        WorldData.bot1.inv[3].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "5":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[4].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "6":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[5].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "7":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[6].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "8":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[7].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "9":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[8].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "0":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv[9].use(WorldData.bot1)
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "!":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[0])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "@":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[1])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "#":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[2])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "$":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[3])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "%":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[4])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "^":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[5])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "&":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[6])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "*":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[7])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == "(":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[8])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
+
+  elif menuInput == ")":
+    if bot1Ready:
+      try:
+        WorldData.bot1.inv.remove(WorldData.bot1.inv[9])
+      except:
+        thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
 
   elif menuInput == "m":
     if bot1Ready:
-      WorldData.menu.closeMenu()
-      WorldData.text.onKeyType(keyAction)
+      WorldData.menu.openStatusMenu()
+      WorldData.text.onKeyType(menuAction)
 
 
 
