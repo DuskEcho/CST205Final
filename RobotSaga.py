@@ -317,7 +317,7 @@ class WorldData():
   except NameError: #if WorldData.path does not exist make new WorldData.path
            printNow("Please select your game install folder")
            path = pickAFolder()
-  else: 
+  else:
     printNow("Welcome Back") #welcome the player back to the game
   display = None
   loading = None
@@ -940,14 +940,14 @@ class SoundData():
 
 
 class Menu():
-  def __init__(self, player, popText = "", x=230, y=0):
+  def __init__(self, player, popText = "popText", x=230, y=0):
     self.statusItems = [gui.Label(str(player.hp)), gui.Label(str(player.xp)), gui.Label(str(player.level))]
     self.invItems = []
     for item in player.inv:
       self.invItems.append(gui.Label(item.name))
     self.labelList = []
     self.player = player
-    self.text = [gui.Label("test test test test test test test")]
+    self.text = [gui.Label(popText)]
     self.coords = Coords(x, y)
     self.animationHoldList = []
     self.sprites = [Sprite(WorldData.path +"Menu/menuDefault.png", self, 1),
@@ -957,6 +957,9 @@ class Menu():
                     Sprite(WorldData.path + "Menu/popUp.png", self, 1)
                     ]
     self.sprite = self.sprites[0]
+
+
+
 
 
 
@@ -978,7 +981,8 @@ class Menu():
 
   def openPopMenu(self):
     self.updateStats()
-    self.switchToMenu(self.sprites[4], self.text)
+    self.coords= Coords(368, 196)
+    self.switchToPop(self.sprites[4], self.text)
 
 
 
@@ -1000,6 +1004,24 @@ class Menu():
     self.updateStats()
     self.switchToMenu(self.sprites[3], transaction.itemLabels)
 
+#Modified to pass startX and Y
+  def switchToPop(self, newSprite, labelsToShow = None):
+    if labelsToShow == None:
+      labelsToShow = self.labelList
+    self.updateStats()
+    self.sprite.removeSprite()
+    self.sprite = newSprite
+    self.openMenu()
+    try:
+      for label in self.labelList:
+        removeLabel(label)
+    except:
+      None
+    self.labelList = []
+    for label in labelsToShow:
+      self.labelList.append(label)
+    self.showLabels(self.labelList, startX = 412, startY= 274)
+    self.sprite.spawnSprite
 
 
   def switchToMenu(self, newSprite, labelsToShow = None):
@@ -1035,6 +1057,7 @@ class Menu():
     for animation in self.animationHoldList:
       animation.animate()
     self.animationHoldList = []
+    self.coords= Coords(230, 0) #resets to default menu location
 
 
 
@@ -1868,6 +1891,7 @@ class Being():
           self.inv.append(item)
         else:
           inventoryFull()
+
     def inventoryRemove(self, item):
         self.inv.remove(item)
 
@@ -2810,7 +2834,7 @@ class Boss1(Enemy):
 
 class BossArm(Enemy):
     def __init__(self, xSpawn, ySpawn, isLeft, parental):
-      Enemy.__init__(self, "Hand", None, SpriteData.bossLeftHandSpritePaths, xSpawn, ySpawn, 0) #dummy values, do not rely on 
+      Enemy.__init__(self, "Hand", None, SpriteData.bossLeftHandSpritePaths, xSpawn, ySpawn, 0) #dummy values, do not rely on
       self.sprite = None
       self.maxHp = 50
       self.hp = 50
@@ -2863,7 +2887,7 @@ class BossArm(Enemy):
           None
         if self.coords.x < targetXBig:
           thread.start_new_thread(self.slideRight, (targetXBig,))
-        
+
     def slideLeft(self, targetXSmall):
         time.sleep(.005)
         self.coords.x -= 1
@@ -2874,7 +2898,7 @@ class BossArm(Enemy):
               being.changeHp(-30)
         if self.coords.x > targetXSmall:
           thread.start_new_thread(self.slideLeft, (targetXSmall,))
-    
+
     def moveLeft(self):
       slideLeft(self, self.coords.x - 32)
 
@@ -2936,7 +2960,7 @@ class BossArm(Enemy):
         try:
           for files in self.bloodySprites:
             os.remove(files)
-        except: 
+        except:
           None
         if self.isLeft:
           self.parental.leftHand = None
@@ -3484,7 +3508,7 @@ def slideRight(toBeMoved, targetXBig):
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x < targetXBig:
         thread.start_new_thread(slideRight, (toBeMoved, targetXBig))
-        
+
 def slideLeft(toBeMoved, targetXSmall):
     time.sleep(.005)
     toBeMoved.coords.x -= 1
@@ -3763,7 +3787,7 @@ def loadNewArea(area):
     setUpLayers()
 
 #   thread.start_new_thread(music.loop2, (SoundData.background_Music,))
-   
+
     for light in WorldData.lightSources:
       if light.isOn:
         light.turnOff()
@@ -3843,6 +3867,36 @@ def setUpLayers():
 
 # Default keybindings/controls
 
+def inventoryAction(menuInput):
+  bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
+  if menuInput == "1":
+    if bot1Ready:
+       WorldData.menu.closeMenu()
+       WorldData.text.onKeyType(keyAction)
+
+  elif menuInput == "2": #testing
+    if bot1Ready:
+        WorldData.menu.closeMenu()
+        WorldData.text.onKeyType(keyAction)
+
+  elif menuInput == "3":
+    if bot1Ready:
+      WorldData.menu.closeMenu()
+      WorldData.text.onKeyType(keyAction)
+
+
+  elif menuInput == "4": #testing
+    if bot1Ready:
+        WorldData.menu.closeMenu()
+        WorldData.text.onKeyType(keyAction)
+
+  elif menuInput == "m":
+    if bot1Ready:
+      WorldData.menu.closeMenu()
+      WorldData.text.onKeyType(keyAction)
+
+
+
 def keyAction(a):
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
   if a == "w":
@@ -3911,16 +3965,8 @@ def buyTransactionKeyAction(inp):
         WorldData.text.onKeyType(keyAction)
 
 
-
     # Keybindings/controls for menus
-"""
-def popAction(menuInput):
-  bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
-  if menuInput == "m":
-      if bot1Ready:
-          WorldData.menu.closeMenu()
-          WorldData.text.onKeyType(keyAction)
-"""
+
 
 def menuAction(menuInput):
 
@@ -3936,6 +3982,7 @@ def menuAction(menuInput):
 
   elif menuInput == "i":
     if bot1Ready:
+        WorldData.text.onKeyType(inventoryAction)
         WorldData.menu.openItemMenu()
 
   elif menuInput == "q":
@@ -4449,4 +4496,3 @@ def main():
 
 
 main()
-
