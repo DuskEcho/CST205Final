@@ -2799,8 +2799,116 @@ class Boss1(Enemy):
         return
 
 
+class BossArm(Enemy):
+    def __init__(self, xSpawn, ySpawn, isLeft):
+      Enemy.__init__(self, "Hand", None, SpriteData.bossLeftHandSpritePaths, xSpawn, ySpawn, 0) #dummy values, do not rely on 
+      self.sprite = None
+      self.maxHp = 50
+      self.hp = 50
+      self.isLeft = false
+      self.isRight = false
+      self.hostile = true
+      self.active = true
+      self.coords = Coords(xSpawn, ySpawn)
+      WorldData.currentBeingList.append(self)
+      if isLeft:
+        self.isLeft = true
+        self.sprite = Sprite(SpriteData.bossLeftHandSpritePaths[0], self)
+      else:
+        self.isRight = true
+        self.sprite = Sprite(SpriteData.bossRightHandSpritePaths[0], self)
+      self.sprite.spawnSprite()
+
+    def giblets(self):
+      None
+    def dropLoot(self):
+      None
+    def randomInvItem(self):
+      None
+    def stun(self):
+        thread.start_new_thread(self.threadStun, (None,))
+    def threadStun(self, x):
+        start = WorldData.counter.turn
+        self.active = false
+        finish = start + 3
+        while WorldData.counter.turn < finish:
+          None
+        self.active = true
+
+    def moveLeft(self):
+      slideLeft(self, self.coords.x - 32)
 
 
+    def moveRight(self):
+      slideRight(self, self.coords.x + 32)
+    def lightenDarken(self):
+      None
+    def lightWithinRange(self, range):
+        None
+
+
+    def threadDeleteLightSprites(self, x):
+        None
+
+
+    def resumePixels(self):
+        None
+
+
+
+    def lightenPixels(self):
+        None
+        self.sprite.spawnSprite()
+
+
+
+    def bloodify(self):
+        None
+
+
+    def getFrontTargetList(self):
+        None
+
+
+    def getFrontTarget(self):
+        None
+
+
+
+    def meleeAtk(self):
+        None
+
+    def simpleHostileAI(self):
+        if self.isLeft:
+          if self.coords.x < 480:
+            self.moveRight()
+          else:
+            self.despawn()
+        else:
+          if self.coords.x > 512:
+            self.moveLeft()
+          else:
+            self.despawn
+        try:
+          for being in WorldData.CURRENT_AREA.beingList:
+            if isinstance(being, User):
+              being.changeHp(-30)
+        except:
+          None
+
+
+    def despawn(self):
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+          os.remove(files)
+        WorldData.currentBeingList.remove(self)
+          
+    def dead(self):
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+          os.remove(files)
+        WorldData.currentBeingList.remove(self)
+        thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
 
         # Class for armor/equipment, in development
@@ -3326,8 +3434,15 @@ def slideRight(toBeMoved, targetXBig):
     toBeMoved.forwardCoords.x += 1
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x < targetXBig:
-        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
-
+        thread.start_new_thread(slideRight, (toBeMoved, targetXBig))
+        
+def slideLeft(toBeMoved, targetXSmall):
+    time.sleep(.005)
+    toBeMoved.coords.x += 1
+    toBeMoved.forwardCoords.x += 1
+    WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.x > targetXSmall:
+        thread.start_new_thread(slideLeft, (toBeMoved, targetXSmall))
 
 
 # Slide-down logic identical to the above, but for vertical sliding
