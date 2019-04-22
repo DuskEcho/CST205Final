@@ -600,7 +600,7 @@ class SpriteData():
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png",
                                WorldData.path + "dungeon/boss/SkullDragonHeadLarge.png"]
-  emptySpritePaths = [WorldData.path + "emptySprite.gif",
+  emptyStritePaths = [WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
                       WorldData.path + "emptySprite.gif",
@@ -612,14 +612,6 @@ class SpriteData():
                               WorldData.path + "dungeon/boss/AttackRightHand.png"]
   bossLeftHandSpritePaths = [WorldData.path + "dungeon/boss/AttackLeftHand.png",
                              WorldData.path + "dungeon/boss/AttackLeftHand.png"]
-  bombSpritePaths = [WorldData.path + "dungeon/boss/BombDrop.png",
-                     WorldData.path + "dungeon/boss/BombDrop.png",
-                     WorldData.path + "dungeon/boss/BombExplode.png",
-                     WorldData.path + "dungeon/boss/BombAfter.png",
-                     WorldData.path + "dungeon/boss/BombAfter.png",
-                     WorldData.path + "dungeon/boss/BombAfter.png",
-                     WorldData.path + "dungeon/boss/BombAfter.png",
-                     WorldData.path + "dungeon/boss/BombAfter.png"]
 
 
 
@@ -2029,7 +2021,7 @@ class Being():
         self.sprite.removeSprite()
         for files in self.bloodySprites:
             os.remove(files)
-        WorldData.currentBeingList.remove(self)
+        currentBeingList.remove(self)
         del self
         thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
@@ -2459,7 +2451,7 @@ class Being():
 class Hitbox(Being):
   def __init__(self, parent, xSpawn, ySpawn, itemList = None):
     name = parent.getName() + "Hitbox"
-    Being.__init__(self, name, None, SpriteData.emptySpritePaths, xSpawn, ySpawn, itemList = None)
+    Being.__init__(self, name, None, SpriteData.emptyStritePaths, xSpawn, ySpawn, itemList = None)
     self.parent = parent
 
 
@@ -2487,7 +2479,9 @@ def makeHitbox(parent, width, height):
                 continue
             spawnx = startx + (x*WorldData.BITS)
             spawny = starty + (y*WorldData.BITS)
+            printNow(str(spawnx) + "," + str(spawny))
             tempBox = Hitbox(parent, spawnx, spawny)
+            tempBox.coords.printCoords()
             boxes.append(tempBox)
     return boxes
 
@@ -2683,41 +2677,16 @@ class Threat5Enemy(Enemy):
       Enemy.__init__(self, name, "Botsmasher", SpriteData.redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
-class Bomb(Enemy):
-    def __init__(self, target):
-        Enemy.__init__(self, "Bomb", "Rock", SpriteData.bombSpritePaths, target.x, target.y, 20)
-        self.coords = target
-        self.tick = 1
-        self.hostile = true
-        self.sprite = BeingSprite(self.spritePaths[self.tick], self)
-        self.damage = -10 #change this to modify bomb damage
-
-    def simpleHostileAI(self):
-        printNow("Tick")
-        if self.tick == 4:
-            WorldData.currentBeingList.remove(self)
-            del self
-        if self.tick == 2:
-            printNow("Boom")
-            for being in WorldData.CURRENT_AREA.beingList:
-                if not being.name == "Bomb" and being.coords == self.coords:
-                    being.changeHp(self.damage)
-        self.sprite = BeingSprite(self.spritePaths[self.tick], self)
-        self.tick += 1
 
 
 
-def dropBomb(coords):
-    coords.printCoords()
-    return Bomb(Coords(coords.x, coords.y))
 
 #Main Class for the first Boss
 class Boss1(Enemy):
     def __init__(self, area):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
-        self.idle = 4 #drop bombs every X turns
         self.area = area
-        self.leftHand = false #need to add hands still
+        self.leftHand = false
         self.rightHand = false
         self.leftHandStunned = true
         self.rightHandStunned = true
@@ -2733,14 +2702,14 @@ class Boss1(Enemy):
             self.hp += int(amount)
             return
         #can only take damage if both hands are stunned
-        if self.leftHandStunned and self.rightHandStunned or not self.leftHand and not self.rightHand:
+        if self.leftHandStunned and self.rightHandStunned:
             self.hp = int(self.hp + amount)
             if self.hp > self.maxHp:
                 self.hp = self.maxHp
             elif self.hp <= 0:
                 self.dead()
             else:
-                self.bloodify() #I don't think blodify works well with large sprites
+                self.bloodify()
             try:
               self.hpBar.updateBar()
             except:
@@ -2749,11 +2718,7 @@ class Boss1(Enemy):
 
 
     def simpleHostileAI(self):
-        printNow("Boss thinking")
-        if not WorldData.counter.turn % self.idle:
-            printNow("Dropping Bomb")
-            dropBomb(WorldData.bot1.coords)
-            #DoNothingSucessfully
+        #DoNothingSucessfully
         return
 
 
@@ -3722,8 +3687,6 @@ def buyTransactionKeyAction(inp):
       MenuData.transaction.buy(MenuData.transaction.seller.inv[1])
     if inp == "3":
       MenuData.transaction.buy(MenuData.transaction.seller.inv[2])
-    if inp == "4":
-      MenuData.transaction.buy(MenuData.transaction.seller.inv[3])
     elif inp == "m":
         WorldData.menu.closeMenu()
         WorldData.text.onKeyType(keyAction)
