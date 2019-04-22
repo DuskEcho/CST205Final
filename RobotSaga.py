@@ -213,7 +213,10 @@ class BeingSprite(Sprite):
       self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
-      self.icon = gui.ImageIO.read(File(filename))
+      try:
+        self.icon = gui.ImageIO.read(File(filename))
+      except:
+        None
       self.parental = parental
       self.layer = layer
       iconWidth = self.icon.getWidth(None)
@@ -980,9 +983,10 @@ class Menu():
 
 
   def openPopMenu(self):
+    WorldData.text.onKeyType(menuAction)
     self.updateStats()
     self.coords= Coords(368, 196)
-    self.switchToPop(self.sprites[4], self.text)
+    self.switchToPop(self.sprites[4], [self.text])
 
 
 
@@ -1323,6 +1327,7 @@ class HealingStation(Doodad):
 class Door(Doodad):
     def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
       Doodad.__init__(self, filepaths, x, y, passable = false)
+      self.lockedMessage = lockedMessage
       self.isLocked = locked
       self.coords = Coords(x, y)
       self.sprite = Sprite(WorldData.path + "ObjectSprites/tempDoorSprite.gif", self, 3)
@@ -1346,9 +1351,8 @@ class Door(Doodad):
       # opens the door if it is unlocked, otherwise desplays the door's locked message
     def activate():
       if self.isLocked:
-        label = gui.Label(lockedMessage)
-        showLabel(label)
-        delayRemoveObject(label, 2)
+        WorldData.menu.text = gui.Label(lockedMessage)
+        WorldData.menu.openPopMenu()
       else:
         self.open()
 
@@ -1510,7 +1514,13 @@ class Transaction():
       cost = item.value * (1)
       if self.buyer is WorldData.bot1:
         cost = int(item.value * (1.5))
-      if len(self.buyer.inv) < WorldData.MAX_INVENTORY:
+      if WorldData.bot1.wallet.value - cost < 0:
+        WorldData.menu.text = gui.Label("Not enough money!")
+        WorldData.menu.openPopMenu()
+      elif len(self.buyer.inv) >= WorldData.MAX_INVENTORY:
+        WorldData.menu.text = gui.Label("Inventory Full!")
+        WorldData.menu.openPopMenu()
+      else:
         self.buyer.changeWallet(cost* (-1))
         self.buyer.inventoryAdd(item)
         self.seller.changeWallet(cost)
@@ -1925,6 +1935,9 @@ class Being():
         if isinstance(self, User):
             self.music = music(WorldData.path+"Audio/level-up.wav")
             self.music.Play()
+            WorldData.menu.text = gui.Label("You leveled up!")
+            WorldData.menu.openPopMenu()
+ 
 
 
 
@@ -3378,13 +3391,16 @@ class User(Being):
                 item = target.randomInvItem()
                 target.inv.remove(item)
                 self.inv.append(item)
-                label = gui.Label("You stole "  + item.name)
-                showLabel(label)
+                WorldData.menu.text = gui.Label("You stole "  + item.name)
+                WorldData.menu.openPopMenu()
             else:
-                label = gui.Label("You messed up now!")
-                showLabel(label)
+                WorldData.menu.text = gui.Label("You messed up now!")
+                WorldData.menu.openPopMenu()
                 target.hostile = true
         else:
+            WorldData.menu.text = gui.Label("Nothing to steal!")
+            WorldData.menu.openPopMenu()
+      else:
             inventoryFull()
 
 
@@ -3402,7 +3418,8 @@ class User(Being):
         elif target.coords.y > self.coords.y:
           target.faceUp()
         speech = gui.Label(target.talkingLines[random.randint(0, len(target.talkingLines)-1)])
-        showLabel(speech)
+        WorldData.menu.text = speech
+        WorldData.menu.openPopMenu()
         delayRemoveObject(speech, 2)
 
 
@@ -3497,10 +3514,8 @@ def turnPass():
 
 
 def inventoryFull():
-    label = gui.Label("Not enough inventory space!")
-#    showLabel(label)
- #   delayRemoveObject(label, 2)
-
+    WorldData.menu.text = gui.Label("Not enough inventory space!")
+    WorldData.menu.openPopMenu()
 
 
 # slides an object to the right one pixel at a time until the object's coords.x == targetXBig.
