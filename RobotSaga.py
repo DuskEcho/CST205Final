@@ -3865,28 +3865,39 @@ def setUpLayers():
 
 # Default keybindings/controls
 
+def potionOrEquip(listPosition)
+    if self.player.inv[listPosition].item.name == "potion"
+        #use potion
+        #remove from inventory
+    else
+        #equip
+
+#Inventory Control: resets closes and resets menu with each item select. If no item, reloads.
 def inventoryAction(menuInput):
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
   if menuInput == "1":
     if bot1Ready:
-       WorldData.menu.closeMenu()
-       WorldData.text.onKeyType(keyAction)
+      potionOrEquip()
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
 
-  elif menuInput == "2": #testing
+  elif menuInput == "2":
     if bot1Ready:
-        WorldData.menu.closeMenu()
-        WorldData.text.onKeyType(keyAction)
+      potionOrEquip()
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
 
   elif menuInput == "3":
     if bot1Ready:
-      WorldData.menu.closeMenu()
-      WorldData.text.onKeyType(keyAction)
+      potionOrEquip()
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
 
-
-  elif menuInput == "4": #testing
+  elif menuInput == "4":
     if bot1Ready:
-        WorldData.menu.closeMenu()
-        WorldData.text.onKeyType(keyAction)
+      potionOrEquip()
+    WorldData.menu.closeMenu()
+    WorldData.menu.openItemMenu()
 
   elif menuInput == "m":
     if bot1Ready:
