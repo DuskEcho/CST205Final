@@ -3723,7 +3723,9 @@ def textCoordToSpot(x, y):
 # intro credits, adjust to add fade, etc.
 
 def loadIntro():
+    WorldData.loading.spawnSprite()
     WorldData.startScreen = RawSprite(WorldData.path + "Fullscreens/startScreen.png", 0, 0, 2)
+    WorldData.loading.spawnSprite()
     WorldData.title = RawSprite(WorldData.path + "EffectSprites/Title.gif", 286, -64, 1)
     WorldData.loading.spawnSprite()
     WorldData.title.spawnSprite()
@@ -3967,11 +3969,11 @@ def mainMenuAction(inp):
   WorldData.text.onKeyType(blockKeys)
   WorldData.title.removeSprite()
   WorldData.startScreen.removeSprite()
-  if inp == "1":
+  if inp == "2":
     loadBot()
   else:
     newBot()
-  startGame()
+    startGame()
 
 
 
@@ -4033,7 +4035,6 @@ def startGame():
   WorldData.text.grabFocus()
   time.sleep(.2) #gives sliding title time to finish
   WorldData.text.onKeyType(keyAction)
-  loadNewArea(DUNGEON_ENTRANCE_AREA)
 
   # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
@@ -4047,7 +4048,7 @@ def newBot():
   # Logic for loading a character. If data exists, bot1 will be loaded from it.
   # Otherwise, the starting screen will replay with a message warning the user
 def loadBot():
-  WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, TOWN_AREA)
+  WorldData.bot1 = User("bot1", "Stick", SpriteData.userSpritePaths, AreaData.TOWN_AREA)
   try:
     fin = open(WorldData.path + "SaveData.txt")
     for line in fin:
@@ -4070,12 +4071,10 @@ def loadBot():
       elif "Wallet" in line:
         WorldData.bot1.changeWallet(int(line[len("Wallet:"):line.index('\n')]))
     fin.close()
+    startGame()
   except:
-    loadIntro()
-    warning = gui.Label("No Save found!")
-    WorldData.display.add(warning, 330, 100)
-    threadRemoveSprite(2, warning)
-
+    thread.start_new_thread(loadIntro, ())
+  
 
 
     # Saves the user's stats to a file for future loading
