@@ -4,9 +4,9 @@
 # This project will be expanded upon by the team members as a side project.  As such, 
 # some of the code is for future extension only. 
 # 
-# 
-#
-#
+# NOTE:  The game cannot be exited by closing the "display" window. In order to quit,
+# press "q" at the game menue or close out JES entirely.  This is by design to prevent
+# memory leaks in persistent animations among other things.
 #
 #
 #
