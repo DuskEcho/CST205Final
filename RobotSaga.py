@@ -1854,6 +1854,9 @@ class Being():
           self.hpBar.updateBar()
         except:
           None
+        if isinstance(self, User):
+            self.music = music(WorldData.path+"Audio/level-up.wav")
+            self.music.Play()
 
 
 
