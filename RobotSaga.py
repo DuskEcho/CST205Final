@@ -156,7 +156,6 @@ class Sprite(gui.Icon):
       self.layer = layer
       self.parental = parental
 
-      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -870,10 +869,6 @@ class Area():
     def isTraversable(self, being, spot):
         if self.mapObject.isTraversable(spot):
             testCoords = tileSpotToCoord(spot)
-            #printNow("TARGET")
-            #printNow(str(testCoords.x) + "," + str(testCoords.y))
-            #printNow("CURRENT")
-            #printNow(str(being.coords.x) + "," + str(being.coords.y))
             #TODO beinglist and objectList into dicitionary so I can look up effifiently
             for thing in self.beingList:
                 if thing.name == being.name:
@@ -1124,8 +1119,6 @@ class Map():
 
 
     def getTileDesc(self, spot):
-        printNow(spot)
-        printNow(self.tileMap[spot].desc)
         return self.tileMap[spot].desc
 
 
@@ -1133,8 +1126,8 @@ class Map():
     def placeStruct(self, struct, spot, desc):
         startx = (spot * WorldData.BITS) % WorldData.backWidth
         starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS
-        if desc == "tree":
-            printNow("Tree at: " + str(startx) + " " + str(starty))
+        #if desc == "tree":
+            #printNow("Tree at: " + str(startx) + " " + str(starty))
 
 
 
@@ -1160,7 +1153,7 @@ class Map():
 
 
     def isTraversable(self, spot):
-        printNow(spot)
+        #printNow(spot)
         if spot < 0 or spot > len(self.tileMap) - 1:
             return false
         return self.tileMap[spot].getTraversable()
@@ -2728,11 +2721,11 @@ class Bomb(Enemy):
         self.sprite.spawnSprite()
 
     def simpleHostileAI(self):
-        printNow("Tick")
+        #printNow("Tick")
         if self.tick == 3:
             self.dead()
         if self.tick == 2:
-            printNow("Boom")
+            #printNow("Boom")
             thread.start_new_thread(music.Play, (SoundData.dead_sound,))
             for being in WorldData.CURRENT_AREA.beingList:
                 if being is not self and being.coords.x == self.coords.x and being.coords.y == self.coords.y:
@@ -2786,9 +2779,9 @@ class Boss1(Enemy):
 
 
     def simpleHostileAI(self):
-        printNow("Boss thinking")
+        #printNow("Boss thinking")
         if not WorldData.counter.turn % self.idle:
-            printNow("Dropping Bomb")
+            #printNow("Dropping Bomb")
             dropBomb(WorldData.bot1.coords)
             #DoNothingSucessfully
         if WorldData.counter.turn % 10 == 0:
@@ -3502,11 +3495,9 @@ def loadAreaCheck(player):
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if WorldData.CURRENT_AREA.otherAreas:
-        printNow("Check area")
         currCoord = coordToTileCoord(WorldData.bot1.coords)
         currSpot = tileCoordToSpot(currCoord)
         if WorldData.currentMap.getTileDesc(currSpot) == "hole":
-            printNow("Found Hole")
             #enter the dungeon!
             coordY = (WorldData.HEIGHT_TILES/2) * WorldData.BITS
             coordX = (WorldData.WIDTH_TILES/2) * WorldData.BITS
@@ -3679,11 +3670,9 @@ def spotToCoord(spot):
     return Coords(spot % WWorldData.IDTH_TILES, spot / WorldData.WIDTH_TILES)
 
 
-
 #given tile Coords give tile Spot in 1d array
 def tileCoordToSpot(coord):
     return coord.x + coord.y * WorldData.WIDTH_TILES
-
 
 
 #Goes from pixel coords to tile Coords
@@ -3697,11 +3686,8 @@ def tileSpotToCoord(spot):
     return Coords((spot * WorldData.BITS)% WorldData.PIXEL_WIDTH, (spot / WorldData.WIDTH_TILES)*WorldData.BITS)
 
 
-
-#probably bad?
 def coordToTile(coord):
     return coord.x/WorldData.BITS + (coord.y/WorldData.BITS) * WorldData.WIDTH_TILES
-
 
 
 #takes pixel coordanates and returns if the tile at that location is
@@ -3710,36 +3696,11 @@ def isTraversable(x, y):
     return WorldData.currentMap.isTraversable(spot)
 
 
-
-#depricated can Delete
-def placeTex(tex, spot, back):
-    startx = (spot * WorldData.BITS) % WorldData.backWidth;
-    starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS;
-    for x in range(0, WorldData.BITS):
-        for y in range(0, WorldData.BITS):
-            setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
-
-
-
 # Converts pixel coordinates to "spot" coordinates
 def textCoordToSpot(x, y):
   col = texWidth/32
   row = texHeight/32
   return x + y*col
-
-
-
-#LEGACY can delete
-def getTexture(spot):
-    texture = makeEmptyPicture(WorldData.BITS,WorldData.BITS)
-    #spot to coord conversion
-    startx = (spot * WorldData.BITS) % texWidth;
-    starty = ((spot * WorldData.BITS) / texWidth) * WorldData.BITS;
-    for x in range(0, WorldData.BITS):
-        for y in range(0, WorldData.BITS):
-            setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
-    return texture
-
 
 
 # intro credits, adjust to add fade, etc.
