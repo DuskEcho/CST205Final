@@ -3955,11 +3955,11 @@ def areaSetup():
   paths = ["d", "s", "h", ".", "o"]
   #create empty grass field will clean up later
   home  = "fffffffffffffddddfffffffffffffff"
-  home += "fh......ggt,,ddddgh......ggggggf"
-  home += "f.......gg,,,ddddg.......dgggggf"
-  home += "f.......gg,,,ddddg.......ddggggf"
-  home += "f..o....gggggddddg..o....ddggggf"
-  home += "f..o....gggggddddg..o....ddggggf"
+  home += "fh......ggt,,ddddgh......gg,,,gf"
+  home += "f.......gg,,,ddddg.......dg,,,gf"
+  home += "f.......gg,,,ddddg.......dd,g,gf"
+  home += "f..o....gggggddddg..o....dd,g,gf"
+  home += "f..o....gggggddddg..o....dd,g,gf"
   home += "fgsssssssddddddddddddddddddggggf"
   home += "fgsssssssddddddddddddddddddggddd"
   home += "fgggsssssggggddddddddddddddddddd"
