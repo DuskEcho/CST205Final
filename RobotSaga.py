@@ -317,7 +317,8 @@ class WorldData():
   except NameError: #if WorldData.path does not exist make new WorldData.path
            printNow("Please select your game install folder")
            path = pickAFolder()
-  else: printNow("Welcome Back") #welcome the player back to the game
+  else: 
+    printNow("Welcome Back") #welcome the player back to the game
   display = None
   loading = None
   title = None
