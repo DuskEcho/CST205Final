@@ -1,10 +1,36 @@
 # CST205Final
-SAGA's Top Secret Project
+Less than a week! Let's do this!!!
 
-We can do this!!!
+All rights reserved.  Not to be duplicated without explicit permission of original creators.
 
-3 weeks until release!
+Original Assets:
 
+Bot sprites
 
-https://github.com/gatech-csl/jes/blob/master/jes/python/gui.py
-GUI
+Lamp sprites
+
+healing station sprites
+
+torch sprites
+
+damage sprites
+
+weapon sprites
+
+giblet sprites
+
+lootbag sprites
+
+hp bar and all variations
+
+chip/"walletSprite"
+
+SAGA original logo (added textures to be cited)
+
+All code from DuskEcho
+
+All code from Shellhn
+
+All code from Anelon
+
+All other art/music property of their respective owners (to be cited)
