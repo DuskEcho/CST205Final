@@ -2840,6 +2840,31 @@ class BossArm(Enemy):
           None
         self.active = true
 
+    def slideRight(self, targetXBig):
+        time.sleep(.005)
+        self.coords.x += 1
+        self.forwardCoords.x += 1
+        WorldData.display.add(self.sprite, self.coords.x, self.coords.y)
+        try:
+          for being in WorldData.CURRENT_AREA.beingList:
+            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
+              being.changeHp(-30)
+        except:
+          None
+        if self.coords.x < targetXBig:
+          thread.start_new_thread(self.slideRight, (targetXBig,))
+        
+    def slideLeft(self, targetXSmall):
+        time.sleep(.005)
+        self.coords.x -= 1
+        self.forwardCoords.x -= 1
+        WorldData.display.add(self.sprite, self.coords.x, self.coords.y)
+        for being in WorldData.CURRENT_AREA.beingList:
+            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
+              being.changeHp(-30)
+        if self.coords.x > targetXSmall:
+          thread.start_new_thread(self.slideLeft, (targetXSmall,))
+    
     def moveLeft(self):
       slideLeft(self, self.coords.x - 32)
 
@@ -2894,33 +2919,33 @@ class BossArm(Enemy):
             self.moveLeft()
           else:
             self.despawn()
-        try:
-          for being in WorldData.CURRENT_AREA.beingList:
-            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
-              being.changeHp(-30)
-        except:
-          None
 
 
     def despawn(self):
         self.sprite.removeSprite()
-        for files in self.bloodySprites:
-          os.remove(files)
+        try:
+          for files in self.bloodySprites:
+            os.remove(files)
+        except: 
+          None
         if self.isLeft:
           self.parental.leftHand = None
         else:
-          self.parental.leftHand = None
+          self.parental.rightHand = None
         WorldData.currentBeingList.remove(self)
 
 
     def dead(self):
         self.sprite.removeSprite()
-        for files in self.bloodySprites:
-          os.remove(files)
+        try:
+          for files in self.bloodySprites:
+            os.remove(files)
+        except:
+          None
         if self.isLeft:
           self.parental.leftHand = None
         else:
-          self.parental.leftHand = None
+          self.parental.rightHand = None
         WorldData.currentBeingList.remove(self)
         thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
