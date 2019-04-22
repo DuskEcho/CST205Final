@@ -620,7 +620,7 @@ class SpriteData():
                      WorldData.path + "dungeon/boss/BombAfter.png",
                      WorldData.path + "dungeon/boss/BombAfter.png",
                      WorldData.path + "dungeon/boss/BombAfter.png"]
-
+  doorSpritePaths = [WorldData.path + "ObjectSprites/tempDoorSprite.gif"]
 
 
   # Sprites for light sources.  Arrays in form [off, on, bright]
@@ -1195,7 +1195,10 @@ class Doodad():
         self.spriteList = filepaths
         self.sprite = Sprite(filepaths[0], self, layer)
         self.isAnimating = false
-        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
+        try:
+          self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
+        except:
+          None
         self.sprite.spawnSprite()
         self.type = "doodad"
         WorldData.objectList.append(self)
@@ -1283,21 +1286,21 @@ class Door(Doodad):
       Doodad.__init__(self, filepaths, x, y, passable = false)
       self.isLocked = locked
       self.coords = Coords(x, y)
-      self.sprite = Sprite(WorldData.path + "tempDoorSprite.gif", self, 3)
+      self.sprite = Sprite(WorldData.path + "ObjectSprites/tempDoorSprite.gif", self, 3)
 
 
 
       # allows a being to pass through the door's coords and removes the sprite
-    def open():
+    def open(self):
       self.isPassable = true
-      self.sprite.removeSprite
+      self.sprite.removeSprite()
 
 
 
       # prevents beings from passing through the door's coords and spawns the sprite
-    def close():
+    def close(self):
       self.isPassable = false
-      self.sprite.spawnSprite
+      self.sprite.spawnSprite()
 
 
 
@@ -1310,7 +1313,8 @@ class Door(Doodad):
       else:
         self.open()
 
-
+    def unlock(self):
+      self.isLocked = false
 
 
 
@@ -1377,8 +1381,34 @@ class LightSource(Doodad):
                     being.lightenDarken()
 
 
+class DungeonTorch(LightSource):
+    def __init__(self, filepaths, x, y, room, burnable = false, layer = 3):
+      LightSource.__init__(self, filepaths, x, y, burnable = false, layer = 3)
+      self.room = room
+
+    def torchRoomCheck(self):
+      allOn = true
+      for light in self.room.lightSources:
+        if isinstance(light, DungeonTorch):
+          allOn = light.isOn
+      if allOn:
+        for door in self.room.objectList:
+          if isinstance(door, Door):
+            door.unlock()
+            door.open()
 
 
+    def turnOn(self):
+        if self.isOn == false:
+            self.isOn = true
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
+            self.animatedSprite.animate()
+            for being in WorldData.currentBeingList:
+                distanceX = abs(being.coords.x - self.coords.x)
+                distanceY = abs(being.coords.y - self.coords.y)
+                if distanceX <= WorldData.BITS*3 and distanceY <= range:
+                    being.lightenDarken()
+        self.torchRoomCheck()
 
 
       # Class  that handles the buying/selling logic.
@@ -2707,10 +2737,7 @@ class Bomb(Enemy):
             printNow("Boom")
             thread.start_new_thread(music.Play, (SoundData.dead_sound,))
             for being in WorldData.CURRENT_AREA.beingList:
-                if being is not self:
-                  distanceX = abs(self.coords.x - being.coords.x) 
-                  distanceY = abs(self.coords.y - being.coords.y)
-                  if distanceX + distanceY <= WorldData.BITS:
+                if being is not self and being.coords.x == self.coords.x and being.coords.y == self.coords.y:
                     being.changeHp(self.damage)
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
         self.sprite.spawnSprite()
@@ -3876,7 +3903,7 @@ def startGame():
   WorldData.text.grabFocus()
   time.sleep(.2) #gives sliding title time to finish
   WorldData.text.onKeyType(keyAction)
-
+  loadNewArea(DUNGEON_ENTRANCE_AREA)
 
   # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
@@ -4227,13 +4254,18 @@ def areaSetup():
   AreaData.TOWN_AREA.objectList.append(HealingStation(SpriteData.healingStationSpritePaths, 896, 64))
   for i in AreaData.TOWN_AREA.lightSources:
     AreaData.TOWN_AREA.objectList.append(i)
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 32, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 32, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 512, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 512, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 32, 32, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 960, 32, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 32, 512, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 960, 512, AreaData.DUNGEON_ENTRANCE_AREA, 1))
   for i in AreaData.DUNGEON_ENTRANCE_AREA.lightSources:
     AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(i)
-
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 992, 288))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 0, 288))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 992, 256))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 0, 256))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 512, 0))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 480, 0))
   #OverWorld connections
   joinNorthSouthAreas(AreaData.N_FIELD_AREA, AreaData.TOWN_AREA)
   joinNorthSouthAreas(AreaData.NE_FIELD_AREA, AreaData.E_FIELD_AREA)
