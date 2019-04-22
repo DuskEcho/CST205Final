@@ -2759,10 +2759,8 @@ class Boss1(Enemy):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
         self.idle = 4 #drop bombs every X turns
         self.area = area
-        self.leftHand = false #need to add hands still
-        self.rightHand = false
-        self.leftHandStunned = true
-        self.rightHandStunned = true
+        self.leftHand = None
+        self.rightHand = None
         self.hitBoxes = makeHitbox(self, 4, 4)
         for box in self.hitBoxes:
             self.area.beingList.append(box)
@@ -2775,18 +2773,15 @@ class Boss1(Enemy):
             self.hp += int(amount)
             return
         #can only take damage if both hands are stunned
-        if self.leftHandStunned and self.rightHandStunned or not self.leftHand and not self.rightHand:
-            self.hp = int(self.hp + amount)
-            if self.hp > self.maxHp:
-                self.hp = self.maxHp
-            elif self.hp <= 0:
-                self.dead()
-            else:
-                self.bloodify() #I don't think blodify works well with large sprites
-            try:
-              self.hpBar.updateBar()
-            except:
-              None
+        try:
+          if (self.leftHand == None and self.rightHand == None) or (self.leftHand.stunned and self.rightHand.stunned):
+              self.hp = int(self.hp + amount)
+              if self.hp > self.maxHp:
+                  self.hp = self.maxHp
+              elif self.hp <= 0:
+                  self.dead()
+        except:
+          None
 
 
 
@@ -2796,11 +2791,15 @@ class Boss1(Enemy):
             printNow("Dropping Bomb")
             dropBomb(WorldData.bot1.coords)
             #DoNothingSucessfully
+        if WorldData.counter.turn % 5 == 0:
+          self.leftHand = BossArm(320, 256, true, self)
+          self.rightHand = BossArm(672, 256, false, self)
+
         return
 
 
 class BossArm(Enemy):
-    def __init__(self, xSpawn, ySpawn, isLeft):
+    def __init__(self, xSpawn, ySpawn, isLeft, parental):
       Enemy.__init__(self, "Hand", None, SpriteData.bossLeftHandSpritePaths, xSpawn, ySpawn, 0) #dummy values, do not rely on 
       self.sprite = None
       self.maxHp = 50
@@ -2809,11 +2808,14 @@ class BossArm(Enemy):
       self.isRight = false
       self.hostile = true
       self.active = true
+      self.parental = parental
+      self.stunned = false
       self.coords = Coords(xSpawn, ySpawn)
       WorldData.currentBeingList.append(self)
       if isLeft:
         self.isLeft = true
         self.sprite = Sprite(SpriteData.bossLeftHandSpritePaths[0], self)
+        self.parental.leftHand = true
       else:
         self.isRight = true
         self.sprite = Sprite(SpriteData.bossRightHandSpritePaths[0], self)
@@ -2825,12 +2827,15 @@ class BossArm(Enemy):
       None
     def randomInvItem(self):
       None
+
+
     def stun(self):
         thread.start_new_thread(self.threadStun, (None,))
     def threadStun(self, x):
         start = WorldData.counter.turn
         self.active = false
-        finish = start + 3
+        self.stunned = true
+        finish = start + 5
         while WorldData.counter.turn < finish:
           None
         self.active = true
@@ -2888,10 +2893,10 @@ class BossArm(Enemy):
           if self.coords.x > 512:
             self.moveLeft()
           else:
-            self.despawn
+            self.despawn()
         try:
           for being in WorldData.CURRENT_AREA.beingList:
-            if isinstance(being, User):
+            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
               being.changeHp(-30)
         except:
           None
@@ -2901,12 +2906,21 @@ class BossArm(Enemy):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
           os.remove(files)
+        if self.isLeft:
+          self.parental.leftHand = None
+        else:
+          self.parental.leftHand = None
         WorldData.currentBeingList.remove(self)
-          
+
+
     def dead(self):
         self.sprite.removeSprite()
         for files in self.bloodySprites:
           os.remove(files)
+        if self.isLeft:
+          self.parental.leftHand = None
+        else:
+          self.parental.leftHand = None
         WorldData.currentBeingList.remove(self)
         thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
@@ -3438,8 +3452,8 @@ def slideRight(toBeMoved, targetXBig):
         
 def slideLeft(toBeMoved, targetXSmall):
     time.sleep(.005)
-    toBeMoved.coords.x += 1
-    toBeMoved.forwardCoords.x += 1
+    toBeMoved.coords.x -= 1
+    toBeMoved.forwardCoords.x -= 1
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x > targetXSmall:
         thread.start_new_thread(slideLeft, (toBeMoved, targetXSmall))
