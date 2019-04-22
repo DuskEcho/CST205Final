@@ -1387,15 +1387,13 @@ class DungeonTorch(LightSource):
       self.room = room
 
     def torchRoomCheck(self):
-      allOn = true
       for light in self.room.lightSources:
-        if isinstance(light, DungeonTorch):
-          allOn = light.isOn
-      if allOn:
-        for door in self.room.objectList:
-          if isinstance(door, Door):
-            door.unlock()
-            door.open()
+        if isinstance(light, DungeonTorch) and not light.isOn:
+          return
+      for door in self.room.objectList:
+        if isinstance(door, Door):
+          door.unlock()
+          door.open()
 
 
     def turnOn(self):
