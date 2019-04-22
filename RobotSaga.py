@@ -2791,7 +2791,7 @@ class Boss1(Enemy):
             printNow("Dropping Bomb")
             dropBomb(WorldData.bot1.coords)
             #DoNothingSucessfully
-        if WorldData.counter.turn % 5 == 0:
+        if WorldData.counter.turn % 10 == 0:
           self.leftHand = BossArm(320, 256, true, self)
           self.rightHand = BossArm(672, 256, false, self)
 
