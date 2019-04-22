@@ -2242,6 +2242,8 @@ class Being():
                     if isinstance(item, Wallet):
                       self.changeWallet(item.value)
                       self.inv.remove(item)
+                      self.music = music(WorldData.path+"Audio/pickup.wav")
+                      self.music.Play()
                 else:
                   inventoryFull()
 
@@ -2945,6 +2947,8 @@ class User(Being):
     def stunLevel1(self):
       self.changeHp((self.hp/(-4.0)))
       self.stunLv1Animate()
+      self.music = music(WorldData.path+"Audio/zap.wav")
+      self.music.Play()
       for target in self.getFrontTargetList():
         if isinstance(target, Being) or isinstance(target, Enemy):
           target.hostile = true
@@ -2977,6 +2981,8 @@ class User(Being):
         # calls stunLevel1
         # hp is reduced through the stunLevel1 call
     def stunLevel2(self):
+      self.music = music(WorldData.path+"Audio/zap.wav")
+      self.music.Play()
       self.stunLevel1()
       self.specialSprite2.coords.x = self.coords.x - 64
       self.specialSprite2.coords.y = self.coords.y - 64
@@ -3003,6 +3009,8 @@ class User(Being):
         # Targets within 2 tiles will be stunned for 3 turns,
         # hostile after, and will take damage scaled with bot1's atk
     def stunLevel3(self, damage = (-10)):
+      self.music = music(WorldData.path+"Audio/zap.wav")
+      self.music.Play()
       self.changeHp((self.hp/(-4.0)))
       self.specialSprite3.coords.x = self.coords.x - 64
       self.specialSprite3.coords.y = self.coords.y - 64
