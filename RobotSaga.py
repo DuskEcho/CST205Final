@@ -2685,6 +2685,7 @@ class Threat5Enemy(Enemy):
       Enemy.__init__(self, name, "Botsmasher", SpriteData.redEnemySpritePaths, xSpawn, ySpawn, 50)
 
 
+#Bomb class dropped by the first boss targeted at the players location
 class Bomb(Enemy):
     def __init__(self, target):
         Enemy.__init__(self, "Bomb", "Rock", SpriteData.bombSpritePaths, target.x, target.y, 20)
