@@ -156,7 +156,6 @@ class Sprite(gui.Icon):
       self.layer = layer
       self.parental = parental
 
-      printNow(filename)
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
@@ -318,7 +317,8 @@ class WorldData():
   except NameError: #if WorldData.path does not exist make new WorldData.path
            printNow("Please select your game install folder")
            path = pickAFolder()
-  else: printNow("Welcome Back") #welcome the player back to the game
+  else: 
+    printNow("Welcome Back") #welcome the player back to the game
   display = None
   loading = None
   title = None
@@ -620,7 +620,7 @@ class SpriteData():
                      WorldData.path + "dungeon/boss/BombAfter.png",
                      WorldData.path + "dungeon/boss/BombAfter.png",
                      WorldData.path + "dungeon/boss/BombAfter.png"]
-
+  doorSpritePaths = [WorldData.path + "ObjectSprites/tempDoorSprite.gif"]
 
 
   # Sprites for light sources.  Arrays in form [off, on, bright]
@@ -870,10 +870,6 @@ class Area():
     def isTraversable(self, being, spot):
         if self.mapObject.isTraversable(spot):
             testCoords = tileSpotToCoord(spot)
-            #printNow("TARGET")
-            #printNow(str(testCoords.x) + "," + str(testCoords.y))
-            #printNow("CURRENT")
-            #printNow(str(being.coords.x) + "," + str(being.coords.y))
             #TODO beinglist and objectList into dicitionary so I can look up effifiently
             for thing in self.beingList:
                 if thing.name == being.name:
@@ -1147,8 +1143,6 @@ class Map():
 
 
     def getTileDesc(self, spot):
-        printNow(spot)
-        printNow(self.tileMap[spot].desc)
         return self.tileMap[spot].desc
 
 
@@ -1156,34 +1150,50 @@ class Map():
     def placeStruct(self, struct, spot, desc):
         startx = (spot * WorldData.BITS) % WorldData.backWidth
         starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS
-        if desc == "tree":
-            printNow("Tree at: " + str(startx) + " " + str(starty))
+        #if desc == "tree":
+            #printNow("Tree at: " + str(startx) + " " + str(starty))
 
 
 
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
-            if tiles[spot] == "g": self.placeTex(WorldData.grass, spot)
-            elif tiles[spot] == "l": self.placeTex(WorldData.lavaRock, spot)
-            elif tiles[spot] == "s": self.placeTex(WorldData.stone, spot)
-            elif tiles[spot] == "S": self.placeTex(WorldData.stoneWall, spot)
-            elif tiles[spot] == "d": self.placeTex(WorldData.dirt, spot)
-            elif tiles[spot] == "D": self.placeTex(WorldData.dirtWall, spot)
-            elif tiles[spot] == "w": self.placeTex(WorldData.water, spot)
-            elif tiles[spot] == "f": self.placeTex(WorldData.fence, spot)
-            elif tiles[spot] == "L": self.placeTex(WorldData.lava, spot)
-            elif tiles[spot] == "H": self.placeTex(WorldData.hole, spot)
-            elif tiles[spot] == ".": self.placeTex(WorldData.blank, spot)
-            elif tiles[spot] == ",": self.placeTex(WorldData.blank, spot)
-            elif tiles[spot] == "o": self.placeTex(WorldData.door, spot)
-            elif tiles[spot] == "h": self.placeStruct(makePicture(WorldData.structPath + "house.png"), spot, "house")
-            elif tiles[spot] == "t": self.placeStruct(makePicture(WorldData.structPath + "tree1.png"), spot, "tree")
-            elif tiles[spot] == "c": self.placeStruct(WorldData.chest, spot, "chest")
+            if tiles[spot] == "g":
+                self.placeTex(WorldData.grass, spot)
+            elif tiles[spot] == "l":
+                self.placeTex(WorldData.lavaRock, spot)
+            elif tiles[spot] == "s":
+                self.placeTex(WorldData.stone, spot)
+            elif tiles[spot] == "S":
+                self.placeTex(WorldData.stoneWall, spot)
+            elif tiles[spot] == "d":
+                self.placeTex(WorldData.dirt, spot)
+            elif tiles[spot] == "D":
+                self.placeTex(WorldData.dirtWall, spot)
+            elif tiles[spot] == "w":
+                self.placeTex(WorldData.water, spot)
+            elif tiles[spot] == "f":
+                self.placeTex(WorldData.fence, spot)
+            elif tiles[spot] == "L":
+                self.placeTex(WorldData.lava, spot)
+            elif tiles[spot] == "H":
+                self.placeTex(WorldData.hole, spot)
+            elif tiles[spot] == ".":
+                self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == ",":
+                self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == "o":
+                self.placeTex(WorldData.door, spot)
+            elif tiles[spot] == "h":
+                self.placeStruct(makePicture(WorldData.structPath + "house.png"), spot, "house")
+            elif tiles[spot] == "t":
+                self.placeStruct(makePicture(WorldData.structPath + "tree1.png"), spot, "tree")
+            elif tiles[spot] == "c":
+                self.placeStruct(WorldData.chest, spot, "chest")
 
 
 
     def isTraversable(self, spot):
-        printNow(spot)
+        #printNow(spot)
         if spot < 0 or spot > len(self.tileMap) - 1:
             return false
         return self.tileMap[spot].getTraversable()
@@ -1218,7 +1228,10 @@ class Doodad():
         self.spriteList = filepaths
         self.sprite = Sprite(filepaths[0], self, layer)
         self.isAnimating = false
-        self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
+        try:
+          self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], x, y, self.layer)
+        except:
+          None
         self.sprite.spawnSprite()
         self.type = "doodad"
         WorldData.objectList.append(self)
@@ -1306,21 +1319,21 @@ class Door(Doodad):
       Doodad.__init__(self, filepaths, x, y, passable = false)
       self.isLocked = locked
       self.coords = Coords(x, y)
-      self.sprite = Sprite(WorldData.path + "tempDoorSprite.gif", self, 3)
+      self.sprite = Sprite(WorldData.path + "ObjectSprites/tempDoorSprite.gif", self, 3)
 
 
 
       # allows a being to pass through the door's coords and removes the sprite
-    def open():
+    def open(self):
       self.isPassable = true
-      self.sprite.removeSprite
+      self.sprite.removeSprite()
 
 
 
       # prevents beings from passing through the door's coords and spawns the sprite
-    def close():
+    def close(self):
       self.isPassable = false
-      self.sprite.spawnSprite
+      self.sprite.spawnSprite()
 
 
 
@@ -1333,7 +1346,8 @@ class Door(Doodad):
       else:
         self.open()
 
-
+    def unlock(self):
+      self.isLocked = false
 
 
 
@@ -1400,8 +1414,32 @@ class LightSource(Doodad):
                     being.lightenDarken()
 
 
+class DungeonTorch(LightSource):
+    def __init__(self, filepaths, x, y, room, burnable = false, layer = 3):
+      LightSource.__init__(self, filepaths, x, y, burnable = false, layer = 3)
+      self.room = room
+
+    def torchRoomCheck(self):
+      for light in self.room.lightSources:
+        if isinstance(light, DungeonTorch) and not light.isOn:
+          return
+      for door in self.room.objectList:
+        if isinstance(door, Door):
+          door.unlock()
+          door.open()
 
 
+    def turnOn(self):
+        if self.isOn == false:
+            self.isOn = true
+            self.animatedSprite = StationaryAnimatedSprite(self.spriteList[1], self.spriteList[2], self.coords.x, self.coords.y, self.layer)
+            self.animatedSprite.animate()
+            for being in WorldData.currentBeingList:
+                distanceX = abs(being.coords.x - self.coords.x)
+                distanceY = abs(being.coords.y - self.coords.y)
+                if distanceX <= WorldData.BITS*3 and distanceY <= range:
+                    being.lightenDarken()
+        self.torchRoomCheck()
 
 
       # Class  that handles the buying/selling logic.
@@ -2063,7 +2101,7 @@ class Being():
 
 
         # Handles lighting of sprites. If a valid light object is within the range
-        # currently set to BITS * 3, a new set of sprites will be created and applied
+        # currently set to * 3, a new set of sprites will be created and applied
         # to simulate lighting.
         # Starts a new thread.
     def lightenDarken(self):
@@ -2717,25 +2755,33 @@ class Bomb(Enemy):
     def __init__(self, target):
         Enemy.__init__(self, "Bomb", "Rock", SpriteData.bombSpritePaths, target.x, target.y, 20)
         self.coords = target
-        self.tick = 1
+        self.tick = 0
         self.hostile = true
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
         self.damage = -10 #change this to modify bomb damage
+        self.sprite.spawnSprite()
 
     def simpleHostileAI(self):
-        printNow("Tick")
-        if self.tick == 4:
-            WorldData.currentBeingList.remove(self)
-            del self
+        #printNow("Tick")
+        if self.tick == 3:
+            self.dead()
         if self.tick == 2:
-            printNow("Boom")
+            #printNow("Boom")
+            thread.start_new_thread(music.Play, (SoundData.dead_sound,))
             for being in WorldData.CURRENT_AREA.beingList:
-                if not being.name == "Bomb" and being.coords == self.coords:
+                if being is not self and being.coords.x == self.coords.x and being.coords.y == self.coords.y:
                     being.changeHp(self.damage)
         self.sprite = BeingSprite(self.spritePaths[self.tick], self)
+        self.sprite.spawnSprite()
         self.tick += 1
 
-
+        # Actions to be taken on hp <= 0
+    def dead(self):
+        self.sprite.removeSprite()
+        for files in self.bloodySprites:
+            os.remove(files)
+        WorldData.currentBeingList.remove(self)
+        del self
 
 def dropBomb(coords):
     coords.printCoords()
@@ -2747,10 +2793,8 @@ class Boss1(Enemy):
         Enemy.__init__(self, "DragonHeadBoss", "Rock", SpriteData.bossDragonHeadSpritePaths, 14*WorldData.BITS, 4*WorldData.BITS, 50)
         self.idle = 4 #drop bombs every X turns
         self.area = area
-        self.leftHand = false #need to add hands still
-        self.rightHand = false
-        self.leftHandStunned = true
-        self.rightHandStunned = true
+        self.leftHand = None
+        self.rightHand = None
         self.hitBoxes = makeHitbox(self, 4, 4)
         for box in self.hitBoxes:
             self.area.beingList.append(box)
@@ -2763,32 +2807,181 @@ class Boss1(Enemy):
             self.hp += int(amount)
             return
         #can only take damage if both hands are stunned
-        if self.leftHandStunned and self.rightHandStunned or not self.leftHand and not self.rightHand:
-            self.hp = int(self.hp + amount)
-            if self.hp > self.maxHp:
-                self.hp = self.maxHp
-            elif self.hp <= 0:
-                self.dead()
-            else:
-                self.bloodify() #I don't think blodify works well with large sprites
-            try:
-              self.hpBar.updateBar()
-            except:
-              None
+        try:
+          if (self.leftHand == None and self.rightHand == None) or (self.leftHand.stunned and self.rightHand.stunned):
+              self.hp = int(self.hp + amount)
+              if self.hp > self.maxHp:
+                  self.hp = self.maxHp
+              elif self.hp <= 0:
+                  self.dead()
+        except:
+          None
 
 
 
     def simpleHostileAI(self):
-        printNow("Boss thinking")
+        #printNow("Boss thinking")
         if not WorldData.counter.turn % self.idle:
-            printNow("Dropping Bomb")
+            #printNow("Dropping Bomb")
             dropBomb(WorldData.bot1.coords)
             #DoNothingSucessfully
+        if WorldData.counter.turn % 10 == 0:
+          self.leftHand = BossArm(320, 256, true, self)
+          self.rightHand = BossArm(672, 256, false, self)
+
         return
 
 
+class BossArm(Enemy):
+    def __init__(self, xSpawn, ySpawn, isLeft, parental):
+      Enemy.__init__(self, "Hand", None, SpriteData.bossLeftHandSpritePaths, xSpawn, ySpawn, 0) #dummy values, do not rely on 
+      self.sprite = None
+      self.maxHp = 50
+      self.hp = 50
+      self.isLeft = false
+      self.isRight = false
+      self.hostile = true
+      self.active = true
+      self.parental = parental
+      self.stunned = false
+      self.coords = Coords(xSpawn, ySpawn)
+      WorldData.currentBeingList.append(self)
+      if isLeft:
+        self.isLeft = true
+        self.sprite = Sprite(SpriteData.bossLeftHandSpritePaths[0], self)
+        self.parental.leftHand = true
+      else:
+        self.isRight = true
+        self.sprite = Sprite(SpriteData.bossRightHandSpritePaths[0], self)
+      self.sprite.spawnSprite()
+
+    def giblets(self):
+      None
+    def dropLoot(self):
+      None
+    def randomInvItem(self):
+      None
 
 
+    def stun(self):
+        thread.start_new_thread(self.threadStun, (None,))
+    def threadStun(self, x):
+        start = WorldData.counter.turn
+        self.active = false
+        self.stunned = true
+        finish = start + 5
+        while WorldData.counter.turn < finish:
+          None
+        self.active = true
+
+    def slideRight(self, targetXBig):
+        time.sleep(.005)
+        self.coords.x += 1
+        self.forwardCoords.x += 1
+        WorldData.display.add(self.sprite, self.coords.x, self.coords.y)
+        try:
+          for being in WorldData.CURRENT_AREA.beingList:
+            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
+              being.changeHp(-30)
+        except:
+          None
+        if self.coords.x < targetXBig:
+          thread.start_new_thread(self.slideRight, (targetXBig,))
+        
+    def slideLeft(self, targetXSmall):
+        time.sleep(.005)
+        self.coords.x -= 1
+        self.forwardCoords.x -= 1
+        WorldData.display.add(self.sprite, self.coords.x, self.coords.y)
+        for being in WorldData.CURRENT_AREA.beingList:
+            if isinstance(being, User) and being.coords.x == self.coords.x and (being.coords.y == self.coords.y or being.coords.y == self.coords.y + 32):
+              being.changeHp(-30)
+        if self.coords.x > targetXSmall:
+          thread.start_new_thread(self.slideLeft, (targetXSmall,))
+    
+    def moveLeft(self):
+      slideLeft(self, self.coords.x - 32)
+
+
+    def moveRight(self):
+      slideRight(self, self.coords.x + 32)
+    def lightenDarken(self):
+      None
+    def lightWithinRange(self, range):
+        None
+
+
+    def threadDeleteLightSprites(self, x):
+        None
+
+
+    def resumePixels(self):
+        None
+
+
+
+    def lightenPixels(self):
+        None
+        self.sprite.spawnSprite()
+
+
+
+    def bloodify(self):
+        None
+
+
+    def getFrontTargetList(self):
+        None
+
+
+    def getFrontTarget(self):
+        None
+
+
+
+    def meleeAtk(self):
+        None
+
+    def simpleHostileAI(self):
+        if self.isLeft:
+          if self.coords.x < 480:
+            self.moveRight()
+          else:
+            self.despawn()
+        else:
+          if self.coords.x > 512:
+            self.moveLeft()
+          else:
+            self.despawn()
+
+
+    def despawn(self):
+        self.sprite.removeSprite()
+        try:
+          for files in self.bloodySprites:
+            os.remove(files)
+        except: 
+          None
+        if self.isLeft:
+          self.parental.leftHand = None
+        else:
+          self.parental.rightHand = None
+        WorldData.currentBeingList.remove(self)
+
+
+    def dead(self):
+        self.sprite.removeSprite()
+        try:
+          for files in self.bloodySprites:
+            os.remove(files)
+        except:
+          None
+        if self.isLeft:
+          self.parental.leftHand = None
+        else:
+          self.parental.rightHand = None
+        WorldData.currentBeingList.remove(self)
+        thread.start_new_thread(music.Play, (SoundData.dead_sound,))
 
 
         # Class for armor/equipment, in development
@@ -3314,8 +3507,15 @@ def slideRight(toBeMoved, targetXBig):
     toBeMoved.forwardCoords.x += 1
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x < targetXBig:
-        thread.start_new_thread(slideRight, (toBeMoved, targetXBig, sprite))
-
+        thread.start_new_thread(slideRight, (toBeMoved, targetXBig))
+        
+def slideLeft(toBeMoved, targetXSmall):
+    time.sleep(.005)
+    toBeMoved.coords.x -= 1
+    toBeMoved.forwardCoords.x -= 1
+    WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
+    if toBeMoved.coords.x > targetXSmall:
+        thread.start_new_thread(slideLeft, (toBeMoved, targetXSmall))
 
 
 # Slide-down logic identical to the above, but for vertical sliding
@@ -3336,11 +3536,9 @@ def loadAreaCheck(player):
     maxAceptableWidth = 960
     maxAceptableHeight = 512
     if WorldData.CURRENT_AREA.otherAreas:
-        printNow("Check area")
         currCoord = coordToTileCoord(WorldData.bot1.coords)
         currSpot = tileCoordToSpot(currCoord)
         if WorldData.currentMap.getTileDesc(currSpot) == "hole":
-            printNow("Found Hole")
             #enter the dungeon!
             coordY = (WorldData.HEIGHT_TILES/2) * WorldData.BITS
             coordX = (WorldData.WIDTH_TILES/2) * WorldData.BITS
@@ -3513,11 +3711,9 @@ def spotToCoord(spot):
     return Coords(spot % WWorldData.IDTH_TILES, spot / WorldData.WIDTH_TILES)
 
 
-
 #given tile Coords give tile Spot in 1d array
 def tileCoordToSpot(coord):
     return coord.x + coord.y * WorldData.WIDTH_TILES
-
 
 
 #Goes from pixel coords to tile Coords
@@ -3531,11 +3727,8 @@ def tileSpotToCoord(spot):
     return Coords((spot * WorldData.BITS)% WorldData.PIXEL_WIDTH, (spot / WorldData.WIDTH_TILES)*WorldData.BITS)
 
 
-
-#probably bad?
 def coordToTile(coord):
     return coord.x/WorldData.BITS + (coord.y/WorldData.BITS) * WorldData.WIDTH_TILES
-
 
 
 #takes pixel coordanates and returns if the tile at that location is
@@ -3544,36 +3737,11 @@ def isTraversable(x, y):
     return WorldData.currentMap.isTraversable(spot)
 
 
-
-#depricated can Delete
-def placeTex(tex, spot, back):
-    startx = (spot * WorldData.BITS) % WorldData.backWidth;
-    starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS;
-    for x in range(0, WorldData.BITS):
-        for y in range(0, WorldData.BITS):
-            setColor(getPixel(back, startx + x, starty + y), getColor(getPixel(tex, x, y)))
-
-
-
 # Converts pixel coordinates to "spot" coordinates
 def textCoordToSpot(x, y):
   col = texWidth/32
   row = texHeight/32
   return x + y*col
-
-
-
-#LEGACY can delete
-def getTexture(spot):
-    texture = makeEmptyPicture(WorldData.BITS,WorldData.BITS)
-    #spot to coord conversion
-    startx = (spot * WorldData.BITS) % texWidth;
-    starty = ((spot * WorldData.BITS) / texWidth) * WorldData.BITS;
-    for x in range(0, WorldData.BITS):
-        for y in range(0, WorldData.BITS):
-            setColor(getPixel(texture, x, y), getColor(getPixel(textureMap, x + startx, y + starty)))
-    return texture
-
 
 
 # intro credits, adjust to add fade, etc.
@@ -3928,8 +4096,7 @@ def startGame():
   WorldData.text.grabFocus()
   time.sleep(.2) #gives sliding title time to finish
   WorldData.text.onKeyType(keyAction)
-
-
+  loadNewArea(DUNGEON_ENTRANCE_AREA)
 
   # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
@@ -4280,13 +4447,18 @@ def areaSetup():
   AreaData.TOWN_AREA.objectList.append(HealingStation(SpriteData.healingStationSpritePaths, 896, 64))
   for i in AreaData.TOWN_AREA.lightSources:
     AreaData.TOWN_AREA.objectList.append(i)
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 32, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 32, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 32, 512, 1))
-  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(LightSource(SpriteData.bigTorchSpritePaths, 960, 512, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 32, 32, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 960, 32, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 32, 512, AreaData.DUNGEON_ENTRANCE_AREA, 1))
+  AreaData.DUNGEON_ENTRANCE_AREA.lightSources.append(DungeonTorch(SpriteData.bigTorchSpritePaths, 960, 512, AreaData.DUNGEON_ENTRANCE_AREA, 1))
   for i in AreaData.DUNGEON_ENTRANCE_AREA.lightSources:
     AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(i)
-
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 992, 288))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 0, 288))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 992, 256))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 0, 256))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 512, 0))
+  AreaData.DUNGEON_ENTRANCE_AREA.objectList.append(Door(SpriteData.doorSpritePaths, 480, 0))
   #OverWorld connections
   joinNorthSouthAreas(AreaData.N_FIELD_AREA, AreaData.TOWN_AREA)
   joinNorthSouthAreas(AreaData.NE_FIELD_AREA, AreaData.E_FIELD_AREA)
@@ -4341,3 +4513,4 @@ def main():
 
 
 main()
+
