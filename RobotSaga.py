@@ -1134,22 +1134,38 @@ class Map():
 
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
-            if tiles[spot] == "g": self.placeTex(WorldData.grass, spot)
-            elif tiles[spot] == "l": self.placeTex(WorldData.lavaRock, spot)
-            elif tiles[spot] == "s": self.placeTex(WorldData.stone, spot)
-            elif tiles[spot] == "S": self.placeTex(WorldData.stoneWall, spot)
-            elif tiles[spot] == "d": self.placeTex(WorldData.dirt, spot)
-            elif tiles[spot] == "D": self.placeTex(WorldData.dirtWall, spot)
-            elif tiles[spot] == "w": self.placeTex(WorldData.water, spot)
-            elif tiles[spot] == "f": self.placeTex(WorldData.fence, spot)
-            elif tiles[spot] == "L": self.placeTex(WorldData.lava, spot)
-            elif tiles[spot] == "H": self.placeTex(WorldData.hole, spot)
-            elif tiles[spot] == ".": self.placeTex(WorldData.blank, spot)
-            elif tiles[spot] == ",": self.placeTex(WorldData.blank, spot)
-            elif tiles[spot] == "o": self.placeTex(WorldData.door, spot)
-            elif tiles[spot] == "h": self.placeStruct(makePicture(WorldData.structPath + "house.png"), spot, "house")
-            elif tiles[spot] == "t": self.placeStruct(makePicture(WorldData.structPath + "tree1.png"), spot, "tree")
-            elif tiles[spot] == "c": self.placeStruct(WorldData.chest, spot, "chest")
+            if tiles[spot] == "g":
+                self.placeTex(WorldData.grass, spot)
+            elif tiles[spot] == "l":
+                self.placeTex(WorldData.lavaRock, spot)
+            elif tiles[spot] == "s":
+                self.placeTex(WorldData.stone, spot)
+            elif tiles[spot] == "S":
+                self.placeTex(WorldData.stoneWall, spot)
+            elif tiles[spot] == "d":
+                self.placeTex(WorldData.dirt, spot)
+            elif tiles[spot] == "D":
+                self.placeTex(WorldData.dirtWall, spot)
+            elif tiles[spot] == "w":
+                self.placeTex(WorldData.water, spot)
+            elif tiles[spot] == "f":
+                self.placeTex(WorldData.fence, spot)
+            elif tiles[spot] == "L":
+                self.placeTex(WorldData.lava, spot)
+            elif tiles[spot] == "H":
+                self.placeTex(WorldData.hole, spot)
+            elif tiles[spot] == ".":
+                self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == ",":
+                self.placeTex(WorldData.blank, spot)
+            elif tiles[spot] == "o":
+                self.placeTex(WorldData.door, spot)
+            elif tiles[spot] == "h":
+                self.placeStruct(makePicture(WorldData.structPath + "house.png"), spot, "house")
+            elif tiles[spot] == "t":
+                self.placeStruct(makePicture(WorldData.structPath + "tree1.png"), spot, "tree")
+            elif tiles[spot] == "c":
+                self.placeStruct(WorldData.chest, spot, "chest")
 
 
 

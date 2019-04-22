@@ -31,7 +31,8 @@ try:
 except NameError: #if path does not exist make new path
     printNow("Please select your game install folder")
     path = pickAFolder()
-else: printNow("Welcome Back") #welcome the player back to the game
+else:
+    printNow("Welcome Back") #welcome the player back to the game
 
 class Coords():
     def __init__(self, x, y):
@@ -60,26 +61,34 @@ class Tile():
         # 1110 1111
         #&0001 0000
         #printNow(not around & upAndRight)
-        if not around ^ allRound: return self.tileArr[17]
+        if not around ^ allRound:
+            return self.tileArr[17]
         if around & up:
             if around & right:
                 if around & down:
                     if around & left:
-                        if not around & upAndRight: return self.tileArr[7]
-                        if not around & upAndLeft: return self.tileArr[13]
-                        if not around & downAndRight: return self.tileArr[6]
-                        if not around & downAndLeft: return self.tileArr[12]
+                        if not around & upAndRight:
+                            return self.tileArr[7]
+                        if not around & upAndLeft:
+                            return self.tileArr[13]
+                        if not around & downAndRight:
+                            return self.tileArr[6]
+                        if not around & downAndLeft:
+                            return self.tileArr[12]
                     return self.tileArr[3]
-                if around & left: return self.tileArr[10]
+                if around & left:
+                    return self.tileArr[10]
                 return self.tileArr[4]
             if around & left:
                 #if around & right: return self.tileArr[10] #redundent
-                if around & down: return self.tileArr[15]
+                if around & down:
+                    return self.tileArr[15]
                 return self.tileArr[16]
         if around & down:
             if around & right:
                 #if around & up: return self.tileArr[3]
-                if around & left: return self.tileArr[8]
+                if around & left:
+                    return self.tileArr[8]
                 return self.tileArr[2]
             if around & left:
                 #if around & right: return self.tileArr[8] #redundent
@@ -87,13 +96,17 @@ class Tile():
                 return self.tileArr[14]
         if self.desc == "fence":
             if around & right:
-                if around & left: return self.tileArr[8]
+                if around & left:
+                    return self.tileArr[8]
                 return self.tileArr[6]
             if around & up:
-                if around & down: return self.tileArr[3]
+                if around & down:
+                    return self.tileArr[3]
                 return self.tileArr[7]
-            if around & left: return self.tileArr[12]
-            if around & down: return self.tileArr[13]
+            if around & left:
+                return self.tileArr[12]
+            if around & down:
+                return self.tileArr[13]
 
         return self.tileArr[1]
 
@@ -118,9 +131,11 @@ def tileCoordToSpot(coord):
 
 def spotToCoord(spot):
     #if low set to 0d
-    if spot < 0: spot = 0
+    if spot < 0:
+        spot = 0
     #if high set to max (should probably just throw error
-    if spot > widthTiles * heightTiles: spot = widthTiles * heightTiles - 1
+    if spot > widthTiles * heightTiles:
+        spot = widthTiles * heightTiles - 1
     return Coords(spot % widthTiles, spot / widthTiles)
 
 #retrieve texture from spot on textureMap
@@ -169,7 +184,8 @@ class Map():
         img = tex.getImg(around)
         for x in range(0, bits):
             for y in range(0, bits):
-                if getColor(getPixel(img, x, y)) == white: continue
+                if getColor(getPixel(img, x, y)) == white:
+                    continue
                 setColor(getPixel(self.map, startx + x, starty + y), getColor(getPixel(img, x, y)))
 
     def placeStruct(self, struct, spot):
@@ -184,7 +200,8 @@ class Map():
                 self.tileMap.update({newSpot: water}) #replace water with a blank tile
                 for x in range(0,bits):
                     for y in range(0,bits):
-                        if getColor(getPixel(struct, x + structx * bits, y + structy * bits)) == white: continue
+                        if getColor(getPixel(struct, x + structx * bits, y + structy * bits)) == white:
+                            continue
                         setColor(getPixel(self.map, startx + x + structx * bits, starty + y + structy * bits), getColor(getPixel(struct, x + structx * bits, y + structy * bits)))
 
     def updateBackground(self, tiles, back):
@@ -213,20 +230,34 @@ class Map():
                     around = around | d[2] #bitwise or direction with around
                 elif tiles[spot] in tempPaths and tiles[tileCoordToSpot(new)] in tempPaths:
                     around = around | d[2] #bitwise or direction with around
-            if   tiles[spot] == self.baseTile.char: continue
-            elif tiles[spot] == "g": self.placeTex(grass, spot, around)
-            elif tiles[spot] == "l": self.placeTex(lavaRock, spot, around)
-            elif tiles[spot] == "s": self.placeTex(stone, spot, around)
-            elif tiles[spot] == "S": self.placeTex(stoneWall, spot, around)
-            elif tiles[spot] == "d": self.placeTex(dirt, spot, around)
-            elif tiles[spot] == "D": self.placeTex(dirtWall, spot, around)
-            elif tiles[spot] == "w": self.placeTex(water, spot, around)
-            elif tiles[spot] == "f": self.placeTex(fence, spot, around)
-            elif tiles[spot] == "L": self.placeTex(lava, spot, around)
-            elif tiles[spot] == "H": self.placeTex(hole, spot, around)
-            elif tiles[spot] == "h": self.placeStruct(house, spot)
-            elif tiles[spot] == "c": self.placeStruct(chest, spot)
-            elif tiles[spot] == "t": self.placeStruct(tree1, spot)
+            if   tiles[spot] == self.baseTile.char:
+                continue
+            elif tiles[spot] == "g":
+                self.placeTex(grass, spot, around)
+            elif tiles[spot] == "l":
+                self.placeTex(lavaRock, spot, around)
+            elif tiles[spot] == "s":
+                self.placeTex(stone, spot, around)
+            elif tiles[spot] == "S":
+                self.placeTex(stoneWall, spot, around)
+            elif tiles[spot] == "d":
+                self.placeTex(dirt, spot, around)
+            elif tiles[spot] == "D":
+                self.placeTex(dirtWall, spot, around)
+            elif tiles[spot] == "w":
+                self.placeTex(water, spot, around)
+            elif tiles[spot] == "f":
+                self.placeTex(fence, spot, around)
+            elif tiles[spot] == "L":
+                self.placeTex(lava, spot, around)
+            elif tiles[spot] == "H":
+                self.placeTex(hole, spot, around)
+            elif tiles[spot] == "h":
+                self.placeStruct(house, spot)
+            elif tiles[spot] == "c":
+                self.placeStruct(chest, spot)
+            elif tiles[spot] == "t":
+                self.placeStruct(tree1, spot)
             repaint(self.map)
             #not in files yet
             #elif tiles[spot] == "m": placeTex(monster, spot)
@@ -237,7 +268,8 @@ class Map():
 
     def isTraversable(self, spot):
         #printNow(spot)
-        if spot < 0 or spot > len(self.tileMap) - 1: return false
+        if spot < 0 or spot > len(self.tileMap) - 1:
+            return false
         #printNow(self.tileMap[spot].getTraversable())
         #printNow(self.tileMap[spot].getDesc())
         return self.tileMap[spot].getTraversable()
