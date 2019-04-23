@@ -2967,6 +2967,14 @@ class MenuData():
 def unstuck():
   WorldData.bot1.moveUp()
   WorldData.bot1.moveDown()
+  WorldData.bot1.moving = false
+      for files in WorldData.bot1.bloodySprites:
+          try:
+            os.remove(files)
+          except:
+            None
+      WorldData.bot1.booodySprites = []
+      WorldData.bot1.spritePaths = WorldData.bot1.unchangedSpritePaths
   WorldData.text.onKeyType(keyAction)
   WorldData.text.grabFocus()
 
