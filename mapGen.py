@@ -61,8 +61,6 @@ class Tile():
         # 1110 1111
         #&0001 0000
         #printNow(not around & upAndRight)
-        printNow(around)
-        printNow(self.desc)
         if self.desc == "fence":
             if around & right:
                 if around & left:
@@ -383,19 +381,19 @@ nfield += "fggggggggggggggggggggggggggggggf"
 nfield += "fggggggggggwwwwwwwwwgggggggggggf"
 nfield += "fgggggggwwwwwwwwwwwwwggggggggggf"
 nfield += "fggggggwwwwwwwwwwwwwwggggggggggf"
-nfield += "fggggggwwwwwwwwwwwwwdddddddddddg"
+nfield += "fggggggwwwwwwwwwwwwwdddddddddddd"
 nfield += "fgggggwwwwwwwwgt,,gddddddddddddd"
 nfield += "fgggggwwwwwwggg,,,ddddwwwwwddddd"
-nfield += "fgggggwwwwwwggg,,,dddwwwwwwwddgg"
+nfield += "fgggggwwwwwwggg,,,dddwwwwwwwdddd"
 nfield += "fgggggwwwwwwddddddddgwwwwwwwddgf"
-nfield += "fgggggwwwwwdddddddddwwwwwwwwddgf"
+nfield += "fgggggwwwwddddddddddwwwwwwwwddgf"
 nfield += "fggggggwwdddddwwwwwwwwwwwwwwddgf"
 nfield += "fggggggggdddwwwwwwwwwwwwwwddddgf"
 nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
 nfield += "fggggggggdddddddddddddddddddgggf"
 nfield += "fggggggggddddddddddddddddddggggf"
 nfield += "fffffffffffffddddfffffffffffffff"
-fieldMap = Map(field, grass, "Nfield.png")
+fieldMap = Map(nfield, grass, "Nfield.png")
 
 efield  = "fffffffffffffddddfffffffffffffff"
 efield += "fggggggggggggddddggggggggggggggf"
@@ -415,7 +413,7 @@ efield += "fgwwwwwwwwwwwggggggggggg,,,,,,gf"
 efield += "fggwwwwwwwgggggggggggggg,,,,,,gf"
 efield += "fggggggggggggggggggggggggggggggf"
 efield += "ffffffffffffffffffffffffffffffff"
-fieldMap = Map(field, grass, "Efield.png")
+fieldMap = Map(efield, grass, "Efield.png")
 
 nefield  = "ffffffffffffffffffffffffffffffff"
 nefield += "fggggggggggggggggggggggggggggggf"
@@ -435,7 +433,7 @@ nefield += "fgggggggdddddddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fggggggggggggddddggggggggggggggf"
 nefield += "fffffffffffffddddfffffffffffffff"
-fieldMap = Map(field, grass, "NEfield.png")
+fieldMap = Map(nefield, grass, "NEfield.png")
 
 entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 entrance += "SllllllllllllllllllllllllllllllS"
@@ -455,7 +453,7 @@ entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SllllllllllllllllllllllllllllllS"
 entrance += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(entrance, lavaRock, "dungeonMap.png")
 
 westRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 westRoom += "SllllllllllllllllllllllllllllllS"
@@ -475,7 +473,7 @@ westRoom += "SllllllllllllllllllllllllllllllS"
 westRoom += "SllllllllllllllllllllllllllllllS"
 westRoom += "SllllllllllllllllllllllllllllllS"
 westRoom += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(westRoom, lavaRock, "dungeonMap.png")
 
 eastRoom  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
@@ -495,7 +493,7 @@ eastRoom += "SlllLLLLLLLlllllllllLLLLLLLllllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "SllllllllllllllllllllllllllllllS"
 eastRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(eastRoom, lavaRock, "dungeonMap.png")
 
 keyRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 keyRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -515,7 +513,7 @@ keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 keyRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 keyRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(keyRoom, lava, "dungeonMap.png")
 
 miniBoss  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 miniBoss += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -535,7 +533,7 @@ miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 miniBoss += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 miniBoss += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(miniBoss, lava, "dungeonMap.png")
 
 bossKey  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
 bossKey += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
@@ -555,7 +553,7 @@ bossKey += "SLLLLLLllllllllllllllllllLLLLLLS"
 bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
 bossKey += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
 bossKey += "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(bossKey, lava, "dungeonMap.png")
 
 bossRoom  = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 bossRoom += "SLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLS"
@@ -575,7 +573,8 @@ bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 bossRoom += "SLLLLLLLLLLLLLllllLLLLLLLLLLLLLS"
 bossRoom += "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
-dungeonMap = Map(dungeon, lavaRock, "dungeonMap.png")
+#dungeonMap = Map(bossRoom, lava, "dungeonMap.png")
+
 def makeDungeon():
     dungeonPath = "dungeon/"
     global entrance
@@ -592,3 +591,5 @@ def makeDungeon():
     miniBoss = Map(miniBoss,lava, dungeonPath + "miniBoss.png")
     bossKey = Map(bossKey,lava, dungeonPath + "bossKey.png")
     bossRoom = Map(bossRoom,lava, dungeonPath + "bossRoom.png")
+
+makeDungeon()

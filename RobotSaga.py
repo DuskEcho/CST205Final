@@ -899,7 +899,7 @@ class Area():
 
 
 class AreaData():
-  TOWN_AREA = Area(RawSprite(WorldData.path + "newBack.png", 0, 0, 6), None, [StationaryAnimatedSprite(WorldData.path + "/EffectSprites/blankWater.gif", WorldData.path + "/EffectSprites/waterMoving.gif", 256, 352),
+  TOWN_AREA = Area(RawSprite(WorldData.path + "townMap.png", 0, 0, 6), None, [StationaryAnimatedSprite(WorldData.path + "/EffectSprites/blankWater.gif", WorldData.path + "/EffectSprites/waterMoving.gif", 256, 352),
                   ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 320, 0, .3),
                   ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 896, 384, .3)])
   E_FIELD_AREA = Area(RawSprite(WorldData.path + "Efield.png", 0, 0, 6), None, [ThreeStageAnimationCycle(WorldData.path + "/EffectSprites/sakuraMoving1.gif", WorldData.path + "/EffectSprites/sakuraMoving2.gif", WorldData.path + "/EffectSprites/sakuraMoving3.gif", 768, 384, .2),
@@ -4383,12 +4383,12 @@ def areaSetup():
   nfield += "fggggggggggwwwwwwwwwgggggggggggf"
   nfield += "fgggggggwwwwwwwwwwwwwggggggggggf"
   nfield += "fggggggwwwwwwwwwwwwwwggggggggggf"
-  nfield += "fggggggwwwwwwwwwwwwwdddddddddddg"
+  nfield += "fggggggwwwwwwwwwwwwwdddddddddddd"
   nfield += "fgggggwwwwwwwwgt,,gddddddddddddd"
   nfield += "fgggggwwwwwwggg,,,ddddwwwwwddddd"
-  nfield += "fgggggwwwwwwggg,,,dddwwwwwwwddgg"
+  nfield += "fgggggwwwwwwggg,,,dddwwwwwwwdddd"
   nfield += "fgggggwwwwwwddddddddgwwwwwwwddgf"
-  nfield += "fgggggwwwwwdddddddddwwwwwwwwddgf"
+  nfield += "fgggggwwwwddddddddddwwwwwwwwddgf"
   nfield += "fggggggwwdddddwwwwwwwwwwwwwwddgf"
   nfield += "fggggggggdddwwwwwwwwwwwwwwddddgf"
   nfield += "fggggggggddgwwwwwwwwwwwwwdddddgf"
