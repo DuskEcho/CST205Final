@@ -1,9 +1,9 @@
 CharName:bot1
-Weapon:Stick
-Level:0
-MaxHp:10
-CurrentHp:10
+Weapon:Botsmasher
+Level:80
+MaxHp:289
+CurrentHp:289
 Xp:0
-Atk:5
-Def:5
+Atk:194
+Def:177
 Wallet:0
