@@ -159,19 +159,18 @@ class BeingSprite(Sprite):
       self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
-      try:
-        self.icon = gui.ImageIO.read(File(filename))
-      except:
-        None
       self.parental = parental
       self.layer = layer
+      try:
+        self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
-
       # keep a deep copy of the image (useful for repeated scalings - we always scale from original
       # for higher quality) - LEGACY, UNUSED FOR NOW
       self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
       self.originalIcon.setData( self.icon.getData() )
+      except:
+        None
 
 
       # adds the sprite to the display. If the sprite already exists,
@@ -1303,7 +1302,10 @@ class Transaction():
 class Wallet():
     def __init__(self, parental, amount):
       self.value = amount
+      self.name = "Wallet"
 
+    def use():
+      None
 
       # User-exclusive wallet class. Inherits from Wallet and calls Wallet.__init__()
       # Expansions:
