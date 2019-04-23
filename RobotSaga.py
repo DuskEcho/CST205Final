@@ -1,4 +1,7 @@
 # Copyright SAGA 2019
+# Contributing members:
+# Shelly Sun, Andrew Bell, Greg Brown, Andrew Terrado
+#
 # Not to be duplicated without express consent of
 # original members. Not for release.
 # This project will be expanded upon by the team members as a side project.  As such, 
@@ -9,14 +12,12 @@
 # memory leaks in persistent animations among other things.
 #
 #
+# For image manipulation examples, see functions lightenDarken( and bloodify(
+# For text manipulation examples, see keyAction(, saveBot(, loadBot(, map class, and help(
+# For audio manipulation examples, see the music class and related calls.
 #
-#
-#
-#
-#
-#
-#
-#.
+# Other info: bot1 always represents the player.  This is in reference
+# to development names given to characters.s
 
 
 import random
