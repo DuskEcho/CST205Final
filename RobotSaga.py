@@ -2964,6 +2964,84 @@ class MenuData():
         #                  #
         ####################
 
+def unstuck():
+  WorldData.bot1.moveUp()
+  WorldData.bot1.moveDown()
+  WorldData.bot1.moving = false
+      for files in WorldData.bot1.bloodySprites:
+          try:
+            os.remove(files)
+          except:
+            None
+      WorldData.bot1.booodySprites = []
+      WorldData.bot1.spritePaths = WorldData.bot1.unchangedSpritePaths
+  WorldData.text.onKeyType(keyAction)
+  WorldData.text.grabFocus()
+
+def help():
+  showInformation("Welcome! Thanks for playing!"
+  + "\n" +  
+  "Controls:"
+  + "\n" +  
+  '"w", "a", "s", "d" - Movement'
+  + "\n" +  
+  '"f"                - Attack'
+  +
+  '"v"                - Talk'
+  + "\n" +  
+  '"z"                - Special Atk, costs health, stuns enemies'
+  +
+  '"g"                - Attempt to steal'
+  + "\n" +  
+  '" " (spacebar     - interact (lights, shopkeeper, healing station)'
+  + "\n" +  
+  '"m"                - Menu'
+  + "\n" +  
+  '"h"                - Help Prompt'
+  + "\n" +  
+  'Menu Controls:'
+  + "\n" +  
+  '"i"                - Inventory'
+  + "\n" +  
+  '"u"                - Stats'
+  + "\n" +  
+  '"q"                - Save and Quit (Saves stats only)'
+  + "\n" +  
+  'Inventory Controls:'
+  + "\n" +  
+  '"1" - "0"          - Use item (equip weapon, use potion)'
+  + "\n" +  
+  '"!" - ")"          - Drop item (use if inventory full)'
+  + "\n" +  
+  'Picking up enemy parts will gain money'
+  + "\n" +  
+  'When injured, walk to the center of the healing structure and hit space'
+  + "\n" +  
+  'to heal, or buy and use potions'
+  + "\n" +
+  'If stuck at any time, type "unstuck()" in the command area or\n'
+  + 'unstuck in the help window.')
+  print("Welcome! Thanks for playing!")
+  print("Controls:")
+  print('"w", "a", "s", "d" - Movement')
+  print('"f"                - Attack')
+  print('"v"                - Talk')
+  print('"z"                - Special Atk, costs health, stuns enemies')
+  print('"g"                - Attempt to steal')
+  print('" " (spacebar)     - interact (lights, shopkeeper, healing station)')
+  print('"m"                - Menu')
+  print('Menu Controls:')
+  print('"i"                - Inventory')
+  print('"u"                - Stats')
+  print('"q"                - Save and Quit (Saves stats only)')
+  print('Inventory Controls:')
+  print('"1" - "0"          - Use item (equip weapon, use potion)')
+  print('"!" - ")"          - Drop item (use if inventory full)')
+  print('Picking up enemy parts will gain money')
+  print('When injured, walk to the center of the healing structure and hit space')
+  print('to heal, or buy and use potions')
+  print('If stuck at any time, type "unstuck()" in the command area or\n')
+  print('unstuck in the help window.')
 
 
 def dropBomb(coords):
@@ -3539,6 +3617,12 @@ def keyAction(a):
     if bot1Ready:
         WorldData.bot1.moveRight()
         turnPass()
+  elif a == "h":
+    inp = requestString("Can I help you?")
+    if "help".upper() in inp.upper():
+      help()
+    if "unstuck".upper() in inp.upper():
+      unstuck()
   elif a == "W":
         WorldData.bot1.faceUp()
   elif a == "A":
@@ -3627,6 +3711,7 @@ def mainMenuAction(inp):
   else:
     newBot()
     startGame()
+    help()
 
 # To pass to getKeyTyped in order to block inputs
 # (e.g., during animations or delays)
