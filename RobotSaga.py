@@ -1,11 +1,12 @@
 # Copyright SAGA 2019
 # Not to be duplicated without express consent of
 # original members. Not for release.
-#
-# Note: Layer 0 is for loading screens, layer 1 is for menu text/sprites, layer 2 is for menus, 3-5 for sprites, 6 for background
-#
-#
-#
+# This project will be expanded upon by the team members as a side project.  As such, 
+# some of the code is for future extension only. 
+# 
+# NOTE:  The game cannot be exited by closing the "display" window. In order to quit,
+# press "q" at the game menue or close out JES entirely.  This is by design to prevent
+# memory leaks in persistent animations among other things.
 #
 #
 #
@@ -26,23 +27,11 @@ import os
 import sys
 
 
-
-
-
-
-
-
-
-
         ####################
         #                  #
         #      CLASSES     #
         #                  #
         ####################
-
-
-
-
 
 
 class music():
@@ -53,17 +42,14 @@ class music():
     def Play(self):
       play(self.sound)
 
-
     def Stop(self):
       self.isPlaying = false
       stopPlaying(self.sound)
-
 
     def volume(self, n):
       for sample in getSamples(self.sound):
         value = getSampleValue(sample)
         setSampleValue(sample, value*n)
-
 
     def repeat(self):
       while true:
@@ -81,24 +67,13 @@ class music():
       return
 
 
-
-
-
-
-
 # Basic class for turn counter instances.
-
 class TurnCounter():
   def __init__(self):
         self.turn = 0
 
 
-
-
-
-
 # universal coordinates object. Coords in pixels.
-
 class Coords():
   def __init__(self, x, y):
     self.x = x
@@ -108,16 +83,9 @@ class Coords():
       printNow(str(self.x) + "," + str(self.y))
 
 
-
-
-
-
     # A custom class created to override gui.Display's default destructor.
     # Though not useful for Python, this will be useful when converting to a new language
-
 class CustomDisplay(gui.Display):
-
-
   def __init__(self, title = "", width = 600, height = 400, x=0, y=0, color = None):
     gui.Display.__init__(self, title, width, height, x, y, color)
   def __del__(self):
@@ -130,10 +98,6 @@ class CustomDisplay(gui.Display):
     gui.display.__del__(self)
 
 
-
-
-
-
     # general class for sprites.
     # to display on the main screen.
     # parameters:
@@ -141,9 +105,7 @@ class CustomDisplay(gui.Display):
     #   parental      - object that owns this instance. must have it's own coords
     #   layer       - screen layer of sprite, 0 closest to front
     # Members inherited from gui.icon
-
 class Sprite(gui.Icon):
-
   def __init__(self, filename, parental, layer = 4):
       gui.JPanel.__init__(self)
       gui.Widget.__init__(self)
@@ -155,54 +117,38 @@ class Sprite(gui.Icon):
       self.degrees = 0                   # used for icon rotation - LEGACY, NOT SURE OF NECESSITY
       self.layer = layer
       self.parental = parental
-
       self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
-
       # keep a deep copy of the image (useful for repeated scalings - we always scale from original
       # for higher quality)- LEGACY, NOT SURE OF NECESSITY
       self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
       self.originalIcon.setData( self.icon.getData() )
 
-
-
-
-
-
       # adds the sprite to the display. If the sprite already exists,
       # moves the sprite to the self.coords location
-
   def spawnSprite(self):
         WorldData.display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
 
       # adds the sprite to the display in the foreground (closest to the user)
-
   def spawnSpriteFront(self):
       self.layer = 3
       self.spawnSprite()
 
-
       # adds the sprite to the display in the background (closest to the map, just in front of it)
       # order number of 3 spawns behind the background
-
   def spawnSpriteBack(self):
       self.layer = 5
       self.spawnSprite()
 
       # removes the sprite from the display
-
   def removeSprite(self):
         WorldData.display.remove(self)
-
-
-
 
 
   # inherits from Sprite. Separated to give
   # ownership to sub-sprites (e.g., weapon)
   #   See sprite for function exacts.
-
 class BeingSprite(Sprite):
   def __init__(self, filename, parental, layer = 4):
       gui.JPanel.__init__(self)
@@ -213,68 +159,48 @@ class BeingSprite(Sprite):
       self.position = (0,0)              # assume placement at a Display's origin - LEGACY, UNUSED FOR NOW
       self.display = None
       self.degrees = 0                   # used for icon rotation - LEGACY, UNUSED FOR NOW
-      try:
-        self.icon = gui.ImageIO.read(File(filename))
-      except:
-        None
       self.parental = parental
       self.layer = layer
+      try:
+        self.icon = gui.ImageIO.read(File(filename))
       iconWidth = self.icon.getWidth(None)
       iconHeight = self.icon.getHeight(None)
-
       # keep a deep copy of the image (useful for repeated scalings - we always scale from original
       # for higher quality) - LEGACY, UNUSED FOR NOW
       self.originalIcon = gui.BufferedImage(self.icon.getWidth(), self.icon.getHeight(), self.icon.getType())
       self.originalIcon.setData( self.icon.getData() )
-
+      except:
+        None
 
 
       # adds the sprite to the display. If the sprite already exists,
       # moves the sprite to the self.coords location
-
   def spawnSprite(self):
         WorldData.display.place(self, self.parental.coords.x, self.parental.coords.y, self.layer)
 
-
-
       # removes the sprite
-
   def removeSprite(self):
         WorldData.display.remove(self)
 
-
-
       # not a huge fan of the weaponOut flag, but it works for now.
       # without the check in putAwayWeap, JES complains
-
   def displayWeapon(self, sprite, coords):
     WorldData.display.add(sprite, coords.x, coords.y)
 
-
-
       # hides the weapon. may be unnecessary if we get
       # animations figured out
-
   def hideWeapon(self):
       WorldData.display.remove(self.weap)
 
-
-
       #moves sprite to location given
-
   def moveTo(self, x, y):
       self.parental.coords.x = x
       self.parental.coords.y = y
       WorldData.display.addOrder(self, 4, x, y)
 
 
-
-
-
-
     # Class used when an ownerless sprite is needed
     # Acts as a sprite with Coords
-
 class RawSprite():
     def __init__(self, filename, x, y, layer = 4):
         self.coords = Coords(x, y)
@@ -287,10 +213,6 @@ class RawSprite():
         self.sprite.spawnSpriteBack()
     def removeSprite(self):
         self.sprite.removeSprite()
-
-
-
-
 
 
 class WorldData():
@@ -345,7 +267,6 @@ class WorldData():
   boss = None
 
   # Currently acts as the "controller" to read inputs
-
   # text.onKeyType(function) sets the function to be called on character entry.  Default is keyAction()
   # setting "function" to a different function will alter controls. Make sure to pass a function
   # that takes exactly one parameter.  onKeyType will pass the character of the typed key as an argument,
@@ -373,17 +294,9 @@ class WorldData():
   lightSources = []
 
 
-
-
-
-
 class ListData():
-
-
   # Dictionaries for items
   # Numbers correspond to stats
-
-
   # Weapon dictionary. Array in form [attack power, weaponSprites[], burnable, flamingWeaponSprites[], range, currencyValue]
   # weaponSprites and flamingWeaponSprites arrays in form [first up frame, first down frame, first left frame,
   # first right frame, repeat for frames two and three]
@@ -485,7 +398,6 @@ class ListData():
   #loot table (currently unused)
   lootTable = {}
 
-
   # Direction dict for reference with arrays
   directionList = {
       "up": 0,
@@ -497,15 +409,9 @@ class ListData():
   mapNameList = ["town", "dungeon", "WorldData.path"]
 
 
-
-
-
-
 class SpriteData():
-
   # Sprite paths for beings. Arrays in form [back, front, left, right,
   # moving left, moving right, moving front, moving back]
-
   userSpritePaths = [WorldData.path + "RobotSprites/botBlueBack.gif",
                  WorldData.path + "RobotSprites/botBlueFront.gif",
                  WorldData.path + "RobotSprites/botBlueSideLeft.gif",
@@ -643,10 +549,6 @@ class SpriteData():
                           WorldData.path + "ObjectSprites/rechargeStation4.gif"]
 
 
-
-
-
-
         # Custom 2 stage animated sprite. On animate, flickers
         # semi-randomly.
         # Constructor Parameters:
@@ -673,8 +575,6 @@ class StationaryAnimatedSprite():
         self.sprite.layer = layer
         self.isAnimating = false
 
-
-
         # Initiates the animation by creating a new thread.
     def animate(self):
         WorldData.animatedSpriteList.append(self)
@@ -683,15 +583,11 @@ class StationaryAnimatedSprite():
     def stopAnimating(self):
         WorldData.animatedSpriteList.remove(self)
 
-
-
         # Sprite creation/removal
     def spawnSprite(self):
         self.sprite.spawnSprite()
     def removeSprite(self):
         WorldData.display.remove(self.sprite)
-
-
 
         # Actual animation logic. Meant for use in thread.start_new_thread().
         # Flickers between two sprites at random intervals. Animation is stopped when
@@ -710,10 +606,6 @@ class StationaryAnimatedSprite():
         if self not in WorldData.animatedSpriteList:
             self.removeSprite()
             del self
-
-
-
-
 
 
         # Custom 3-stage animated sprite that animates 3 frames in cycles (1, 2, 3, 1, 2, 3...)
@@ -745,29 +637,20 @@ class ThreeStageAnimationCycle():
         self.isAnimating = false
         self.secondsBetween = secondsBetween
 
-
-
         # Initiates animation and adds to current animatedSpriteList
-
     def animate(self):
         WorldData.animatedSpriteList.append(self)
         self.isAnimating = true
         thread.start_new_thread(self.threadAnimate, (None,))
 
-
-
     def stopAnimating(self):
         WorldData.animatedSpriteList.remove(self)
-
-
 
         # shortcut to object's sprite functions
     def spawnSprite(self):
         self.sprite.spawnSprite()
     def removeSprite(self):
         WorldData.display.remove(self.sprite)
-
-
 
         # core animation, cycles through the sprites repeatedly at set intervals
     def threadAnimate(self, x):
@@ -797,15 +680,11 @@ class ThreeStageAnimationCycle():
             self.sprite = self.spriteList[2]
             del self
 
-
-
         # Runs one 3-stage animation cycle by creating a new thread
     def animateOnce(self):
         WorldData.animatedSpriteList.append(self)
         self.isAnimating = true
         thread.start_new_thread(self.threadAnimateOnce, (None,))
-
-
 
     def threadAnimateOnce(self, x):
         try:
@@ -819,10 +698,6 @@ class ThreeStageAnimationCycle():
           self.removeSprite()
         self.isAnimating = false
         WorldData.animatedSpriteList.remove(self)
-
-
-
-
 
 
     # The following class holds area-specific information for use in tracking
@@ -845,11 +720,7 @@ class ThreeStageAnimationCycle():
     #    wasOn                - List of lightSources that are on (turn on these when loading area)
     #    northArea            - Area connected to the north of the area
     #    sourth/east/westArea - See above
-
 class Area():
-
-
-
     def __init__(self, mapSprite, mapObject, persistantAnimations = []):
         self.beingList = [] #beings
         self.objectList = [] #lootbags, chests, doodads, etc.
@@ -868,8 +739,6 @@ class Area():
         self.otherAreas = []
         self.music = music(WorldData.path+"Audio/Strange-Zone.wav")
 
-
-
     def isTraversable(self, being, spot):
         if self.mapObject.isTraversable(spot):
             testCoords = tileSpotToCoord(spot)
@@ -887,15 +756,9 @@ class Area():
             return true
         return false
 
-
-
     def activateAnimations(self):
         for animatedSprite in self.persistentAnimations:
           animatedSprite.animate()
-
-
-
-
 
 
 class AreaData():
@@ -917,10 +780,6 @@ class AreaData():
   DUNGEON_BOSSROOM_AREA = Area(RawSprite(dungeonPath + "bossRoom.png", 0, 0, 6), None)
 
 
-
-
-
-
 class SoundData():
   move = music(WorldData.path+"Audio/footstep.wav")
   move1 = music(WorldData.path+"Audio/footstep.wav")
@@ -936,10 +795,6 @@ class SoundData():
   talk_sound = music(WorldData.path+"Audio/Robot_blip.wav")
   background_Music = music(WorldData.path+"Audio/Strange-Zone.wav")
   dungeon_sound = music(WorldData.path+"Audio/Night-Stalker.wav")
-
-
-
-
 
 
 class Menu():
@@ -961,11 +816,6 @@ class Menu():
                     ]
     self.sprite = self.sprites[0]
 
-
-
-
-
-
   def openMenu(self):
     self.updateStats()
     for light in WorldData.CURRENT_AREA.lightSources:
@@ -981,16 +831,11 @@ class Menu():
         None
     self.sprite.spawnSprite()
 
-
   def openPopMenu(self):
     WorldData.text.onKeyType(menuAction)
     self.updateStats()
     self.coords= Coords(368, 196)
     self.switchToPop(self.sprites[4], [self.text])
-
-
-
-
 
   def openItemMenu(self):
     self.updateStats()
@@ -1002,13 +847,9 @@ class Menu():
     self.switchToMenu(self.sprites[1], newItemLabels)
     WorldData.text.onKeyType(inventoryAction)
 
-
-
   def openStatusMenu(self):
     self.updateStats()
     self.switchToMenu(self.sprites[2], self.statusItems)
-
-
 
   def openShopMenu(self, transaction):
     self.updateStats()
@@ -1033,7 +874,6 @@ class Menu():
     self.showLabels(self.labelList, startX = 412, startY= 274)
     self.sprite.spawnSprite
 
-
   def switchToMenu(self, newSprite, labelsToShow = None):
     if labelsToShow == None:
       labelsToShow = self.labelList
@@ -1052,8 +892,6 @@ class Menu():
     self.showLabels(self.labelList)
     self.sprite.spawnSprite
 
-
-
   def closeMenu(self):
     try:
       for label in self.labelList:
@@ -1069,17 +907,12 @@ class Menu():
     self.animationHoldList = []
     self.coords= Coords(230, 0) #resets to default menu location
 
-
-
   def updateStats(self):
     self.statusItems = [gui.Label(str(self.player.hp)), gui.Label(str(self.player.xp)), gui.Label(str(self.player.level)),
     gui.Label(str(self.player.atk)), gui.Label(str(self.player.df))]
     self.invItems = []
     for item in self.player.inv:
       self.invItems.append(gui.Label(item.name))
-
-
-
 
   def showLabels(self, labelsToShow, startX = 700, startY = 171, lineJump = 50):
     #x = 625 - old measurements, might be better for items
@@ -1090,20 +923,13 @@ class Menu():
       WorldData.display.addOrder(item, 0, x, y)
       y +=lineJump
 
-
-
   def removeMenuLabels (self):
      for item in self.labelList:
          label = item
          removeLabel(label)
 
 
-
-
-
-
     # Object that holds collision/terrain information
-
 class Tile():
   def __init__(self, isTraversable, isPassable, isTough, desc):
     self.desc = desc
@@ -1116,28 +942,17 @@ class Tile():
     self.isTough = isTough
     self.beings = {} #array of beings in that tile
 
-
-
   def getTraversable(self):
     return self.isTraversable
 
-
-
   def addBeing(self, being):
     self.beings.append(being)
-
-
 
   def getDesc(self):
     return self.desc
 
 
-
-
-
-
     # Object that holds collision/terrain information
-
 class Map():
     def __init__(self, tileMap):
         #self.map = back
@@ -1145,25 +960,17 @@ class Map():
         self.beings = {} #master holder for all of the beings
         self.updateMap(tileMap)
 
-
-
     def placeTex(self, tex, spot):
         self.tileMap.update({spot: tex})
 
-
-
     def getTileDesc(self, spot):
         return self.tileMap[spot].desc
-
-
 
     def placeStruct(self, struct, spot, desc):
         startx = (spot * WorldData.BITS) % WorldData.backWidth
         starty = ((spot * WorldData.BITS) / WorldData.backWidth) * WorldData.BITS
         #if desc == "tree":
             #printNow("Tree at: " + str(startx) + " " + str(starty))
-
-
 
     def updateMap(self, tiles):
         for spot in range(0, len(tiles)):
@@ -1200,17 +1007,11 @@ class Map():
             elif tiles[spot] == "c":
                 self.placeStruct(WorldData.chest, spot, "chest")
 
-
-
     def isTraversable(self, spot):
         #printNow(spot)
         if spot < 0 or spot > len(self.tileMap) - 1:
             return false
         return self.tileMap[spot].getTraversable()
-
-
-
-
 
 
     # class for placeable objects (torches, trees, blocks, tc.)
@@ -1228,7 +1029,6 @@ class Map():
     #    sprite               - Sprite object holding the default sprite
     #    animatedSprite       - StationaryAnimatedSprite object holding the animation for the doodad
     #    isAnimating          - bool indicating animation activity
-
 class Doodad():
     def __init__(self, filepaths, x, y, passable = true, layer = 3):
         self.destructible = false
@@ -1247,22 +1047,12 @@ class Doodad():
         WorldData.objectList.append(self)
 
 
-
-
-
-
 class Activatable(Doodad):
     def __init__(self, filepaths, x, y, onActivateFunction, layer = 3):
       Doodad.__init(self, filepaths, x, y, layer)
 
-
-
     def activate(self):
       onActivateFunction()
-
-
-
-
 
 
       # Special doodad that heals the user upon activation.
@@ -1276,7 +1066,6 @@ class Activatable(Doodad):
       # Members:
       #    animatedSprite   -   ThreeStageAnimationCycle that plays upon usage using spriteList[1-3]
       #    type             -   string type used in targeting
-
 class HealingStation(Doodad):
     def __init__(self, filepaths, x, y, layer = 2):
       passable = false #Change if you want to be passable
@@ -1286,7 +1075,6 @@ class HealingStation(Doodad):
       self.sprite.spawnSprite = self.spawnSprite
       self.sprite.layer = 1
       self.sprite.spawnSprite()
-
 
     def spawnSprite(self):
       WorldData.display.place(self.sprite, self.coords.x - 32, self.coords.y - 64)
@@ -1305,10 +1093,6 @@ class HealingStation(Doodad):
       self.animatedSprite.animateOnce()
 
 
-
-
-
-
       # Special doodad class used mainly in dungeons. Can be activated by player with user.activateTarget()
       # Constructor Parameters:
       #    filepaths        -   sprite filepaths for animations (4 total)
@@ -1323,7 +1107,6 @@ class HealingStation(Doodad):
       #    isLocked         -   bool determining locked status
       #    coords           -   Coords object for placement
       #    sprite           -   object sprite
-
 class Door(Doodad):
     def __init__(self, filepaths, x, y, passable = false, locked = true, lockedMessage = "It's locked!", layer = 3):
       Doodad.__init__(self, filepaths, x, y, passable = false)
@@ -1332,21 +1115,15 @@ class Door(Doodad):
       self.coords = Coords(x, y)
       self.sprite = Sprite(WorldData.path + "ObjectSprites/tempDoorSprite.gif", self, 3)
 
-
-
       # allows a being to pass through the door's coords and removes the sprite
     def open(self):
       self.isPassable = true
       self.sprite.removeSprite()
 
-
-
       # prevents beings from passing through the door's coords and spawns the sprite
     def close(self):
       self.isPassable = false
       self.sprite.spawnSprite()
-
-
 
       # opens the door if it is unlocked, otherwise desplays the door's locked message
     def activate():
@@ -1358,8 +1135,6 @@ class Door(Doodad):
 
     def unlock(self):
       self.isLocked = false
-
-
 
 
       # special animated doodad that emits light within 3 tiles. if is burnable, attacking
@@ -1375,7 +1150,6 @@ class Door(Doodad):
       #    isOn             -   boolean light on/off status
       #    type             -   string type for targeting
       #    isBurnable       -   bool burnable status.
-
 class LightSource(Doodad):
     def __init__(self, filepaths, x, y, burnable = false, layer = 3):
         passable = false #Change if you want to be passable
@@ -1385,16 +1159,12 @@ class LightSource(Doodad):
         self.isBurnable = burnable
         WorldData.lightSources.append(self)
 
-
-
         # turns the light on or off. Activated by a user's activateTarget()
     def activate(self):
         if self.isOn == true:
             self.turnOff()
         else:
             self.turnOn()
-
-
 
         # turns the light on and runs a non-trivial check for nearby beings.
         # Any beings in the area will activate lightenDarken(), lightening their sprites
@@ -1409,8 +1179,6 @@ class LightSource(Doodad):
                 if distanceX <= WorldData.BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
-
-
         # turns the light off and runs a non-trivial check for nearby beings.
         # Any beings in the area will activate lightenDarken(), returning their sprites to pre-light status
     def turnOff(self):
@@ -1423,7 +1191,9 @@ class LightSource(Doodad):
                 if distanceX <= WorldData.BITS*3 and distanceY <= range:
                     being.lightenDarken()
 
-
+    # Custom torch for rooms with locked doors tied to torches. If all torches
+    # in such rooms are lit, doors should open.
+    # Unique Attribute:  room -  Area class containing the torch and locked doors.
 class DungeonTorch(LightSource):
     def __init__(self, filepaths, x, y, room, burnable = false, layer = 3):
       LightSource.__init__(self, filepaths, x, y, burnable = false, layer = 3)
@@ -1437,7 +1207,6 @@ class DungeonTorch(LightSource):
         if isinstance(door, Door):
           door.unlock()
           door.open()
-
 
     def turnOn(self):
         if self.isOn == false:
@@ -1463,7 +1232,6 @@ class DungeonTorch(LightSource):
       #    buyer              - buyer being
       #    seller             - seller being
       #
-
 class Transaction():
     def __init__(self, buyer, seller):
       self.buyer = buyer
@@ -1479,8 +1247,6 @@ class Transaction():
           self.buyingMode()
         else:
           inventoryFull()
-
-
 
           # pops up the selling display and adjusts the keyAction
     def buyingMode(self):
@@ -1508,8 +1274,6 @@ class Transaction():
         #set selling price to item.value
         #set keyaction
 
-
-
     def buy(self, item):
       cost = item.value * (1)
       if self.buyer is WorldData.bot1:
@@ -1527,10 +1291,6 @@ class Transaction():
         self.seller.inventoryRemove(item)
 
 
-
-
-
-
         # An object used for holding/transporting/tracking currency for beings.
         # Constructor Parameters:
         #   parental              - Owner object
@@ -1539,22 +1299,19 @@ class Transaction():
         # Members:
         #   value                 - Current currency value
         #   parental              - Owner
-
 class Wallet():
     def __init__(self, parental, amount):
       self.value = amount
+      self.name = "Wallet"
 
-
-
-
-
+    def use():
+      None
 
       # User-exclusive wallet class. Inherits from Wallet and calls Wallet.__init__()
       # Expansions:
       #   coords                - coords for the HUD icon (User only)
       #   sprite                - sprite for the HUD icon (User only)
       #   label                 - currency amount display for HUD (User only)
-
 class UserWallet(Wallet):
     def __init__(self, parental, amount):
       Wallet.__init__(self, parental, amount)
@@ -1565,9 +1322,7 @@ class UserWallet(Wallet):
       WorldData.display.add(self.label, 1000, 24)
 
 
-
       # updates the currency display to the wallet's current value
-
     def updateWalletDisplay(self):
       self.sprite.spawnSprite()
       try:
@@ -1576,10 +1331,6 @@ class UserWallet(Wallet):
         None
       self.label = gui.Label(str(self.value), gui.RIGHT)
       WorldData.display.add(self.label, 1000, 24)
-
-
-
-
 
 
     # Container object for obtainable items. Often dropped by enemies.
@@ -1599,7 +1350,6 @@ class UserWallet(Wallet):
     #    spriteList           - object sprites (2, used for animation)
     #    sprite               - current sprite
     #    type                 - string type used for targeting
-
 class Lootbag():
     def __init__(self, itemList, coords):
         self.isPassable = true
@@ -1615,15 +1365,11 @@ class Lootbag():
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
 
-
-
         # quick access to sprite functions
     def spawnSprite(self):
         WorldData.display.place(self.sprite, self.coords.x, self.coords.y, 1)
     def removeSprite(self):
         WorldData.display.remove(self.sprite)
-
-
 
         # meant for use with thread.start_new_thread.
         # alternates between the object's sprites at half-second intervals.
@@ -1641,11 +1387,6 @@ class Lootbag():
         if self not in WorldData.objectList:
             self.removeSprite()
             del self
-
-
-
-
-
 
 
     # Class for weapon objects. weapName must correspond to a weapon
@@ -1700,21 +1441,14 @@ class Weapon():
             self.burningAnimationLeft = ThreeStageAnimationCycle(self.burningSprites[2], self.burningSprites[6], self.burningSprites[10], 0, 0, self.animationDelay)
             self.burningAnimationRight = ThreeStageAnimationCycle(self.burningSprites[3], self.burningSprites[7], self.burningSprites[11], 0, 0, self.animationDelay)
 
-
-
     def use(self, equipper):
       equipper.setWeapon(self)
 
-
-
       # sets the weapon on fire. Starts a new thread for a count down to put out fire
-
     def burn(self):
         x = None
         self.onFire = true
         thread.start_new_thread(self.threadFireCountdown, (x, ))
-
-
 
       # meant for use with thread.start_new_thread. Sets onFire to false after 15 turns
       # and reverts the weapon's sprites to the original sprites
@@ -1726,11 +1460,8 @@ class Weapon():
         self.onFire = false
         self.sprites = self.originalSprites
 
-
-
         # Displays the weapon's "up/down/left/right" sprite at the coords.
         # For use with being's "self.forwardCoords.x/y"
-
     def displayUp(self, x, y):
         if self.displayed == false:
           self.displayed = true
@@ -1769,17 +1500,10 @@ class Weapon():
           self.currentAnimation.animate()
           self.displayed = true
 
-
-
         # removes the weapon from the display
-
     def hide(self):
         WorldData.display.remove(self.sprite)
         self.displayed = false
-
-
-
-
 
 
     # Class for living entities (people, enemies, bosses, etc.)
@@ -1819,7 +1543,6 @@ class Weapon():
     #    bloodySprites        - altered BeingSprites used when injured
     #    lightSprites         - altered BeingSprites when within range of LightSource that is on
     #    darkSprites          - placeholder for darkened BeingSprites
-
 class Being():
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
         self.name = name
@@ -1856,10 +1579,8 @@ class Being():
             WorldData.currentBeingList.append(self)
 
 
-
         # use this moveTo when moving beings around
         # Being's coords will be set to the passed x/y
-
     def stun(self):
         thread.start_new_thread(self.threadStun, (None,))
     def threadStun(self, x):
@@ -1870,14 +1591,10 @@ class Being():
           None
         self.active = true
 
-
-
     def moveTo(self, x, y):
         self.sprite.moveTo(x, y)
         self.coords.x = x
         self.coords.y = y
-
-
 
         # activates an activatable object directly in front
         # Calls the target's activate() function
@@ -1888,8 +1605,6 @@ class Being():
       except:
         target.activate()
 
-
-
         # Updates wallet by amount
         # Wallet will increase by amount if positive, decrease if negative
     def changeWallet(self, amount):
@@ -1897,8 +1612,6 @@ class Being():
         if self.wallet <= 0:
             self.wallet == 0
         self.wallet.updateWalletDisplay()
-
-
 
         # Adds/removes item to/from inventory list
         # Checks to ensure inventory is not full
@@ -1911,13 +1624,9 @@ class Being():
     def inventoryRemove(self, item):
         self.inv.remove(item)
 
-
-
         # returns the Being's level
     def getLevel(self):
         return self.level
-
-
 
         # level-up logic. Semi-randomly increases max HP, Atk, df
         # and refreshes hp
@@ -1938,44 +1647,29 @@ class Being():
             WorldData.menu.text = gui.Label("You leveled up!")
             WorldData.menu.openPopMenu()
  
-
-
-
         # returns the Being's name
     def getName(self):
         return self.name
-
-
 
         # returns the Being's current hp
     def getCurrentHP(self):
         return int(self.hp)
 
-
-
         # returns the Being's max hp
     def getMaxHP(self):
         return int(self.maxHp)
-
-
 
         # returns the Being's current xp
     def getXp(self):
         return int(self.xp)
 
-
-
         # returns the Being's ATK
     def getAtk(self):
         return int(self.atk)
 
-
-
         # returns the Being's DF
     def getDf(self):
         return int(self.df)
-
-
 
         # increases xp by the amount given.
         # negative amounts will reduce xp
@@ -1987,25 +1681,17 @@ class Being():
             if self.xp>=(self.level**1.2)*1.5:
                 self.levelUp()
 
-
-
         # changes ATK by the amount given
     def changeAtk(self, amount):
         self.atk += amount
-
-
 
         # changes DF by the amount given
     def changeDf(self, amount):
         self.df += amount
 
-
-
         # changes max HP by the amount given
     def changeMaxHP(self, amount):
         self.maxHp += amount
-
-
 
         # changes current HP by amount given.
         # negative values reduce.
@@ -2022,9 +1708,6 @@ class Being():
           self.hpBar.updateBar()
         except:
           None
-
-
-
 
         # Basic enemy AI. Enemy moves in a random direction and attacks if
         # the player is directly in front.
@@ -2053,8 +1736,6 @@ class Being():
         else:
             self.moveRandom()
 
-
-
         # distanceX and distanceY are compared. The caller will attempt to reduce the distance
         # Depending on which absolute value is greater, the caller will move either vertically
         # or horizontally one space. If decision is made based on distanceX, movement will be horizontal
@@ -2072,8 +1753,6 @@ class Being():
             else:
                 self.moveUp()
 
-
-
         # Moves a being in a random direction
     def moveRandom(self):
         randNum = random.randint(0, 3)
@@ -2086,8 +1765,6 @@ class Being():
         else:
             self.moveRight()
 
-
-
         # returns a random item from the inv list
     def randomInvItem(self):
         possibilities = len(self.inv)
@@ -2095,16 +1772,12 @@ class Being():
             itemIndex = random.randint(0, possibilities-1)
             return self.inv[itemIndex]
 
-
-
         # drops all contents of the inv list in a lootbag object on the map
         # The being's wallet is also dropped with any currency
     def dropLoot(self):
         newWallet = Wallet(None, self.wallet.value)
         self.inv.append(newWallet)
         loot = Lootbag(self.inv, self.coords)
-
-
 
         # Actions to be taken on hp <= 0
     def dead(self):
@@ -2116,8 +1789,6 @@ class Being():
         WorldData.currentBeingList.remove(self)
         del self
         thread.start_new_thread(music.Play, (SoundData.dead_sound,))
-
-
 
         # Handles lighting of sprites. If a valid light object is within the range
         # currently set to * 3, a new set of sprites will be created and applied
@@ -2133,8 +1804,6 @@ class Being():
             deleteKey = self.name + str(WorldData.currentBeingList.index(self)) + "lightSprite"
             thread.start_new_thread(self.threadDeleteLightSprites, (None,))
 
-
-
         # Helper for lightenDarken(). Separated to allow for early returns. Determines if
         # a valid light source is within the range passed
     def lightWithinRange(self, range):
@@ -2145,15 +1814,11 @@ class Being():
                 return true
         return false
 
-
-
         # Deletes lightened sprites when no longer in use
     def threadDeleteLightSprites(self, x):
         for sprite in self.lightSprites:
             os.remove(sprite)
         self.lightSprites = []
-
-
 
         # Returns being's BeingSprites to normal-nonlightened sprites
     def resumePixels(self):
@@ -2161,8 +1826,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.spritePaths[self.facing], self)
         self.sprite.spawnSprite()
-
-
 
         # Lightens the BeingSprites by creating new image files for lightened sprites and
         # setting the being's spritelist to a list containing the new sprites. Sprites are lightened pixel
@@ -2186,8 +1849,6 @@ class Being():
         self.sprite.removeSprite()
         self.sprite = BeingSprite(self.lightSprites[self.facing], self)
         self.sprite.spawnSprite()
-
-
 
         # Adds an oil effect to the BeingSprites at varied intensity depending
         # on being.hp (higher effect at lower hp).  Achieved by creating new image files
@@ -2224,8 +1885,6 @@ class Being():
         if isinstance(self, User):
           WorldData.text.onKeyType(keyAction)
 
-
-
         # For use with actions that can target more than one target (e.g., attacks)
         # Returns a list of objects and beings that are directly in front of the being
     def getFrontTargetList(self):
@@ -2236,8 +1895,6 @@ class Being():
                 targetList.append(target)
         return targetList
 
-
-
         #for use with actions that can only target one target (e.g., talking)
         # Returns one object or being directly in front of the target
     def getFrontTarget(self):
@@ -2245,8 +1902,6 @@ class Being():
         for target in bigList:
             if target.coords.x == self.forwardCoords.x and target.coords.y == self.forwardCoords.y:
                 return target
-
-
 
         # activates the melee attack action.
         # displays the weapon animation at the being's forward coord
@@ -2277,8 +1932,6 @@ class Being():
                 damage = 1
               thread.start_new_thread(threadDamageCalculation, (self, target, damage, self.weapon.animationDelay*2))
 
-
-
         # Display's the "damage splash" sprite at
         # the given location. Uses multithreading.
     def displayDamage(self):
@@ -2286,15 +1939,11 @@ class Being():
         WorldData.display.add(damage, self.coords.x, self.coords.y)
         thread.start_new_thread(threadRemoveSprite, (.25, damage))
 
-
-
         # For use with meleeAtk and thread.start_new_thread().
     def threadHideWeapon(self, x):
         time.sleep(self.weapon.currentAnimation.secondsBetween*4)
         self.weapon.currentAnimation.stopAnimating()
         self.weapon.displayed = false
-
-
 
         # displays the being's weapon at the being's forward coords
         # note that the weapon sprite is not despawned
@@ -2307,8 +1956,6 @@ class Being():
             self.weapon.displayLeft(self.forwardCoords.x, self.forwardCoords.y)
         else:  #right
             self.weapon.displayRight(self.forwardCoords.x, self.forwardCoords.y)
-
-
 
         # picks up any LootBag objects at the coords given
     def pickUpLoot(self, coords):
@@ -2331,8 +1978,6 @@ class Being():
                 else:
                   inventoryFull()
 
-
-
                     # MOVEMENT CLUSTER
         # Moves the being up/down/left/right one unit in two steps.
         # the first step is instant/halfstep, the second
@@ -2344,9 +1989,6 @@ class Being():
         #
         # may be streamlined by using a single moveForward function
         # that interacts with direction facing
-
-
-
     def moveUp(self):
         self.isMoving = true
         self.faceUp()
@@ -2489,12 +2131,9 @@ class Being():
           self.coords.x = (self.coords.x/32)*32
         self.isMoving = false
 
-
-
         # changes the being's sprite to one facing the corresponding
         # direction. If a weapon is displayed, it is first hidden.
         # adjusts forwardCoords accordingly
-
     def faceUp(self):
         if self.weapon.displayed == true:
           self.weapon.hide()
@@ -2537,10 +2176,6 @@ class Being():
           self.forwardCoords.y = self.coords.y
 
 
-
-
-
-
 #Hitbox class passes hits to parent class
 class Hitbox(Being):
   def __init__(self, parent, xSpawn, ySpawn, itemList = None):
@@ -2548,19 +2183,13 @@ class Hitbox(Being):
     Being.__init__(self, name, None, SpriteData.emptySpritePaths, xSpawn, ySpawn, itemList = None)
     self.parent = parent
 
-
-
     #if hitbox hit parent
   def changeHp(self, amount):
     self.parent.changeHp(amount)
 
-
-
   #override thinking so it doesn't do anything
   def simpleHostileAI(self):
     return
-
-
 
 #hitbox helper class
 def makeHitbox(parent, width, height):
@@ -2578,10 +2207,6 @@ def makeHitbox(parent, width, height):
     return boxes
 
 
-
-
-
-
         # Custom being instance for friendlies. Slightly different giblets/giblet logic
 class Friendly(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
@@ -2591,13 +2216,9 @@ class Friendly(Being):
                               RawSprite(WorldData.path + r"RobotSprites/friendlyHead.gif", self.coords.x, self.coords.y),
                               ]
 
-
-
     def gibSpawn(self, gibSprite, x, y):
         WorldData.gibList.append(gibSprite.sprite)
         WorldData.display.add(gibSprite.sprite, x, y)
-
-
 
     def giblets(self):
         x = random.randint(self.coords.x - WorldData.BITS, self.coords.x + WorldData.BITS)
@@ -2612,8 +2233,6 @@ class Friendly(Being):
             y = random.randint(self.coords.y - WorldData.BITS, self.coords.y + WorldData.BITS)
             if isTraversable(x, y):
               self.gibSpawn(self.gibSpriteList[2], x, y)
-
-
 
         # Actions to be taken on hp <= 0
     def dead(self):
@@ -2631,10 +2250,6 @@ class Friendly(Being):
         thread.start_new_thread(music.Play, (SoundData.dead_sound2,))
 
 
-
-
-
-
         # Custom being instance for friendlies. Slightly different giblets/giblet logic
 class ShopKeeper(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, itemList = None):
@@ -2643,13 +2258,9 @@ class ShopKeeper(Being):
                               Sprite(WorldData.path + r"RobotSprites/shopKeeperGib2.gif", self)
                               ]
 
-
-
     def activate(self):
       transaction = Transaction(WorldData.bot1, self)
       transaction.sellingMode()
-
-
 
         # Displays gore effects
     def giblets(self):
@@ -2658,8 +2269,6 @@ class ShopKeeper(Being):
         if isTraversable(x, y):
           animatedGib = AnimatedGiblets(WorldData.path + r"RobotSprites/shopKeeperGib1.gif", WorldData.path + r"RobotSprites/shopKeeperGib2.gif", x, y)
           animatedGib.animate()
-
-
 
     def dead(self):
         self.giblets()
@@ -2673,12 +2282,7 @@ class ShopKeeper(Being):
         thread.start_new_thread(music.Play, (SoundData.dead_sound4,))
 
 
-
-
-
-
     # Custom being for enemies. Slightly different logic for giblets and loot
-
 class Enemy(Being):
     def __init__(self, name, weapName, spritePaths, xSpawn, ySpawn, level):
         Being.__init__(self, name, weapName, spritePaths, xSpawn, ySpawn)
@@ -2692,8 +2296,6 @@ class Enemy(Being):
                               ]
         self.hostile = true
 
-
-
         # Drops a Lootbag instance with a random inv item
     def dropLoot(self):
         items = []
@@ -2701,14 +2303,10 @@ class Enemy(Being):
         items.append(self.wallet)
         loot = Lootbag(items, self.coords)
 
-
-
         # adds a sprite to the gibList and display at the pixel coords given
     def gibSpawn(self, gibSprite, x, y):
         WorldData.gibList.append(gibSprite)
         WorldData.display.add(gibSprite, x, y)
-
-
 
         # Gore effect for enemies
     def giblets(self):
@@ -2720,8 +2318,6 @@ class Enemy(Being):
                 self.gibSpawn(self.gibSpriteList[gibIndex], x, y)
                 print(gibIndex)
                 gibIndex += 1
-
-
 
         # Calls functions related to hp==0 logic
     def dead(self):
@@ -2737,18 +2333,12 @@ class Enemy(Being):
         del self
         thread.start_new_thread(music.Play, (SoundData.dead_sound3,))
 
-
-
         # returns a random item from the inv list
     def randomInvItem(self):
         possibilities = len(self.inv)
         if possibilities>0:
             itemIndex = random.randint(0, possibilities-1)
             return self.inv[itemIndex]
-
-
-
-
 
 
   # The following cluster acts as shortcuts to create higher level enemies with better weapons
@@ -2802,9 +2392,6 @@ class Bomb(Enemy):
         WorldData.currentBeingList.remove(self)
         del self
 
-def dropBomb(coords):
-    coords.printCoords()
-    return Bomb(Coords(coords.x, coords.y))
 
 #Main Class for the first Boss
 class Boss1(Enemy):
@@ -2817,8 +2404,6 @@ class Boss1(Enemy):
         self.hitBoxes = makeHitbox(self, 4, 4)
         for box in self.hitBoxes:
             self.area.beingList.append(box)
-
-
 
     def changeHp(self, amount):
         #if healing heal
@@ -2835,8 +2420,6 @@ class Boss1(Enemy):
                   self.dead()
         except:
           None
-
-
 
     def simpleHostileAI(self):
         #printNow("Boss thinking")
@@ -2881,7 +2464,6 @@ class BossArm(Enemy):
     def randomInvItem(self):
       None
 
-
     def stun(self):
         thread.start_new_thread(self.threadStun, (None,))
     def threadStun(self, x):
@@ -2921,7 +2503,6 @@ class BossArm(Enemy):
     def moveLeft(self):
       slideLeft(self, self.coords.x - 32)
 
-
     def moveRight(self):
       slideRight(self, self.coords.x + 32)
     def lightenDarken(self):
@@ -2929,34 +2510,24 @@ class BossArm(Enemy):
     def lightWithinRange(self, range):
         None
 
-
     def threadDeleteLightSprites(self, x):
         None
 
-
     def resumePixels(self):
         None
-
-
 
     def lightenPixels(self):
         None
         self.sprite.spawnSprite()
 
-
-
     def bloodify(self):
         None
-
 
     def getFrontTargetList(self):
         None
 
-
     def getFrontTarget(self):
         None
-
-
 
     def meleeAtk(self):
         None
@@ -2973,7 +2544,6 @@ class BossArm(Enemy):
           else:
             self.despawn()
 
-
     def despawn(self):
         self.sprite.removeSprite()
         try:
@@ -2986,7 +2556,6 @@ class BossArm(Enemy):
         else:
           self.parental.rightHand = None
         WorldData.currentBeingList.remove(self)
-
 
     def dead(self):
         self.sprite.removeSprite()
@@ -3004,19 +2573,13 @@ class BossArm(Enemy):
 
 
         # Class for armor/equipment, in development
-
 class Armor():
     def __init__(self, name):
         self.armorType = "FIX THIS CLASS"
 
 
-
-
-
-
 # used for sprite animation, flickering between two sprites at random
 # used for twitching/sparking/flames
-
 class AnimatedGiblets():
     def __init__(self, filename1, filename2, x, y):
         self.coords = Coords(x, y)
@@ -3025,22 +2588,16 @@ class AnimatedGiblets():
         self.sprite = self.spriteList[0]
         WorldData.gibList.append(self.spriteList[0])
 
-
-
         #activates animation
     def animate(self):
         x = None
         thread.start_new_thread(self.threadAnimate, (x,))
-
-
 
         # sprite addition and removal to and from display
     def spawnSprite(self):
         WorldData.display.place(self.sprite, self.coords.x, self.coords.y, 5)
     def removeSprite(self):
         WorldData.display.remove(self.sprite)
-
-
 
     def threadAnimate(self, container):
         while self.spriteList[0] in WorldData.gibList:
@@ -3057,10 +2614,6 @@ class AnimatedGiblets():
             del self
 
 
-
-
-
-
     # In development class for potions
 class Potion():
     def __init__(self):
@@ -3069,15 +2622,9 @@ class Potion():
       self.restoreValue = 10
       self.value = 20
 
-
-
     def use(self, user):
       user.changeHp(self.restoreValue)
       user.inv.remove(self)
-
-
-
-
 
 
         # Singleton class for player's HP Bar
@@ -3094,8 +2641,6 @@ class HpBar():
       self.parental = parental
       self.coords = Coords(0, 0)
       self.sprite.spawnSprite()
-
-
 
       # Updates the bar's sprite based on owner HP levels
     def updateBar(self):
@@ -3118,10 +2663,6 @@ class HpBar():
       self.sprite.spawnSprite()
 
 
-
-
-
-
     # Class for living entities (people, enemies, bosses, etc.)
     # handles stats, movement, experience, inventory
     # spritePaths should be an array of order [up, down, leftFace, rightFace, leftMove, rightMove]
@@ -3133,7 +2674,6 @@ class HpBar():
     #   xSpawn:         - initial x location
     #   ySpawn:         - initial y location
     #   level:          - Being's starting level
-
 class User(Being):
     def __init__(self, name, weapName, spritePaths, CURRENT_AREA):
         Being.__init__(self, name, weapName, spritePaths, CURRENT_AREA.spawnCoords.x, CURRENT_AREA.spawnCoords.y)
@@ -3155,14 +2695,10 @@ class User(Being):
         self.sprite.spawnSprite()
         self.held = false
 
-
-
         # for use with inventory. Will be altered.  All usable items
         # in the future will have a use() method that will be called here.
     def useItem(self, item):
       item.use(self)
-
-
 
         # Initiates bot1's special attack. The attack has three levels, based
         # on bot1's atk value. Level 1 stuns the target(s) directly ahead for 3 turns.
@@ -3178,8 +2714,6 @@ class User(Being):
         self.stunLevel2()
       else:
         self.stunLevel3()
-
-
 
         # Level 1 stun logic.
         # Handles targeting.
@@ -3212,8 +2746,6 @@ class User(Being):
         self.specialSprites1[3].coords.y = self.coords.y
         self.specialSprites1[3].animateOnce()
 
-
-
         # Level 2 stun logic.
         # Handles targeting.
         # Targets exactly 2 tiles away will be stunned in
@@ -3233,8 +2765,6 @@ class User(Being):
           being.hostile = true
           being.stun()
 
-
-
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # For use with stunLevel2()
@@ -3242,8 +2772,6 @@ class User(Being):
       distanceX = abs(self.coords.x - being.coords.x)
       distanceY = abs(self.coords.y - being.coords.y)
       return (distanceX + distanceY > 32 and distanceX + distanceY <= 64)
-
-
 
         # Level 3 stun logic.
         # Handles targeting.
@@ -3267,8 +2795,6 @@ class User(Being):
         being.changeHp(damage)
       beingsToDamage = []
 
-
-
         # Returns a boolean if the being passed
         # is exactly 2 tiles (64pixels) away.
         # for use with stunLevel3()
@@ -3277,15 +2803,11 @@ class User(Being):
       distanceY = abs(self.coords.y - being.coords.y)
       return distanceX + distanceY <= 64
 
-
-
       # Updates the user's wallet by the amount given,
       # positive or negative.  calls wallet.updateWalletDisplay()
     def changeWallet(self, amount):
       Being.changeWallet(self, amount)
       self.wallet.updateWalletDisplay()
-
-
 
       # Combination cleanup/money creation.
       # Too many giblets on screen causes issues, so
@@ -3305,20 +2827,15 @@ class User(Being):
             self.changeWallet(1)
           break
 
-
-
       # Player doesn't currently drop gibs
     def giblets():
         None
-
-
 
                # EQUIPMENT CLUSTER###
         # The following 6 functions handle equipping items
         # to  specific parts of the body.  Atk and Df stats
         # are adjusted accordingly.  The equipped item must
         # correlate to one of the itemLists
-
     def setWeapon(self, weapon):
         self.inventoryAdd(self.weapon)
         self.atk -= ListData.weaponStatsList[self.weapon.name][0]
@@ -3326,7 +2843,6 @@ class User(Being):
           self.inventoryRemove(weapon)
         self.weapon = weapon
         self.atk += ListData.weaponStatsList[self.weapon.name][0]
-
 
     def setHelm(self, helm):
         if self.helm != "Hair":
@@ -3337,7 +2853,6 @@ class User(Being):
         self.helm = helm
         self.df += ListData.helmStatsList(self.helm)
 
-
     def setChest(self, chest):
         if self.chest != "BDaySuit":
             self.inventoryAdd(self.chest)
@@ -3346,7 +2861,6 @@ class User(Being):
           self.inventoryRemove(chest)
         self.chest = chest
         self.df += chestStatsList(self.chest)
-
 
     def setLegs(self, legs):
         if self.legs != "Shame":
@@ -3357,7 +2871,6 @@ class User(Being):
         self.legs = legs
         self.df += legsStatsList(self.legs)
 
-
     def setBoots(self, boots):
         if self.boots != "Toes":
             self.inventoryAdd(self.boots)
@@ -3367,7 +2880,6 @@ class User(Being):
         self.boots = boots
         self.df += bootsStatsList(self.boots)
 
-
     def setGloves(self, gloves):
         if self.gloves != "Digits":
             self.inventoryAdd(self.gloves)
@@ -3376,8 +2888,6 @@ class User(Being):
           self.inventoryRemove(gloves)
         self.gloves = gloves
         self.df += glovesStatsList(self.gloves)
-
-
 
             # action - attempts to steal an item from a target
             # Being.  If the attempt fails, the Being turns hostile
@@ -3403,8 +2913,6 @@ class User(Being):
       else:
             inventoryFull()
 
-
-
             # Talks to the being directly in front
     def talk(self):
         thread.start_new_thread(music.Play, (SoundData.talk_sound,))
@@ -3421,8 +2929,6 @@ class User(Being):
         WorldData.menu.text = speech
         WorldData.menu.openPopMenu()
         delayRemoveObject(speech, 2)
-
-
 
         # Logic for hp == 0.  The player will drop all loot/money
         # and respawn at lv 0 with default eqiupment
@@ -3446,16 +2952,9 @@ class User(Being):
         thread.start_new_thread(music.Play, (SoundData.dead_sound5,))
 
 
-
-
-
 class MenuData():
     transaction = None
     popupCoords = None
-
-
-
-
 
 
 
@@ -3467,16 +2966,18 @@ class MenuData():
 
 
 
-# Removes the passed object from the display
+def dropBomb(coords):
+    coords.printCoords()
+    return Bomb(Coords(coords.x, coords.y))
 
+
+# Removes the passed object from the display
 def removeLabel(label):
     WorldData.display.remove(label)
 
 
-
 # All actions that depend on the turn counter go here. All actions/functions within
 # will occur with the passing of each turn (e.g., attack, player-directed movement)
-
 def turnPass():
     WorldData.counter.turn += 1
     if  WorldData.CURRENT_AREA != AreaData.TOWN_AREA and len(WorldData.currentBeingList)< WorldData.MAX_BEINGS:
@@ -3512,7 +3013,6 @@ def turnPass():
     clearBadSprites()
 
 
-
 def inventoryFull():
     WorldData.menu.text = gui.Label("Not enough inventory space!")
     WorldData.menu.openPopMenu()
@@ -3522,7 +3022,6 @@ def inventoryFull():
 # parameters:
 # object        - object to be moved (must have a sprite)
 # targetXBig    - x coord target (must be greater than object.coords.x)
-
 def slideRight(toBeMoved, targetXBig):
     time.sleep(.005)
     toBeMoved.coords.x += 1
@@ -3530,7 +3029,6 @@ def slideRight(toBeMoved, targetXBig):
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x < targetXBig:
         thread.start_new_thread(slideRight, (toBeMoved, targetXBig))
-
 def slideLeft(toBeMoved, targetXSmall):
     time.sleep(.005)
     toBeMoved.coords.x -= 1
@@ -3538,8 +3036,6 @@ def slideLeft(toBeMoved, targetXSmall):
     WorldData.display.add(toBeMoved.sprite, toBeMoved.coords.x, toBeMoved.coords.y)
     if toBeMoved.coords.x > targetXSmall:
         thread.start_new_thread(slideLeft, (toBeMoved, targetXSmall))
-
-
 # Slide-down logic identical to the above, but for vertical sliding
 def slideSpriteDown(toBeMoved, targetYBig):
     time.sleep(.005)
@@ -3549,11 +3045,9 @@ def slideSpriteDown(toBeMoved, targetYBig):
         thread.start_new_thread(slideSpriteDown, (toBeMoved, targetYBig))
 
 
-
 # Checks player coords to determine if a load is necessary.
 # may call loadNewArea
 # double calls for garbage sprite cleanup
-
 def loadAreaCheck(player):
     maxAceptableWidth = 960
     maxAceptableHeight = 512
@@ -3594,11 +3088,9 @@ def loadAreaCheck(player):
         WorldData.CURRENT_AREA.spawnCoords = Coords(WorldData.bot1.coords.x, WorldData.bot1.coords.y)
 
 
-
 # Joins area objects by placing both in the opposite area's opposite
 # area attribute.  Used when loading new areas. Arguments should be passed
 # as parameters are described (e.g., northArea should be the area to the north).
-
 def joinNorthSouthAreas(northArea, southArea):
     northArea.southArea = southArea
     southArea.northArea = northArea
@@ -3612,7 +3104,6 @@ def joinOtherAreas(target, area):
 
 # Spawns the passed enemy object. If none is passed, the default spawned enemy is a blue enemy, lv 1,
 # with a stick as a weapon
-
 def spawnEnemy(toSpawn = None):
     if toSpawn == None:
       toSpawn = Enemy(None, "Stick", SpriteData.blueEnemySpritePaths, random.randint(0, 10)*32, random.randint(0, 10)*32, 1)
@@ -3657,9 +3148,7 @@ def spawnThreat5():
       toSpawn.sprite.spawnSprite()
 
 
-
 # Spawns a friendly with the given parameters.  Default is green friendly with stick at random location.
-
 def spawnFriendly(name = None, weap = "Stick", spritePaths = SpriteData.friendlyGreenSpritePaths,  x = random.randint(0, 10)*32, y =  random.randint(0, 10)*32):
     if name == None:
       name = ("FriendlyBorn" + str(WorldData.counter.turn))
@@ -3670,14 +3159,12 @@ def spawnFriendly(name = None, weap = "Stick", spritePaths = SpriteData.friendly
     friendly.sprite.spawnSprite()
 
 
-
 # Used to remove objects (labels, sprites, etc.) from the display after a delay.
 # only call delayRemoveObject.  threadDelayRemoveObject() is not meant to be called
 # directly.
 # Parameters:
 #   object          - An object on the displays self.items list
 #   delay           - the amount of time in seconds to delay the removal
-
 def delayRemoveObject(object, delay):
     thread.start_new_thread(threadDelayRemoveObject, (object, delay))
 def threadDelayRemoveObject(object, delay):
@@ -3685,10 +3172,8 @@ def threadDelayRemoveObject(object, delay):
     WorldData.display.remove(object)
 
 
-
 # cleanup for duplicate sprites created when input is given
 # too quickly
-
 def clearBadSprites():
     goodSprites = []
     for being in WorldData.currentBeingList:
@@ -3701,9 +3186,7 @@ def clearBadSprites():
           break
 
 
-
 # clears giblets from the display()
-
 def clearGibList():
     for sprite in WorldData.gibList:
         WorldData.display.remove(sprite)
@@ -3711,17 +3194,14 @@ def clearGibList():
         del sprite
 
 
-
 # used with thread.start_new_thread(threadRemoveSprite, (timeToWait, sprite))
 # in order to despawn a sprite after a delay. For use with animations.
 # parameters:
 #   timeToWait      - time in seconds to delay the sprite removal
 #   sprite          - sprite to be removed
-
 def threadRemoveSprite(timeToWait, sprite):
     time.sleep(timeToWait)
     WorldData.display.remove(sprite)
-
 
 
 #helper Functions
@@ -3732,32 +3212,25 @@ def spotToCoord(spot):
     if spot > WorldData.WIDTH_TILES * WorldData.HEIGHT_TILES: spot = WorldData.WIDTH_TILES * WorldData.HEIGHT_TILES - 1
     return Coords(spot % WWorldData.IDTH_TILES, spot / WorldData.WIDTH_TILES)
 
-
 #given tile Coords give tile Spot in 1d array
 def tileCoordToSpot(coord):
     return coord.x + coord.y * WorldData.WIDTH_TILES
-
 
 #Goes from pixel coords to tile Coords
 def coordToTileCoord(coord):
     return Coords(coord.x/WorldData.BITS, coord.y/WorldData.BITS)
 
-
-
 #Goes from tile spot to pixel coords
 def tileSpotToCoord(spot):
     return Coords((spot * WorldData.BITS)% WorldData.PIXEL_WIDTH, (spot / WorldData.WIDTH_TILES)*WorldData.BITS)
 
-
 def coordToTile(coord):
     return coord.x/WorldData.BITS + (coord.y/WorldData.BITS) * WorldData.WIDTH_TILES
-
 
 #takes pixel coordanates and returns if the tile at that location is
 def isTraversable(x, y):
     spot = coordToTile(Coords(x,y))
     return WorldData.currentMap.isTraversable(spot)
-
 
 # Converts pixel coordinates to "spot" coordinates
 def textCoordToSpot(x, y):
@@ -3767,7 +3240,6 @@ def textCoordToSpot(x, y):
 
 
 # intro credits, adjust to add fade, etc.
-
 def loadIntro():
     WorldData.loading.spawnSprite()
     WorldData.startScreen = RawSprite(WorldData.path + "Fullscreens/startScreen.png", 0, 0, 2)
@@ -3787,15 +3259,12 @@ def loadIntro():
     #thread.start_new_thread(music.play, (SoundData.dungeon_sound,))
 
 
-
 # Clears the display, sets up layers for use, and displays
 # the SAGA logo
-
 def loadingScreen():
     WorldData.display.removeAll()
     setUpLayers()
     WorldData.loading.spawnSprite()
-
 
 
 # Compacts and stores information about the current area and
@@ -3807,8 +3276,6 @@ def loadingScreen():
 def loadNewArea(area):
     loadingScreen()
     setUpLayers()
-
-#   thread.start_new_thread(music.loop2, (SoundData.background_Music,))
 
     for light in WorldData.lightSources:
       if light.isOn:
@@ -3849,10 +3316,8 @@ def loadNewArea(area):
     turnPass()
 
 
-
  # Adds 7 sprites as placeholders to create layers
  # for use with future sprites
-
 def setUpLayers():
     try:
       WorldData.layer0.removeSprite()
@@ -3886,10 +3351,7 @@ def setUpLayers():
       WorldData.layer6.spawnSprite()
 
 
-
 # Default keybindings/controls
-
-
 
 #Inventory Control: resets closes and resets menu with each item select. If no item, reloads.
 def inventoryAction(menuInput):
@@ -3902,7 +3364,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "2":
     if bot1Ready:
       try:
@@ -3911,7 +3372,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "3":
     if bot1Ready:
       try:
@@ -3920,7 +3380,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "4":
     if bot1Ready:
       try:
@@ -3929,7 +3388,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "5":
     if bot1Ready:
       try:
@@ -3938,7 +3396,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "6":
     if bot1Ready:
       try:
@@ -3947,7 +3404,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "7":
     if bot1Ready:
       try:
@@ -3956,7 +3412,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "8":
     if bot1Ready:
       try:
@@ -3965,7 +3420,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "9":
     if bot1Ready:
       try:
@@ -3974,7 +3428,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "0":
     if bot1Ready:
       try:
@@ -3983,7 +3436,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "!":
     if bot1Ready:
       try:
@@ -3992,7 +3444,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "@":
     if bot1Ready:
       try:
@@ -4001,7 +3452,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "#":
     if bot1Ready:
       try:
@@ -4010,7 +3460,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "$":
     if bot1Ready:
       try:
@@ -4019,7 +3468,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "%":
     if bot1Ready:
       try:
@@ -4028,7 +3476,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "^":
     if bot1Ready:
       try:
@@ -4037,7 +3484,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "&":
     if bot1Ready:
       try:
@@ -4046,7 +3492,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "*":
     if bot1Ready:
       try:
@@ -4055,7 +3500,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "(":
     if bot1Ready:
       try:
@@ -4064,7 +3508,6 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == ")":
     if bot1Ready:
       try:
@@ -4073,13 +3516,10 @@ def inventoryAction(menuInput):
         thread.start_new_thread(music.Play, (SoundData.hit_sound,))
     WorldData.menu.closeMenu()
     WorldData.menu.openItemMenu()
-
   elif menuInput == "m":
     if bot1Ready:
       WorldData.menu.openStatusMenu()
       WorldData.text.onKeyType(menuAction)
-
-
 
 def keyAction(a):
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
@@ -4133,8 +3573,6 @@ def keyAction(a):
       WorldData.menu.openStatusMenu()
       WorldData.text.onKeyType(menuAction)
 
-
-
 def buyTransactionKeyAction(inp):
     if inp == "1":
       MenuData.transaction.buy(MenuData.transaction.seller.inv[0])
@@ -4148,27 +3586,16 @@ def buyTransactionKeyAction(inp):
         WorldData.menu.closeMenu()
         WorldData.text.onKeyType(keyAction)
 
-
-    # Keybindings/controls for menus
-
-
 def menuAction(menuInput):
-
   bot1Ready = (WorldData.bot1.weapon.displayed == false and WorldData.bot1.isMoving == false)
 
   if menuInput == "u":
     if bot1Ready:
       WorldData.menu.openStatusMenu()
-
-  elif menuInput == "x": #testing
-    if bot1Ready:
-        WorldData.menu.openPopMenu()
-
   elif menuInput == "i":
     if bot1Ready:
         WorldData.text.onKeyType(inventoryAction)
         WorldData.menu.openItemMenu()
-
   elif menuInput == "q":
     if bot1Ready:
       try:
@@ -4185,17 +3612,12 @@ def menuAction(menuInput):
         None
       saveBot()
       WorldData.display.hide()
-   #   sys.exit()
-      print "When this works, it will quit game."
-
+      sys.exit()
   elif menuInput == "m":
     if bot1Ready:
       WorldData.menu.closeMenu()
       WorldData.text.onKeyType(keyAction)
 
-
-
-    # Default controls for main menu
 def mainMenuAction(inp):
   WorldData.text.onKeyType(blockKeys)
   WorldData.title.removeSprite()
@@ -4206,21 +3628,15 @@ def mainMenuAction(inp):
     newBot()
     startGame()
 
-
-
 # To pass to getKeyTyped in order to block inputs
 # (e.g., during animations or delays)
-
 def blockKeys(a):
     None
-
-
 
 # Damage calculation logic for combat. Note:
 # Certain friendlies will be obliterated on defeat
 # Currently meant to be called with thread.start_new_thread
 # to line up damage with animations
-
 def threadDamageCalculation(self, target, damage, delay):
   time.sleep(delay)
   if target != WorldData.bot1:
@@ -4237,9 +3653,7 @@ def threadDamageCalculation(self, target, damage, delay):
       del WorldData.shopKeeper
 
 
-
   # Game startup/bootup logic
-
 def startGame():
   WorldData.loading.spawnSprite()
   WorldData.CURRENT_AREA = AreaData.TOWN_AREA
@@ -4265,7 +3679,9 @@ def startGame():
   WorldData.menu = Menu(WorldData.bot1)
   WorldData.text.grabFocus()
   time.sleep(.2) #gives sliding title time to finish
+  WorldData.display.onClose(None)
   WorldData.text.onKeyType(keyAction)
+
 
   # Logic for starting a new character.  Bot1/User will have starting stats
 def newBot():
@@ -4273,7 +3689,6 @@ def newBot():
   WorldData.bot1.area = WorldData.CURRENT_AREA
   WorldData.bot1.inv.append(Potion())
   WorldData.bot1.inv.append(Potion())
-
 
 
   # Logic for loading a character. If data exists, bot1 will be loaded from it.
@@ -4307,7 +3722,6 @@ def loadBot():
     thread.start_new_thread(loadIntro, ())
   
 
-
     # Saves the user's stats to a file for future loading
 def saveBot():
   fout = open(WorldData.path + "SaveData.txt", 'w')
@@ -4323,16 +3737,8 @@ def saveBot():
   fout.close()
 
 
-
 def areaSetup():
-  #initailize background image
   tilesPath = WorldData.path + "Tiles/LPC/tiles/"
-  #Old, probably dont need textureMap anymore
-  #textureMap = makePicture(WorldData.path + "Tiles/hyptosis_tile-art-batch-1.png")
-
-  #initailize textures
-  #  Tile(isTraversable, isPassable, isTough, desc)
-  #add Dirt
   WorldData.dirt = Tile(true, true, false, "dirt")
   WorldData.dirtWall = Tile(false, true, false, "dirtWall")
   WorldData.grass = Tile(true, true, false, "grass")
@@ -4347,14 +3753,7 @@ def areaSetup():
   WorldData.door = Tile(true, false, false, "door")
   WorldData.blank = Tile(false, false, false, "Filler for structure class")
   WorldData.structPath = WorldData.path + "Tiles/LPC/structures/"
-
-  #get width and height
-  #texWidth = getWidth(textureMap)
-  #texHeight = getHeight(textureMap)
-
-
   paths = ["d", "s", "h", ".", "o"]
-  #create empty grass field will clean up later
   home  = "fffffffffffffddddfffffffffffffff"
   home += "fh......ggt,,ddddgh......gg,,,gf"
   home += "f.......gg,,,ddddg.......dg,,,gf"
@@ -4439,27 +3838,6 @@ def areaSetup():
   nefield += "fffffffffffffddddfffffffffffffff"
   nefieldMap = Map(nefield)
   AreaData.NE_FIELD_AREA.mapObject = nefieldMap
-
-  #old field no longer in use
-  field  = "ffffffffffffffffffffffffffffffff"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggwwwwwwwgggf"
-  field += "fggggggggggggggggggggwwwwwwwwwgf"
-  field += "fggggggggggggggggggggwwwwwwwwwgf"
-  field += "fgggggggggggggggggggggggggwwwwgf"
-  field += "fggggggggggggggggggggggggwwwwwgf"
-  field += "ggggggggggggggggggggggggwwwwwwgf"
-  field += "ggggggggggggggggggggggggwwwwwggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fggggggggggggggggggggggggggggggf"
-  field += "fffffffffffffggggfffffffffffffff"
-  fieldMap = Map(field)
 
   entrance  = "SSSSSSSSSSSSSSSllSSSSSSSSSSSSSSS"
   entrance += "SllllllllllllllllllllllllllllllS"
@@ -4642,14 +4020,11 @@ def areaSetup():
   joinNorthSouthAreas(AreaData.DUNGEON_MINIBOSS_AREA, AreaData.DUNGEON_EASTROOM_AREA)
 
 
-
 def displaySetup():
   setUpLayers()
   WorldData.display.add(WorldData.text, -32, -32)
 
 
-
-#music
 def soundSetup():
   thread.start_new_thread(music.volume, (SoundData.move, .08,))
   thread.start_new_thread(music.volume, (SoundData.move1, .08,))
@@ -4661,7 +4036,7 @@ def soundSetup():
 
 
 def main():
-
+  thread.start_new_thread(music.loop2, (SoundData.background_Music,))
   WorldData.display = CustomDisplay("Robot Saga", WorldData.backWidth, WorldData.backHeight)
   WorldData.loading = RawSprite(WorldData.path + "Fullscreens/LogoOmega.png", 0, 0, 0)
   WorldData.boss = Boss1(AreaData.DUNGEON_BOSSROOM_AREA)
@@ -4669,8 +4044,6 @@ def main():
   areaSetup()
   soundSetup()
   loadIntro()
-
-
 
                #################
                #               #
