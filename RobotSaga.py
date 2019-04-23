@@ -2053,7 +2053,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.pickUpLoot(self.coords)
-        self.lightenDarken()
+          self.lightenDarken()
         if isinstance(self, User):
             loadAreaCheck(self)
             self.suckUpGiblets()
@@ -3699,7 +3699,7 @@ def loadBot():
     fin = open(WorldData.path + "SaveData.txt")
     for line in fin:
       if "CharName:" in line:
-        WorldData.bot1.name = line[len("Name:"):line.index('\n')]
+        WorldData.bot1.name = line[len("CharName:"):line.index('\n')]
       elif "Weapon:" in line:
         WorldData.bot1.weapon = Weapon(line[len("Weapon:"):line.index('\n')])
       elif "Level:" in line:
