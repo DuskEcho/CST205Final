@@ -2989,6 +2989,8 @@ def help():
   + "\n" +  
   '"m"                - Menu'
   + "\n" +  
+  '"h"                - Help Prompt'
+  + "\n" +  
   'Menu Controls:'
   + "\n" +  
   '"i"                - Inventory'
