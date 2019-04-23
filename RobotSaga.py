@@ -2053,7 +2053,7 @@ class Being():
         self.sprite = BeingSprite(self.spritePaths[1], self)
         self.sprite.moveTo(self.coords.x, self.coords.y)
         self.pickUpLoot(self.coords)
-          self.lightenDarken()
+        self.lightenDarken()
         if isinstance(self, User):
             loadAreaCheck(self)
             self.suckUpGiblets()
