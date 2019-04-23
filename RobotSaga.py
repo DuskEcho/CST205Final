@@ -3706,6 +3706,7 @@ def loadBot():
         WorldData.bot1.level = int(line[len("Level:"):line.index('\n')])
       elif "MaxHp:" in line:
         WorldData.bot1.maxHp = int(line[len("MaxHp:"):line.index('\n')])
+        WorldData.bot1.changeHp(WorldData.bot1.maxHp)
       elif "CurrentHp:" in line:
         WorldData.bot1.maxHp = int(line[len("CurrentHp:"):line.index('\n')])
       elif "Xp:" in line:
