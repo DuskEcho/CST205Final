@@ -29,7 +29,7 @@ SAGA original logo (added textures to be cited)
 
 All code from DuskEcho
 
-All code from Shellhn
+All code from catwfiddle
 
 All code from Anelon
 
