@@ -21,6 +21,13 @@ team SAGA went the extra mile. There are some obvious compromises made due to th
 - Explorable dungeon complete with a boss
 
 
+# Run instructions:
+(tested using JES version 5.02)
+- Load RobotSaga.py into JES
+- Click "Load Program"
+- Navigate to and open the root folder of the project in the file explorer that opens 
+- Click "Open"
+- Enjoy!
 
 
 All rights reserved.  Not to be duplicated without explicit permission of original creators.
