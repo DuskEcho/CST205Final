@@ -1,5 +1,12 @@
-# CST205Final
-One Day!!!!
+# Robot Saga
+
+Completed prototype! Great job everyone!
+
+Robot Saga is a proof-of-concept Jython game engine, developed for JES from scratch. JES was never meant 
+to run anything like this; we pushed it to the limit. There are certainly further optimizations to be made,
+but the team feels we largely rose to the occation of getting an interactive game running out of JES.  Any future implementations
+would be developed more seriously on a better suited platform.
+
 
 All rights reserved.  Not to be duplicated without explicit permission of original creators.
 
