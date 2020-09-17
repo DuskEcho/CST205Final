@@ -22,7 +22,7 @@ team SAGA went the extra mile. There are some obvious compromises made due to th
 
 
 # Run instructions:
-(tested using JES version 5.02)
+(tested using [JES version 5.02](https://github.com/gatech-csl/jes/releases/tag/5.020))
 - Load RobotSaga.py into JES
 - Click "Load Program"
 - Navigate to and open the root folder of the project in the file explorer that opens 
