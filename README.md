@@ -8,7 +8,7 @@ but the team feels we largely rose to the occation of getting an interactive gam
 would be developed more seriously on a better suited platform.
 
 We were given 4 weeks to come up with a unique multimedia sample using JES.  Not content with simple image filters and soundbytes,
-team SAGA went the extra mile. There are some obvious compromises made due to the time and platform constraint, but the end product features:
+team SAGA went the extra mile. There are some obvious compromises made due to the time and platform constraints, but the end product features:
 - An explorable town
 - Currency
 - Loot
